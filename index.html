@@ -2203,10 +2203,11 @@ function exitExamMode(){clearInterval(emTimerInt);emRunning=false;document.getEl
 const BANK_COURSES=['Aritmética','Álgebra','Física','Geometría','Trigonometría','Química'];
 // File System Access API - Root directory handle
 let uniDirHandle=null;
-// IndexedDB for persisting directory handle
+// IndexedDB for persisting directory handle + images
 const DB_NAME='UniPlanDB';
-const DB_VERSION=1;
+const DB_VERSION=2;
 const STORE_NAME='directoryHandles';
+const IMG_STORE='images';
 async function openDB(){
   return new Promise((resolve,reject)=>{
     const request=indexedDB.open(DB_NAME,DB_VERSION);
@@ -2217,8 +2218,61 @@ async function openDB(){
       if(!db.objectStoreNames.contains(STORE_NAME)){
         db.createObjectStore(STORE_NAME);
       }
+      if(!db.objectStoreNames.contains(IMG_STORE)){
+        db.createObjectStore(IMG_STORE);
+      }
     };
   });
+}
+// Save image blob to IndexedDB
+async function saveImageToDB(file){
+  try{
+    const db=await openDB();
+    const key='img_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+    const tx=db.transaction(IMG_STORE,'readwrite');
+    const store=tx.objectStore(IMG_STORE);
+    const blob=new Blob([await file.arrayBuffer()],{type:file.type});
+    await new Promise((resolve,reject)=>{
+      const req=store.put(blob,key);
+      req.onsuccess=resolve;
+      req.onerror=()=>reject(req.error);
+    });
+    await new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});
+    db.close();
+    return 'idb:'+key;
+  }catch(err){
+    console.error('Error saving image to IndexedDB:',err);
+    return null;
+  }
+}
+// Load image blob from IndexedDB
+async function loadImageFromDB(key){
+  try{
+    const db=await openDB();
+    const tx=db.transaction(IMG_STORE,'readonly');
+    const store=tx.objectStore(IMG_STORE);
+    const blob=await new Promise((resolve,reject)=>{
+      const req=store.get(key);
+      req.onsuccess=()=>resolve(req.result);
+      req.onerror=()=>reject(req.error);
+    });
+    db.close();
+    if(!blob)return null;
+    return URL.createObjectURL(blob);
+  }catch(err){
+    console.error('Error loading image from IndexedDB:',err);
+    return null;
+  }
+}
+// Delete image blob from IndexedDB
+async function deleteImageFromDB(key){
+  try{
+    const db=await openDB();
+    const tx=db.transaction(IMG_STORE,'readwrite');
+    tx.objectStore(IMG_STORE).delete(key);
+    await new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});
+    db.close();
+  }catch(err){console.error('Error deleting image:',err);}
 }
 async function saveDirHandle(handle){
   try{
@@ -2276,32 +2330,17 @@ async function getOrCreateDir(handle,path){
   }
   return current;
 }
-// Save image file to filesystem
+// Save image — now uses IndexedDB (persists across reloads, no carpeta needed)
 async function saveImageToFile(file,course,tema){
-  if(!uniDirHandle){
-    alert('Primero selecciona la carpeta UNI usando el botón "Seleccionar carpeta UNI"');
-    return null;
-  }
-  try{
-    const exercisesDir=await getOrCreateDir(uniDirHandle,'ejercicios');
-    const courseDir=await getOrCreateDir(exercisesDir,course);
-    const temaDir=await getOrCreateDir(courseDir,tema);
-    // Generate unique filename
-    const timestamp=Date.now();
-    const ext=file.name.split('.').pop();
-    const filename=`p${timestamp}.${ext}`;
-    const fileHandle=await temaDir.getFileHandle(filename,{create:true});
-    const writable=await fileHandle.createWritable();
-    await writable.write(file);
-    await writable.close();
-    return `ejercicios/${course}/${tema}/${filename}`;
-  }catch(err){
-    alert('Error al guardar imagen: '+err.message);
-    return null;
-  }
+  return await saveImageToDB(file);
 }
-// Load image from filesystem
+// Load image — supports new idb: paths and old filesystem paths (fallback)
 async function loadImageFromPath(path){
+  if(!path)return null;
+  if(path.startsWith('idb:')){
+    return await loadImageFromDB(path.slice(4));
+  }
+  // Fallback: old filesystem-based images (need uniDirHandle)
   if(!uniDirHandle)return null;
   try{
     const parts=path.split('/').filter(p=>p);
@@ -2311,10 +2350,9 @@ async function loadImageFromPath(path){
     }
     const fileHandle=await current.getFileHandle(parts[parts.length-1]);
     const file=await fileHandle.getFile();
-    const url=URL.createObjectURL(file);
-    return url;
+    return URL.createObjectURL(file);
   }catch(err){
-    console.error('Error loading image:',err);
+    console.error('Error loading image from filesystem:',err);
     return null;
   }
 }
@@ -2340,13 +2378,9 @@ async function addBank(){
   if(!prob&&!imageInput.files.length)return;
   if(!S.bank)S.bank=[];
   const entry={course,tema:tema||'',prob:prob||'',sol:sol||'',date:today()};
-  // Handle image with File System API
+  // Handle image with IndexedDB
   if(imageInput.files.length>0){
     const file=imageInput.files[0];
-    if(!course||!tema){
-      alert('Para guardar una imagen, debes seleccionar curso y tema.');
-      return;
-    }
     const imagePath=await saveImageToFile(file,course,tema);
     if(imagePath){
       entry.image=imagePath;
