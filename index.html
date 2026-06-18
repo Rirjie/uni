@@ -2227,11 +2227,13 @@ async function openDB(){
 // Save image blob to IndexedDB — persists across reloads
 async function saveImageToDB(file){
   try{
+    // Read arrayBuffer BEFORE opening transaction (transactions auto-close during await)
+    const buffer=await file.arrayBuffer();
+    const blob=new Blob([buffer],{type:file.type});
     const db=await openDB();
     const key='img_'+Date.now()+'_'+Math.random().toString(36).slice(2);
     const tx=db.transaction(IMG_STORE,'readwrite');
     const store=tx.objectStore(IMG_STORE);
-    const blob=new Blob([await file.arrayBuffer()],{type:file.type});
     await new Promise((res,rej)=>{const r=store.put(blob,key);r.onsuccess=res;r.onerror=()=>rej(r.error);});
     await new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});
     db.close();
