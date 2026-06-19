@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Plan UNI – Luis Mori 2026 · v13</title>
+<title>Mi Plan de Estudio</title>
 <link rel="manifest" href="Plan_UNI_manifest.webmanifest">
-<meta name="theme-color" content="#7c6aff">
+<meta name="theme-color" content="#6366f1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#0a0a0f;--card:#16161f;--border:#2a2a3a;
-  --accent:#7c6aff;--accent2:#ff6a6a;--accent3:#6affb8;--accent4:#ffb86a;
+  --accent:#6366f1;--accent2:#f43f5e;--accent3:#34d399;--accent4:#38bdf8;
   --text:#e8e8f0;--muted:#6b6b80;
   --ca:#38bdf8;--calg:#fb923c;--cf:#ec4899;--cg:#86efac;--ct:#a78bfa;--cq:#22c55e;
   --scroll-track:#101018;--scroll-thumb:#3a3a50;--scroll-thumb-hover:#4e4e68;--scroll-thumb-active:#6b5fd4;
@@ -76,7 +76,7 @@ body.sidebar-collapsed .sb-btn.active{border-left:none;outline:1px solid rgba(12
 .sb-section{font-size:.52rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:.6rem 0 .3rem;padding-left:.2rem}
 .sb-btn{display:flex;align-items:center;gap:.5rem;padding:.38rem .6rem;font-family:'DM Mono',monospace;font-size:.62rem;color:var(--muted);background:transparent;border:none;cursor:pointer;width:100%;text-align:left;transition:all .15s;border-radius:2px}
 .sb-btn:hover{background:#1a1a25;color:var(--text)}
-.sb-btn.active{background:#1a1535;color:var(--accent);border-left:2px solid var(--accent)}
+.sb-btn.active{background:#1e1e40;color:var(--accent);border-left:2px solid var(--accent)}
 .sb-btn .icon{font-size:.75rem;flex-shrink:0}
 .sb-countdown{background:var(--card);border:1px solid var(--border);padding:.6rem .7rem;margin-top:.4rem}
 .sb-exam-days{font-family:'Syne',sans-serif;font-size:1.65rem;font-weight:700;color:var(--accent2);letter-spacing:-0.03em}
@@ -490,6 +490,7 @@ body.print-week .week.print-hide{display:none!important}
 </style>
 </head>
 <body>
+
 <div class="noise"></div>
 
 <!-- MOBILE MENU BUTTON -->
@@ -527,8 +528,7 @@ body.print-week .week.print-hide{display:none!important}
   <div class="sb-top">
     <button type="button" class="menu-toggle" onclick="toggleSidebar()" aria-label="Colapsar o expandir barra lateral">☰</button>
     <div>
-      <div class="sb-logo">Plan <span>UNI</span></div>
-      <div class="sb-sub">Luis Mori · 2026</div>
+
     </div>
   </div>
 
@@ -691,8 +691,7 @@ body.print-week .week.print-hide{display:none!important}
 
 <!-- VIEW: PLAN -->
 <div class="view active" id="view-plan">
-  <div class="tag">UNI · Admisión 2026</div>
-  <h1>Plan de estudio<br><span>Luis Mori</span></h1>
+  <h1>Plan de <span>estudio</span></h1>
   <div class="subtitle" id="subtitle-date">Hoy: 2026-05-27 · Examen UNI: 10 ago · 11 semanas restantes</div>
 
   <div class="searchbar">
@@ -2927,10 +2926,10 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 // ── CUSTOM THEMES ──
 const DEFAULT_COLORS={
-  '--accent':'#ff6b35',
-  '--accent2':'#ef4444',
-  '--accent3':'#22c55e',
-  '--accent4':'#f59e0b',
+  '--accent':'#6366f1',
+  '--accent2':'#f43f5e',
+  '--accent3':'#34d399',
+  '--accent4':'#38bdf8',
   '--ca':'#38bdf8',
   '--calg':'#fb923c',
   '--cf':'#ec4899',
@@ -4070,6 +4069,7 @@ renderPlanTopics();load();loadThemePreference();loadCustomTheme();renderAll();in
 })();
 setInterval(ls,3600000);setInterval(updateRhythm,60000);setInterval(updateSidebar,60000);
 setInterval(()=>{updateRhythmProjection();renderHighLoadAlerts();renderPreOpReview();renderEnhancements();},120000);
+
 </script>
 </body>
 </html>
