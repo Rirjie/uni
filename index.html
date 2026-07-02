@@ -4147,30 +4147,132 @@ function setGeminiApiKey(key){localStorage.setItem(GEMINI_API_KEY_KEY,key.trim()
 function hasGeminiApiKey(){return !!getGeminiApiKey();}
 
 // Sistema de Presets de Prompts
-const PromptPresets={
-  systemPrompt:'Eres un especialista en preparación preuniversitaria de nivel UNI. Genera SOLO contenido de texto: preguntas con datos numéricos, explicaciones teóricas y respuestas. NO generes imágenes, NO menciones imágenes, NO pidas crear imágenes. Todo debe ser texto puro.',
-  
-  presets:{
-    teoria:'Explica el tema {tema} del curso {curso} para un estudiante preuniversitario. Profundidad: {dificultad}. Incluye conceptos clave, fórmulas importantes y ejemplos breves con datos numéricos específicos. Solo texto.',
-    
-    preguntas_conceptuales:'Genera {cantidad} preguntas conceptuales sobre {tema} del curso {curso}. Dificultad: {dificultad}. Nivel UNI. Cada pregunta debe probar comprensión profunda, no solo memorización. Solo texto, sin imágenes.',
-    
-    problemas:'Genera {cantidad} problemas tipo examen UNI sobre {tema} del curso {curso}. Dificultad: {dificultad}. Incluye datos numéricos específicos, cálculo, aplicación y análisis. Cada problema debe tener su respuesta y explicación. Solo texto.',
-    
-    simulacro:'Genera un simulacro de examen UNI sobre {tema} del curso {curso}. Dificultad: {dificultad}. {cantidad} problemas con datos numéricos. Debe reflejar el estilo real del examen: tiempo limitado, mezcla de temas relacionados. Incluye respuestas. Solo texto.',
-    
-    repaso_errores:'Genera {cantidad} problemas de repaso enfocados en errores comunes de {tema} del curso {curso}. Dificultad: {dificultad}. Enfócate en las trampas típicas donde los estudiantes suelen fallar. Incluye datos numéricos y respuestas. Solo texto.',
-    
-    resumen:'Genera un resumen rápido de {tema} del curso {curso}. Profundidad: {dificultad}. Máximo 200 palabras. Puntos clave en formato bullet. Solo texto.'
+const PromptPresets = {
+  systemPrompt: `Eres un especialista en preparación preuniversitaria para el examen de admisión de la UNI.
+
+Genera únicamente contenido en texto. Nunca generes ni menciones imágenes.
+
+REGLA DE CONTROL MATEMÁTICO:
+
+Antes de redactar cada problema, inicia un comentario HTML oculto con "<!-- pensemos:".
+
+Dentro del comentario:
+
+1. Define primero los valores numéricos.
+2. Construye el ejercicio desde la solución hacia el enunciado.
+3. Resuelve nuevamente el ejercicio desde el enunciado.
+4. Verifica que ambas resoluciones coincidan exactamente.
+5. Comprueba que exista una única respuesta correcta y que las demás alternativas sean incorrectas pero plausibles.
+6. Si detectas cualquier inconsistencia matemática, rehace completamente el problema.
+
+Cierra el comentario con "-->" y muestra únicamente el contenido final destinado al estudiante.`,
+
+  presets: {
+
+    teoria:
+`Explica el tema {tema} del curso {curso} para un estudiante preuniversitario.
+
+Profundidad: {dificultad}.
+
+Incluye:
+
+- conceptos fundamentales;
+- fórmulas importantes;
+- observaciones útiles;
+- ejemplos breves con datos numéricos.
+
+Solo texto.`,
+
+    preguntas_conceptuales:
+`Genera {cantidad} preguntas conceptuales sobre {tema} del curso {curso}.
+
+Nivel: {dificultad}.
+
+Las preguntas deben evaluar razonamiento y comprensión profunda, no memorización.
+
+Incluye respuesta y explicación.
+
+Solo texto.`,
+
+    problemas:
+`Genera {cantidad} problemas originales tipo examen UNI sobre {tema} del curso {curso}.
+
+Nivel: {dificultad}.
+
+Aplica la regla de control matemático para cada ejercicio.
+
+Cada problema debe incluir:
+
+- Enunciado.
+- Alternativas A, B, C, D y E.
+- Respuesta correcta.
+- Desarrollo paso a paso.
+- Explicación conceptual.
+
+Solo texto.`,
+
+    simulacro:
+`Genera un simulacro tipo examen UNI sobre {tema} del curso {curso}.
+
+Nivel: {dificultad}.
+
+Cantidad de problemas: {cantidad}.
+
+Cada problema debe ser independiente, original y cumplir la regla de control matemático.
+
+El simulacro debe reflejar el estilo real del examen UNI, incluyendo:
+
+- distractores plausibles;
+- trampas operativas;
+- mezcla natural de conceptos relacionados.
+
+Incluye respuestas y explicaciones.
+
+Solo texto.`,
+
+    repaso_errores:
+`Genera {cantidad} problemas de repaso sobre {tema} del curso {curso}.
+
+Nivel: {dificultad}.
+
+Enfócate en los errores más comunes que cometen los postulantes de la UNI.
+
+Cada problema debe cumplir la regla de control matemático.
+
+Incluye alternativas, respuesta correcta y explicación.
+
+Solo texto.`,
+
+    resumen:
+`Genera un resumen del tema {tema} del curso {curso}.
+
+Profundidad: {dificultad}.
+
+Máximo 200 palabras.
+
+Presenta únicamente los puntos clave en formato de viñetas.
+
+Solo texto.`
+
   },
-  
-  buildPrompt(modo,params){
-    const preset=this.presets[modo]||this.presets.teoria;
-    let prompt=preset;
-    for(const[key,value]of Object.entries(params)){
-      prompt=prompt.replace('{'+key+'}',value);
+
+  buildPrompt(modo, params) {
+    const preset = this.presets[modo] || this.presets.teoria;
+    let prompt = preset;
+
+    for (const [key, value] of Object.entries(params)) {
+      prompt = prompt.replaceAll(`{${key}}`, value);
     }
+
     return prompt;
+  },
+
+  limpiarRespuesta(textoIA) {
+    if (!textoIA) return "";
+
+    return textoIA
+      .replace(/<!--\s*pensemos:[\s\S]*?-->/gi, "")
+      .trim();
   }
 };
 
