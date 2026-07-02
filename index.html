@@ -8,6 +8,10 @@
 <meta name="theme-color" content="#6366f1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!-- KaTeX para renderizar matemáticas -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -4140,6 +4144,23 @@ setInterval(()=>{updateRhythmProjection();renderHighLoadAlerts();renderPreOpRevi
 
 // ── FASE 1: MOTOR IA + PRESETS + INTEGRACIÓN GEMINI ──
 
+// Función para convertir markdown básico a HTML
+function markdownToHTML(text){
+  if(!text)return '';
+  let html=text;
+  // Convertir **texto** a <strong>texto</strong>
+  html=html.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  // Convertir *texto* a <em>texto</em>
+  html=html.replace(/\*(.*?)\*/g,'<em>$1</em>');
+  // Convertir __texto__ a <strong>texto</strong>
+  html=html.replace(/__(.*?)__/g,'<strong>$1</strong>');
+  // Convertir _texto_ a <em>texto</em>
+  html=html.replace(/_(.*?)_/g,'<em>$1</em>');
+  // Convertir `texto` a <code>texto</code>
+  html=html.replace(/`(.*?)`/g,'<code>$1</code>');
+  return html;
+}
+
 // Configuración de API Key
 const GEMINI_API_KEY_KEY='uni-gemini-api-key';
 function getGeminiApiKey(){return localStorage.getItem(GEMINI_API_KEY_KEY)||'';}
@@ -4148,112 +4169,81 @@ function hasGeminiApiKey(){return !!getGeminiApiKey();}
 
 // Sistema de Presets de Prompts
 const PromptPresets = {
-  systemPrompt: `Eres un especialista en preparación preuniversitaria para el examen de admisión de la UNI.
+  systemPrompt: `Eres un profesor especialista en preparación para el examen de admisión de la Universidad Nacional de Ingeniería (UNI).
 
-Genera únicamente contenido en texto. Nunca generes ni menciones imágenes.
+Genera únicamente contenido en texto plano. Prohibido generar o mencionar imágenes.
 
-REGLA DE CONTROL MATEMÁTICO:
+REGLA CRÍTICA DE CONSISTENCIA MATEMÁTICA:
 
-Antes de redactar cada problema, inicia un comentario HTML oculto con "<!-- pensemos:".
+Para cada ejercicio debes seguir este flujo interno obligatorio:
 
-Dentro del comentario:
+1. Primero resuelve completamente el problema y obtén un resultado final único y exacto.
+2. Ese resultado queda FIJO e INMUTABLE (no se puede modificar después).
+3. Construye el enunciado del problema usando ese resultado ya fijado.
+4. Genera 5 alternativas (A, B, C, D, E) donde solo una sea correcta.
+5. Las alternativas incorrectas deben ser errores plausibles de estudiantes.
+6. Verifica una sola vez que la respuesta correcta coincide con el resultado fijado.
+7. Si hay inconsistencia, descarta el ejercicio completo y genera uno nuevo.
 
-1. Define primero los valores numéricos.
-2. Construye el ejercicio desde la solución hacia el enunciado.
-3. Resuelve nuevamente el ejercicio desde el enunciado.
-4. Verifica que ambas resoluciones coincidan exactamente.
-5. Comprueba que exista una única respuesta correcta y que las demás alternativas sean incorrectas pero plausibles.
-6. Si detectas cualquier inconsistencia matemática, rehace completamente el problema.
-
-Cierra el comentario con "-->" y muestra únicamente el contenido final destinado al estudiante.`,
+REGLAS IMPORTANTES:
+- No rehagas ni ajustes el problema después de generar alternativas.
+- No cambies el resultado final para hacerlo encajar con opciones.
+- Mantén coherencia total entre enunciado, solución y alternativas.
+`,
 
   presets: {
+    teoria: `Explica el tema {tema} del curso {curso} para nivel preuniversitario UNI.
 
-    teoria:
-`Explica el tema {tema} del curso {curso} para un estudiante preuniversitario.
+Nivel de profundidad: {dificultad}.
 
-Profundidad: {dificultad}.
-
-Incluye:
-
-- conceptos fundamentales;
-- fórmulas importantes;
-- observaciones útiles;
-- ejemplos breves con datos numéricos.
+Incluye conceptos clave, fórmulas importantes y un ejemplo breve resuelto.
 
 Solo texto.`,
 
-    preguntas_conceptuales:
-`Genera {cantidad} preguntas conceptuales sobre {tema} del curso {curso}.
+    preguntas_conceptuales: `Genera {cantidad} preguntas conceptuales sobre {tema} del curso {curso}. Nivel {dificultad}.
 
-Nivel: {dificultad}.
+Las preguntas deben evaluar razonamiento, no memorización.
 
-Las preguntas deben evaluar razonamiento y comprensión profunda, no memorización.
-
-Incluye respuesta y explicación.
+Incluye alternativas A–E, respuesta correcta y breve explicación.
 
 Solo texto.`,
 
-    problemas:
-`Genera {cantidad} problemas originales tipo examen UNI sobre {tema} del curso {curso}.
+    problemas: `Genera {cantidad} problemas tipo examen UNI sobre {tema} del curso {curso}. Nivel {dificultad}.
 
-Nivel: {dificultad}.
+Para cada problema:
+- Enunciado claro.
+- 5 alternativas (A–E).
+- Una única respuesta correcta.
+- Desarrollo paso a paso.
+- Explicación final.
 
-Aplica la regla de control matemático para cada ejercicio.
+Debes cumplir estrictamente la regla de consistencia del system prompt.`,
+
+    simulacro: `Genera un simulacro UNI sobre {tema} del curso {curso}. Nivel {dificultad}. Cantidad: {cantidad} problemas.
+
+Características:
+- Problemas independientes.
+- Dificultad progresiva o mixta.
+- Distractores plausibles.
+- Una sola respuesta correcta por pregunta.
+
+Incluye respuestas y explicaciones.`,
+
+    repaso_errores: `Genera {cantidad} problemas de repaso sobre errores comunes en {tema} del curso {curso}. Nivel {dificultad}.
 
 Cada problema debe incluir:
+- Enunciado
+- Alternativas A–E
+- Respuesta correcta
+- Explicación del error típico
 
-- Enunciado.
-- Alternativas A, B, C, D y E.
-- Respuesta correcta.
-- Desarrollo paso a paso.
-- Explicación conceptual.
+Enfocado en fallos frecuentes de postulantes UNI.`,
 
-Solo texto.`,
-
-    simulacro:
-`Genera un simulacro tipo examen UNI sobre {tema} del curso {curso}.
-
-Nivel: {dificultad}.
-
-Cantidad de problemas: {cantidad}.
-
-Cada problema debe ser independiente, original y cumplir la regla de control matemático.
-
-El simulacro debe reflejar el estilo real del examen UNI, incluyendo:
-
-- distractores plausibles;
-- trampas operativas;
-- mezcla natural de conceptos relacionados.
-
-Incluye respuestas y explicaciones.
-
-Solo texto.`,
-
-    repaso_errores:
-`Genera {cantidad} problemas de repaso sobre {tema} del curso {curso}.
-
-Nivel: {dificultad}.
-
-Enfócate en los errores más comunes que cometen los postulantes de la UNI.
-
-Cada problema debe cumplir la regla de control matemático.
-
-Incluye alternativas, respuesta correcta y explicación.
-
-Solo texto.`,
-
-    resumen:
-`Genera un resumen del tema {tema} del curso {curso}.
-
-Profundidad: {dificultad}.
+    resumen: `Genera un resumen del tema {tema} del curso {curso}. Nivel {dificultad}.
 
 Máximo 200 palabras.
-
-Presenta únicamente los puntos clave en formato de viñetas.
-
-Solo texto.`
-
+Formato en viñetas.
+Solo conceptos clave.`
   },
 
   buildPrompt(modo, params) {
@@ -4269,12 +4259,12 @@ Solo texto.`
 
   limpiarRespuesta(textoIA) {
     if (!textoIA) return "";
-
-    return textoIA
-      .replace(/<!--\s*pensemos:[\s\S]*?-->/gi, "")
-      .trim();
+    return textoIA.trim();
   }
 };
+
+
+
 
 // Motor único de IA
 const GeminiEngine={
@@ -4319,7 +4309,7 @@ const GeminiEngine={
     // Para modos interactivos, solicitar JSON
     const requiresJson=['preguntas_conceptuales','problemas','simulacro','repaso_errores'].includes(modo);
     if(requiresJson){
-      const jsonInstruction='\n\nCRITICAL: You MUST respond ONLY with valid JSON. No markdown, no additional text, no explanations outside the JSON structure.\n\nRequired JSON structure:\n{\n  "preguntas": [\n    {\n      "id": 1,\n      "enunciado": "problem statement",\n      "alternativas": ["A", "B", "C", "D", "E"],\n      "respuesta": "C",\n      "explicacion": "detailed explanation"\n    }\n  ]\n}\n\nGenerate exactly '+cantidad+' questions.';
+      const jsonInstruction='\n\nCRITICAL: You MUST respond ONLY with valid JSON. No markdown, no additional text, no explanations outside the JSON structure.\n\nRequired JSON structure:\n{\n  "preguntas": [\n    {\n      "id": 1,\n      "enunciado": "problem statement",\n      "alternativas": ["text of option A", "text of option B", "text of option C", "text of option D", "text of option E"],\n      "respuesta": "C",\n      "explicacion": "detailed explanation"\n    }\n  ]\n}\n\nIMPORTANT: The "respuesta" field MUST contain ONLY the letter (A, B, C, D, or E) without any additional text, periods, or explanations.\n\nGenerate exactly '+cantidad+' questions.';
       return await this.callGemini(this.systemPrompt+userPrompt+jsonInstruction,apiKey,true);
     }
     
@@ -4451,12 +4441,12 @@ function renderInteractiveQuestions(questionsData){
         <span class="ai-q-num">Pregunta ${idx+1}/${currentQuestions.length}</span>
         <span class="ai-q-progress">${idx+1}/${currentQuestions.length}</span>
       </div>
-      <div class="ai-q-enunciado">${q.enunciado}</div>
+      <div class="ai-q-enunciado">${markdownToHTML(q.enunciado)}</div>
       <div class="ai-q-alternativas">
         ${q.alternativas.map((alt,altIdx)=>`
           <label class="ai-q-alt">
-            <input type="radio" name="q-${idx}" value="${alt}" onchange="selectAnswer(${idx},'${alt}')">
-            <span>${String.fromCharCode(65+altIdx)}. ${alt}</span>
+            <input type="radio" name="q-${idx}" value="${String.fromCharCode(65+altIdx)}" onchange="selectAnswer(${idx},'${String.fromCharCode(65+altIdx)}')">
+            <span>${String.fromCharCode(65+altIdx)}. ${markdownToHTML(alt)}</span>
           </label>
         `).join('')}
       </div>
@@ -4484,7 +4474,26 @@ function selectAnswer(qIdx,answer){
 function checkAnswer(qIdx){
   const question=currentQuestions[qIdx];
   const userAnswer=userAnswers[qIdx];
-  const isCorrect=userAnswer===question.respuesta;
+  
+  // Normalizar respuestas para comparación robusta
+  const normalizeAnswer=(ans)=>{
+    if(!ans)return '';
+    return ans.toString().trim().toUpperCase().replace(/[^\w]/g,'');
+  };
+  
+  const normalizedUserAnswer=normalizeAnswer(userAnswer);
+  const normalizedCorrectAnswer=normalizeAnswer(question.respuesta);
+  
+  const isCorrect=normalizedUserAnswer===normalizedCorrectAnswer;
+  
+  // Debug en consola
+  console.log('Verificación:',{
+    userAnswer,
+    correctAnswer:question.respuesta,
+    normalizedUserAnswer,
+    normalizedCorrectAnswer,
+    isCorrect
+  });
   
   const feedbackEl=document.getElementById(`feedback-${qIdx}`);
   const resultEl=document.getElementById(`result-${qIdx}`);
@@ -4494,7 +4503,20 @@ function checkAnswer(qIdx){
   resultEl.textContent=isCorrect?'✓ ¡Correcto!':'✕ Incorrecto';
   resultEl.className='ai-q-result '+(isCorrect?'correct':'incorrect');
   
-  explicacionEl.innerHTML='<strong>Explicación:</strong><br>'+question.explicacion;
+  explicacionEl.innerHTML='<strong>Explicación:</strong><br>'+markdownToHTML(question.explicacion);
+  
+  // Renderizar fórmulas matemáticas en la explicación
+  if(typeof renderMathInElement!=='undefined'){
+    renderMathInElement(explicacionEl,{
+      delimiters:[
+        {left:'$$',right:'$$',display:true},
+        {left:'$',right:'$',display:false},
+        {left:'\\[',right:'\\]',display:true},
+        {left:'\\(',right:'\\)',display:false}
+      ],
+      throwOnError:false
+    });
+  }
   
   // Deshabilitar botón de verificar
   const checkBtn=document.getElementById(`check-${qIdx}`);
@@ -4770,7 +4792,7 @@ async function generateAIContent(){
     
     // Manejar fallback si JSON falló
     if(result.isFallback){
-      document.getElementById('aiTextResult').innerHTML=result.rawText.replace(/\n/g,'<br>');
+      document.getElementById('aiTextResult').innerHTML=markdownToHTML(result.rawText).replace(/\n/g,'<br>');
       document.getElementById('aiTextContainer').style.display='block';
       closeStudyGuidedModal();
       showToast('⚠ JSON inválido, mostrando respuesta cruda','error');
@@ -4778,15 +4800,39 @@ async function generateAIContent(){
     }
     
     if(typeof result==='object'&&result.preguntas){
-      // Modo interactivo
+      // Modo interactivo - registrar en estadísticas
       closeStudyGuidedModal();
       renderInteractiveQuestions(result);
+      
+      // Registrar sesión de IA
+      registerAISession(curso,tema,modo,result.preguntas.length,dificultad);
+      
+      // Agregar preguntas al banco de problemas
+      addAIQuestionsToBank(curso,tema,result.preguntas,modo);
+      
       showToast('✓ Contenido generado exitosamente','success');
     }else{
       // Modo texto (teoría, resumen)
-      document.getElementById('aiTextResult').innerHTML=result.replace(/\n/g,'<br>');
+      document.getElementById('aiTextResult').innerHTML=markdownToHTML(result).replace(/\n/g,'<br>');
       document.getElementById('aiTextContainer').style.display='block';
       closeStudyGuidedModal();
+      
+      // Renderizar fórmulas matemáticas con KaTeX
+      if(typeof renderMathInElement!=='undefined'){
+        renderMathInElement(document.getElementById('aiTextResult'),{
+          delimiters:[
+            {left:'$$',right:'$$',display:true},
+            {left:'$',right:'$',display:false},
+            {left:'\\[',right:'\\]',display:true},
+            {left:'\\(',right:'\\)',display:false}
+          ],
+          throwOnError:false
+        });
+      }
+      
+      // Registrar sesión de IA para modo texto
+      registerAISession(curso,tema,modo,1,dificultad);
+      
       showToast('✓ Contenido generado exitosamente','success');
     }
   }catch(error){
@@ -4795,6 +4841,77 @@ async function generateAIContent(){
     btn.disabled=false;
     btn.textContent='Generar contenido';
   }
+}
+
+// ── REGISTRAR SESIONES DE IA EN ESTADÍSTICAS ──
+function registerAISession(curso,tema,modo,cantidad,dificultad){
+  if(!S.sessions)S.sessions=[];
+  
+  const td=today();
+  const session={
+    date:td,
+    timestamp:Date.now(),
+    course:curso,
+    topic:tema,
+    mode:modo,
+    count:parseInt(cantidad),
+    difficulty:dificultad,
+    type:'ai_generated',
+    duration:0 // Se puede calcular si se implementa timer
+  };
+  
+  S.sessions.push(session);
+  save();
+  
+  // Actualizar estadísticas de horas (considerar 5 minutos por pregunta como estimación)
+  if(!S.h)S.h={};
+  const estimatedMinutes=cantidad*5;
+  const estimatedSeconds=estimatedMinutes*60;
+  S.h[td]=(S.h[td]||0)+estimatedSeconds;
+  
+  // Actualizar estadísticas por curso
+  if(!S.dailySegments)S.dailySegments={};
+  if(!S.dailySegments[td])S.dailySegments[td]={};
+  if(!S.dailySegments[td][curso])S.dailySegments[td][curso]={teoria:0,ejercicios:0,repaso:0};
+  
+  if(modo==='teoria'||modo==='resumen'){
+    S.dailySegments[td][curso].teoria+=estimatedSeconds;
+  }else if(modo==='repaso_errores'){
+    S.dailySegments[td][curso].repaso+=estimatedSeconds;
+  }else{
+    S.dailySegments[td][curso].ejercicios+=estimatedSeconds;
+  }
+  
+  save();
+  updateSidebar();
+  renderHome();
+}
+
+// ── AGREGAR PREGUNTAS IA AL BANCO DE PROBLEMAS ──
+function addAIQuestionsToBank(curso,tema,preguntas,modo){
+  if(!S.bank)S.bank=[];
+  
+  const td=today();
+  const dateStr=new Date().toLocaleDateString('es-PE');
+  
+  preguntas.forEach((pregunta,index)=>{
+    const bankItem={
+      course:curso,
+      tema:tema,
+      prob:pregunta.enunciado,
+      sol:pregunta.explicacion||pregunta.respuesta,
+      date:dateStr,
+      source:'ai_generated',
+      mode:modo,
+      difficulty:pregunta.dificultad||'media',
+      alternatives:pregunta.alternativas||[],
+      correctAnswer:pregunta.respuesta||''
+    };
+    S.bank.push(bankItem);
+  });
+  
+  save();
+  showToast(`✓ ${preguntas.length} preguntas agregadas al banco de problemas`,'success');
 }
 
 // Sistema de Notificaciones Toast
