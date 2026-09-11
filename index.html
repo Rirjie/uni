@@ -639,21 +639,21 @@ body.print-week .week.print-hide{display:none!important}
     </div>
   </div>
 
-  <div class="sb-countdown">
-    <div class="sb-exam-days" id="sbDays">80</div>
+<div class="sb-countdown">
+    <div class="sb-exam-days" id="sbDays">—</div>
     <div class="sb-exam-label">días para el examen</div>
   </div>
 
   <div class="sb-streak">
     <div>
-      <div class="streak-num" id="sbStreak">2</div>
+      <div class="streak-num" id="sbStreak">—</div>
       <div class="streak-label">días seguidos 🔥</div>
     </div>
   </div>
 
   <div class="sb-mini-errors" id="sbMiniErrors">
     <div class="sme-title">Errores activos &nbsp;<span id="sbErrCount" style="color:var(--accent2);font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700"></span></div>
-    <div id="sbErrList"><div class="sme-item">Lei mal el enunciado</div><div class="sme-item">Me confundi al operar</div><div class="sme-item">Me tranqueo mucho en problemas q se pueden resolver mas facilmente</div></div>
+    <div id="sbErrList"></div>
   </div>
 
   <div class="sb-section">Navegación</div>
@@ -821,7 +821,7 @@ body.print-week .week.print-hide{display:none!important}
   </div>
   <div class="search-results" id="searchresults"></div>
 
-  <div id="alertBox"><div class="alert-box alert-ok"><div class="alert-dot"></div><span>Semana activa. <strong>6/20</strong> caps · ~<strong>3 caps/día</strong> para terminar a tiempo.</span></div></div>
+   <div id="alertBox"></div>
 
   <div class="rhythm-bar">
     <span>Meta hoy:</span><span class="rv" id="rMeta">5h 0m</span>
@@ -885,10 +885,10 @@ body.print-week .week.print-hide{display:none!important}
   <div class="subtitle" style="margin-bottom:1.5rem">Seguimiento real de tu progreso</div>
 
   <div class="stats-row">
-    <div class="stat"><div class="stat-val p" id="statSems">12</div><div class="stat-label">Semanas restantes</div></div>
+    <div class="stat"><div class="stat-val p" id="statSems">0</div><div class="stat-label">Semanas restantes</div></div>
     <div class="stat"><div class="stat-val" id="sHoy">0h 0m</div><div class="stat-label">Hoy (ef.)</div></div>
     <div class="stat"><div class="stat-val g" id="sSem">0h 0m</div><div class="stat-label">Esta semana</div></div>
-    <div class="stat"><div class="stat-val o" id="sCaps">4%</div><div class="stat-label">Completado</div></div>
+    <div class="stat"><div class="stat-val o" id="sCaps">0</div><div class="stat-label">Completado</div></div>
   </div>
   <div class="stats-row">
     <div class="stat"><div class="stat-val" id="statTotalH">3h 13m</div><div class="stat-label">Total acumulado</div></div>
@@ -985,7 +985,7 @@ body.print-week .week.print-hide{display:none!important}
     </div>
     <div class="tcard full">
       <div class="tcardtitle">Resumen por semana</div>
-      <div class="ws-grid" id="wsgrid"><div class="ws-item"><div class="ws-wk">Sem 23/5</div><div class="ws-stats">3h 13m · 5 caps · 4 err</div></div></div>
+      <div class="ws-grid" id="wsgrid"></div>
     </div>
     <div class="tcard full">
       <div class="tcardtitle">Puntuación de simulacros</div>
@@ -1045,8 +1045,8 @@ body.print-week .week.print-hide{display:none!important}
             <option value="Química">Química</option>
             <option value="Trigonometría">Trigonometría</option>
             <option value="_global">General</option>
-            <option value="RV">Raz. Verbal</option>
-            <option value="RM">Raz. Matematico</option>
+            <option value="Raz. Verbal">Raz. Verbal</option>
+            <option value="Raz. Matemático">Raz. Matemático</option>
             <option value="Historia Universal">Historia Universal</option>
             <option value="Historia del Perú">Historia del Perú</option>
            <option value="Filosofia">Filosofia</option>
@@ -1237,7 +1237,7 @@ body.print-week .week.print-hide{display:none!important}
 <script>
 // ── PLAN DATA (replaces static HTML) ──
 
-const WEEKS_TOPICS={"w1":["a1","a2","a3","a4","a5","a6","a7","a8","a9","a10","a11","a12","a13","a14","a15","a16","a17","a18","a19","a20"],"w2":["al1","al2","al3","al4","al5","al6","al7","al8","al9","al10","al11","al12","al13","al14"],"w3":["al15","al16","al17","al18","al19","al20","al21","al22","al23","al24","al25","al26","al27","al28"],"w4":["f1","f2","f3","f4","f5","f6","f7","g9"],"w8":["g10","g11","g12","g13","g14","g15","t9"]};
+const WEEKS_TOPICS={};
 function makeTI(id){
   const course=Object.keys(TOPICS).find(c=>TOPICS[c][id]);
   const name=course?TOPICS[course][id]:null;
@@ -1756,10 +1756,6 @@ const PLAN_SPECIAL_WEEKS={
   25:{badge:'⚡ COLCHÓN 2',desc:'Simulacros a lo bestia. Afilado final.',color:'#ffdd6a'},
   26:{badge:'🟢 PRE-EXAMEN',desc:'Descanso activo. Solo fórmulas y audios. Nada de problemas nuevos.',color:'var(--accent3)'}
 };
-const EARLY_EXTRA_WEEKS={
-  'Álgebra':[1,3,5,7,9],
-  'Química':[0,2,4,6,8,10,12]
-};
 function planLocalDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
   function expandCourseIntoWeeklySessions(ids, course, targetWeeks = PLAN_STUDY_WEEK_COUNT){
   if(ids.length >= targetWeeks) return ids;
@@ -2206,9 +2202,12 @@ function detectWeek(){
   const td=today();
   const scheduled=scheduleWeekFor(td);
   const scheduleAlert=document.getElementById('alertBox');
+  const rem=Math.max(0,Math.ceil(daysBetween(td,EXAM_DATE)/7));
+  const statSemsEl=document.getElementById('statSems');
+  if(statSemsEl)statSemsEl.textContent=rem;
   if(scheduled){
-    document.getElementById('subtitle-date').textContent='Hoy: '+td+' · Semana '+scheduled.number+' ('+scheduled.template+') · horario alternado desde el 10 de agosto de 2026';
-    if(scheduleAlert)scheduleAlert.innerHTML='<div class="alert-box alert-ok"><div class="alert-dot"></div><span>Horario activo: <strong>semana '+scheduled.number+' ('+scheduled.template+')</strong>. '+(scheduled.template==='impar'?'Se muestra la plantilla superior.':'Se muestra la plantilla inferior.')+'</span></div>';
+    document.getElementById('subtitle-date').textContent='Hoy: '+td+' · Semana '+scheduled.number+' ('+scheduled.template+') · '+rem+' semanas para el examen UNI ('+EXAM_DATE+')';
+        if(scheduleAlert)scheduleAlert.innerHTML='<div class="alert-box alert-ok"><div class="alert-dot"></div><span>Horario activo: <strong>semana '+scheduled.number+' ('+scheduled.template+')</strong>. '+(scheduled.template==='impar'?'Se muestra la plantilla superior.':'Se muestra la plantilla inferior.')+'</span></div>';
     renderStudySchedule();
     renderAllWeekProgress();
     return;
@@ -2220,9 +2219,7 @@ function detectWeek(){
     renderAllWeekProgress();
     return;
   }
-  const rem=Math.max(0,Math.ceil(daysBetween(td,EXAM_DATE)/7));
-  document.getElementById('statSems').textContent=rem;
-  document.getElementById('subtitle-date').textContent='Hoy: '+td+' · Examen UNI: '+EXAM_DATE+' · '+rem+' semanas restantes';
+   document.getElementById('subtitle-date').textContent='Hoy: '+td+' · Examen UNI: '+EXAM_DATE+' · '+rem+' semanas restantes';
   let aw=null;
   for(const w of WSCHED){if(td>=w.s&&td<=w.e){aw=w;break;}}
   const ab=document.getElementById('alertBox');
@@ -2336,10 +2333,18 @@ function ck(e,id){
   }
   const nw=document.getElementById('notes-'+id);
   if(nw&&S.t[id].done)nw.classList.add('on');
-  // weekly caps
+    // weekly caps — contar solo los completados dentro de esta semana
   const wk2=wkey();if(!S.ws)S.ws={};S.ws[wk2]=S.ws[wk2]||{h:0,caps:0,errors:0};
-  const allDone=document.querySelectorAll('.ti[data-id].done').length;
-  S.ws[wk2].caps=allDone;
+  const wkStart=new Date(wk2+'T12:00:00');
+  const wkEnd=new Date(wkStart);wkEnd.setDate(wkEnd.getDate()+6);
+  let capsThisWeek=0;
+  for(const[id2,data2]of Object.entries(S.t||{})){
+    if(data2.done&&data2.completedAt){
+      const cd=new Date(data2.completedAt);
+      if(cd>=wkStart&&cd<=wkEnd)capsThisWeek++;
+    }
+  }
+  S.ws[wk2].caps=capsThisWeek;
   // MEJORA 1: revisión espaciada — programar cuando se completa
   if(!wasDone && S.t[id].done){
     const goal=getExGoal(id);
@@ -2913,8 +2918,8 @@ const ERROR_PRESETS={
    Filosofía:['Confundí autores','Confundí corrientes filosóficas','Confundí conceptos','Atribuí una idea al autor equivocado','Interpreté mal el argumento','Confundí tesis y argumento','No identifiqué la postura filosófica','No recordaba el concepto','Me fui por una interpretación intuitiva','Descarté mal una alternativa'],
   Literatura:['Confundí autor y obra','Confundí personajes','Confundí movimientos literarios','Confundí características del movimiento','Confundí género literario','No reconocí el recurso literario','Interpreté mal el fragmento','Confundí contexto y obra','No recordaba el dato','Descarté mal una alternativa'],
   Lenguaje:['Confundí la regla gramatical','Confundí categorías gramaticales','Error de sintaxis','Error de ortografía','Error de puntuación','Confundí significados','No identifiqué la función de la palabra','Interpreté mal el enunciado','Confundí conceptos lingüísticos','Descarté mal una alternativa'],
-  RV:['Interpreté mal el texto','No identifiqué la idea principal','Confundí una inferencia','Confundí el significado de una palabra','Relación lógica incorrecta','Analogía incorrecta','Ordenamiento incorrecto','Leí demasiado rápido','Me dejé llevar por una alternativa plausible','Descarté mal una alternativa'],
-  RM:['No identifiqué el patrón','Planteamiento incorrecto','Error de lógica','Error de cálculo','Interpreté mal el problema','No identifiqué la estrategia','Me faltó un caso','Asumí algo que no estaba dado','Me bloqueé demasiado tiempo','Descarté mal una alternativa'],
+  'Raz. Verbal':['Interpreté mal el texto','No identifiqué la idea principal','Confundí una inferencia','Confundí el significado de una palabra','Relación lógica incorrecta','Analogía incorrecta','Ordenamiento incorrecto','Leí demasiado rápido','Me dejé llevar por una alternativa plausible','Descarté mal una alternativa'],
+  'Raz. Matemático':['No identifiqué el patrón','Planteamiento incorrecto','Error de lógica','Error de cálculo','Interpreté mal el problema','No identifiqué la estrategia','Me faltó un caso','Asumí algo que no estaba dado','Me bloqueé demasiado tiempo','Descarté mal una alternativa'],
   Ingles:['Vocabulario desconocido','Confundí tiempos verbales','Confundí estructura gramatical','Interpreté mal el texto','Confundí significado por contexto','Error de preposición','Error con phrasal verb','No reconocí la referencia','Leí demasiado rápido','Descarté mal una alternativa']
 };
 
@@ -4821,7 +4826,6 @@ function filterWeekPending(force){
   else weekPendingFilter=!weekPendingFilter;
   document.getElementById('vcWeekPending')?.classList.toggle('active',weekPendingFilter);
   const aw=getActiveWeek();
-  document.querySelectorAll('.month').forEach(m=>m.classList.toggle('print-hide',weekPendingFilter));
   document.querySelectorAll('.week').forEach(w=>{
     if(!weekPendingFilter){w.classList.remove('print-hide');return;}
     const wid=w.id?.replace('week-','');
@@ -4925,20 +4929,25 @@ function generateMiniSimFromErrors(){
 }
 function printActiveWeek(){
   const aw=getActiveWeek();
-  document.querySelectorAll('.month').forEach(m=>{
-    const hasWeek=[...m.querySelectorAll('.week')].some(w=>aw&&w.id==='week-'+aw.id);
-    m.classList.toggle('print-hide',aw&&!hasWeek);
-  });
+  if(!aw){alert('No hay semana activa.');return;}
+  const wasPendingFilter=weekPendingFilter;
   document.querySelectorAll('.week').forEach(w=>{
-    w.classList.toggle('print-hide',aw&&w.id!=='week-'+aw.id);
-    w.classList.toggle('print-active',aw&&w.id==='week-'+aw.id);
-    if(aw&&w.id==='week-'+aw.id)w.classList.add('ex');
+    const isActive=w.id==='week-'+aw.id;
+    w.classList.toggle('print-hide',!isActive);
+    w.classList.toggle('print-active',isActive);
+    if(isActive)w.classList.add('ex');
   });
   document.body.classList.add('print-week');
   window.print();
   setTimeout(()=>{
     document.body.classList.remove('print-week');
     document.querySelectorAll('.print-hide,.print-active').forEach(el=>el.classList.remove('print-hide','print-active'));
+    if(wasPendingFilter){
+      weekPendingFilter=true;
+      filterWeekPending(true);
+    }else{
+      document.querySelectorAll('.ti[data-id]').forEach(ti=>ti.style.display='');
+    }
   },800);
 }
 function renderSyncHint(){
@@ -5269,45 +5278,66 @@ function renderHomeErrCurso(){
   if(!el)return;
   const errs=S.errors||[];
   const capErrs=S.capErrors||{};
-  // Count by course from capErrors
+  const COURSE_COLORS={
+    'Aritmética':'var(--ca)','Álgebra':'var(--calg)','Física':'var(--cf)',
+    'Geometría':'var(--cg)','Trigonometría':'var(--ct)','Química':'var(--cq)',
+    'Raz. Matemático':'var(--crm)','Raz. Verbal':'var(--crv)',
+    'Historia Universal':'var(--chu)','Historia del Perú':'var(--chp)',
+    'Geografía':'var(--cge)','Filosofía':'var(--cfi)',
+    'Literatura':'var(--cli)','Lenguaje':'var(--cle)','Inglés':'var(--cin)'
+  };
+  // Fuente de verdad: TOPICS (todos los cursos reales del plan)
+  const courseNames=Object.keys(TOPICS);
   const byCourse={};
-  Object.values(COURSES).forEach(c=>byCourse[c.name]=0);
-  // From capErrors (by topic id → course)
-  Object.entries(capErrs).forEach(([id,errarr])=>{
-    if(!errarr||!errarr.length)return;
+  courseNames.forEach(n=>byCourse[n]=0);
+  // 1) capErrors (id → curso)
+  Object.entries(capErrs).forEach(([id,arr])=>{
+    if(!arr||!arr.length)return;
     const topicEl=document.querySelector('[data-id="'+id+'"]');
-    const course=topicEl?.dataset.course||null;
-    if(course&&byCourse[course]!==undefined)byCourse[course]+=errarr.length;
+    const c=topicEl?.dataset.course||null;
+    if(c&&byCourse[c]!==undefined)byCourse[c]+=arr.length;
   });
-  // From global errors with [id] prefix (chapter errors)
+  // 2) errores con [id] (capítulo)
   errs.forEach(e=>{
     const match=e.match(/^\[([a-z]+\d*)\]/);
-    if(match){
-      const id=match[1];
-      const topicEl=document.querySelector('[data-id="'+id+'"]');
-      const course=topicEl?.dataset.course||null;
-      if(course&&byCourse[course]!==undefined&&capErrs[id]===undefined)byCourse[course]++;
-    }
+    if(!match)return;
+    const id=match[1];
+    const topicEl=document.querySelector('[data-id="'+id+'"]');
+    const c=topicEl?.dataset.course||null;
+    if(c&&byCourse[c]!==undefined&&capErrs[id]===undefined)byCourse[c]++;
   });
-  // From global errors with [Course] prefix (course-specific global errors)
+  // 3) errores con [Curso]
   errs.forEach(e=>{
-    const match=e.match(/^\[([A-Za-záéíóúÁÉÍÓÚñÑ\s]+)\]\s*/);
-    if(match){
-      const course=match[1];
-      if(byCourse[course]!==undefined)byCourse[course]++;
-    }
+    const match=e.match(/^\[([A-Za-záéíóúÁÉÍÓÚñÑ.\s]+)\]\s*/);
+    if(!match)return;
+    const c=match[1].trim();
+    if(byCourse[c]!==undefined)byCourse[c]++;
   });
-  const totalErrs=Object.values(byCourse).reduce((a,b)=>a+b,0);
+  // 4) Errores totalmente generales (sin prefijo)
+  const generalCount=errs.filter(e=>!e.match(/^\[/)).length;
+  const totalErrs=Object.values(byCourse).reduce((a,b)=>a+b,0)+generalCount;
   if(total)total.textContent='('+totalErrs+' total)';
-  const COURSE_COLORS={Aritmética:'var(--ca)',Álgebra:'var(--calg)',Física:'var(--cf)',Geometría:'var(--cg)',Trigonometría:'var(--ct)',Química:'var(--cq)'};
-  el.innerHTML=Object.values(COURSES).map(c=>{
-    const n=byCourse[c.name]||0;
-    const col=COURSE_COLORS[c.name]||'#888';
-    return'<div class="ecc" onclick="goToErrCourse(\''+c.name+'\')" title="Ver errores de '+c.name+'">'
-      '<div class="ecc-name" style="color:'+col+'">'+c.name+'</div>'
-      +(n>0?'<div class="ecc-num">'+n+'</div><div style="font-size:.44rem;color:var(--muted)">err activos</div>':'<div class="ecc-zero">✓</div>')
+  let html=courseNames.map(name=>{
+    const n=byCourse[name]||0;
+    const col=COURSE_COLORS[name]||'#888';
+    const hasErr=n>0;
+    const bg=hasErr?'background:#1a0f0f;border-color:#3a1515':'background:#0d1a0f;border-color:#1a3a20';
+    return'<div class="ecc" onclick="goToErrCourse(\''+name+'\')" title="'+(hasErr?'Ver errores de '+name:'Sin errores en '+name)+'" style="'+bg+'">'
+      +'<div class="ecc-name" style="color:'+col+'">'+name+'</div>'
+      +(hasErr
+        ?'<div class="ecc-num">'+n+'</div><div style="font-size:.44rem;color:var(--muted)">err activos</div>'
+        :'<div class="ecc-zero">✓</div>')
       +'</div>';
   }).join('');
+  // Fila extra para errores generales (sin curso)
+  if(generalCount>0){
+    html+='<div class="ecc" onclick="goToErrCourse(\'General\')" title="Errores sin curso asignado" style="background:#1a1a0f;border-color:#3a3a15">'
+      +'<div class="ecc-name" style="color:var(--muted)">General</div>'
+      +'<div class="ecc-num" style="color:var(--accent4)">'+generalCount+'</div>'
+      +'<div style="font-size:.44rem;color:var(--muted)">err sin curso</div>'
+      +'</div>';
+  }
+  el.innerHTML=html;
 }
 
 function goToErrCourse(course){
@@ -5368,26 +5398,36 @@ function renderHomeErrRecientes(){
 function renderHomeWeeklyProgress(){
   const el=document.getElementById('homeWeeklyProgress');
   if(!el)return;
-  const COURSE_DATA=[
-    {name:'Aritmética',ids:['a1','a2','a3','a4','a5','a6','a7','a8','a9','a10','a11','a12','a13','a14','a15','a16','a17','a18','a19','a20']},
-    {name:'Álgebra',ids:['al1','al2','al3','al4','al5','al6','al7','al8','al9','al10','al11','al12','al13','al14','al15','al16','al17','al18','al19','al20','al21','al22','al23','al24','al25','al26','al27','al28']},
-    {name:'Física',ids:['f1','f2','f3','f4','f5','f6','f7','f8','f9','f10','f11','f12','f13','f14','f15','f16','f17','f18','f19','f20','f21']},
-    {name:'Geometría',ids:['g1','g2','g3','g4','g5','g6','g7','g8','g9','g10','g11','g12','g13','g14','g15','g16','g17','g18']},
-    {name:'Trigonometría',ids:['t1','t2','t3','t4','t5','t6','t7','t8','t9','t10']},
-    {name:'Química',ids:['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','q11','q12','q13','q14','q15','q16','q17','q18','q19','q20','q21','q22','q23','q24','q25','q26','q27','q28','q29','q30']},
-  ];
-  const COURSE_COLORS={Aritmética:'var(--ca)',Álgebra:'var(--calg)',Física:'var(--cf)',Geometría:'var(--cg)',Trigonometría:'var(--ct)',Química:'var(--cq)'};
-  el.innerHTML=COURSE_DATA.map(c=>{
-    const done=c.ids.filter(id=>(S.t||{})[id]?.done).length;
-    const total=c.ids.length;
-    const pct=total?Math.round(done/total*100):0;
-    const col=COURSE_COLORS[c.name]||'var(--accent)';
-    return'<div class="week-prog-row">'
-      +'<div class="wpr-label" style="color:'+col+'">'+c.name+'</div>'
-      +'<div class="wpr-bar"><div class="wpr-fill" style="width:'+pct+'%;background:'+col+'"></div></div>'
-      +'<div class="wpr-pct">'+done+'/'+total+'</div>'
-      +'</div>';
-  }).join('');
+  const COURSE_COLORS={
+    'Aritmética':'var(--ca)','Álgebra':'var(--calg)','Física':'var(--cf)',
+    'Geometría':'var(--cg)','Trigonometría':'var(--ct)','Química':'var(--cq)',
+    'Raz. Matemático':'var(--crm)','Raz. Verbal':'var(--crv)',
+    'Historia Universal':'var(--chu)','Historia del Perú':'var(--chp)',
+    'Geografía':'var(--cge)','Filosofía':'var(--cfi)',
+    'Literatura':'var(--cli)','Lenguaje':'var(--cle)','Inglés':'var(--cin)'
+  };
+  const SCIENCE=['Aritmética','Álgebra','Física','Geometría','Trigonometría','Química'];
+  const courses=Object.keys(TOPICS).filter(c=>COURSE_COLORS[c]);
+  const sciences=courses.filter(c=>SCIENCE.includes(c));
+  const letras=courses.filter(c=>!SCIENCE.includes(c));
+  const renderBlock=(list)=>{
+    return list.map(name=>{
+      const ids=Object.keys(TOPICS[name]||{});
+      const total=ids.length;
+      const done=ids.filter(id=>(S.t||{})[id]?.done).length;
+      const pct=total?Math.round(done/total*100):0;
+      const col=COURSE_COLORS[name]||'var(--accent)';
+      return'<div class="week-prog-row">'
+        +'<div class="wpr-label" style="color:'+col+'">'+name+'</div>'
+        +'<div class="wpr-bar"><div class="wpr-fill" style="width:'+pct+'%;background:'+col+'"></div></div>'
+        +'<div class="wpr-pct">'+done+'/'+total+'</div>'
+        +'</div>';
+    }).join('');
+  };
+  el.innerHTML='<div style="font-size:.46rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:.3rem 0 .3rem">Ciencias</div>'
+    +renderBlock(sciences)
+    +'<div style="font-size:.46rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:.7rem 0 .3rem">Humanidades</div>'
+    +renderBlock(letras);
 }
 
 function saveHomeNotes(){
