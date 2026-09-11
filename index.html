@@ -2849,7 +2849,7 @@ function ck(e,id){
       renderT();save();return;
     }
     const now=Date.now();
-    const reviews=[3,7,14];
+    const reviews=getReviewIntervals(id);
     S.t[id].reviewDates=reviews.map(d=>localKey(new Date(now+d*86400000)));
     S.t[id].reviewsDone=[];
   }
@@ -3255,6 +3255,12 @@ function logSession(secs,course,topic,type,energy){
     if(!S.topicTime[k])S.topicTime[k]={total:0,teoria:0,ejercicios:0,repaso:0};
     S.topicTime[k].total=(S.topicTime[k].total||0)+secs;
     S.topicTime[k][type]=(S.topicTime[k][type]||0)+secs;
+        // NUEVO: extender ventana de repaso con el pomodoro
+    const topicId = findTopicIdByCourseAndName(course, topic);
+    if(topicId){
+      const meta = ensureTopicMetadata(topicId);
+      meta.fechaUltimoEstudio = today();
+    }
   }
   // accumulate by course+type for segmented bars (daily)
   const td=today();
@@ -5010,7 +5016,22 @@ async function importFromSync(file){
 // ═══════════════════════════════════════════════════════════════
 // MEJORAS v10
 // ═══════════════════════════════════════════════════════════════
+function getReviewIntervals(id){
+  const mastery = getTopicMastery(id);
+  const dependents = getDependents(id).length;
 
+  // Base según cuántos temas desbloquea
+  let base;
+  if(dependents >= 3)       base = [2, 4, 8];    // cuello crítico
+  else if(dependents >= 1)  base = [3, 6, 12];   // importante
+  else                      base = [4, 9, 18];   // hoja, relax
+
+  // Ajuste por dominio real
+  if(mastery >= 80)      base = base.map(d => Math.round(d * 1.6));
+  else if(mastery < 40)  base = base.map(d => Math.max(1, Math.round(d * 0.6)));
+
+  return base;
+}
 // ── MEJORA 1: ALERTA DE REVISIÓN ESPACIADA ──
 function getSpacedDue(){
   const td=today();
@@ -5711,7 +5732,6 @@ function renderHomeAccion(){
   const nextId=pending[0];
   const {name:topicName, course}=getTopic(nextId);
   // Fallback si no está en el índice
-  const finalTopicName = topicName || nextId;
   const done=aw.topics.filter(id=>(S.t||{})[id]?.done).length;
   const total=aw.topics.length;
   const dl=Math.max(1,daysBetween(td,aw.e)+1);
@@ -7356,9 +7376,18 @@ function chronoToggle(){
 
     // Conectar con el grafo: el acierto real actualiza el dominio del tema
     // (los saltados cuentan como 40, entre fallo y acierto con esfuerzo)
-    const effectiveAcc=Math.round(
-      (chronoCounts.easy*100 + chronoCounts.hard*70 + chronoCounts.skipped*40 + chronoCounts.failed*10) / total
-    );
+    // Acierto puro
+    const rawAcc = (chronoCounts.easy*100 + chronoCounts.hard*70 + chronoCounts.skipped*40 + chronoCounts.failed*10) / total;
+
+    // Penalización por lentitud (solo si acertaste algo)
+    const target = getSpeedTarget(course);
+    const speedRatio = target ? tpp / target : 1;
+    let speedPenalty = 1;
+    if(speedRatio > 1.5)      speedPenalty = 0.7;   // lentísimo
+    else if(speedRatio > 1.2) speedPenalty = 0.85;  // lento
+    else if(speedRatio < 0.8) speedPenalty = 1.1;   // rápido
+
+    const effectiveAcc = Math.round(Math.min(100, rawAcc * speedPenalty));
     StudyPrioritizer.updateDominio(topicId, effectiveAcc);
 
      const body='<div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem .7rem">'
