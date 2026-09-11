@@ -66,9 +66,84 @@ html{scrollbar-width:thin;scrollbar-color:var(--scroll-thumb) var(--scroll-track
 body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace,sans-serif;min-height:100vh;padding:0;line-height:1.6}
 .plan-foot{margin-top:1rem;padding:.55rem 0 .15rem;border-top:1px solid var(--border)}
 .plan-kb-hint{font-size:.48rem;color:var(--muted);line-height:1.45;text-align:center;letter-spacing:.02em}
-.schedule-card{margin:1rem 0 1.2rem;padding:1rem;background:var(--card);border:1px solid var(--border);border-radius:6px;overflow:hidden}
-.schedule-head{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:.75rem}.schedule-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem}.schedule-meta{font-size:.52rem;color:var(--muted);margin-right:auto}.schedule-nav{border:1px solid var(--border);background:transparent;color:var(--text);border-radius:3px;padding:.16rem .45rem;cursor:pointer;font:inherit;font-size:.65rem}.schedule-nav:hover{border-color:var(--accent);color:var(--accent)}
-.schedule-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:4px}.schedule-grid{display:grid;grid-template-columns:48px repeat(7,minmax(108px,1fr));min-width:805px}.schedule-grid>div{min-height:25px;padding:.23rem .28rem;border-right:1px solid #292938;border-bottom:1px solid #292938;text-align:center;font-size:.48rem;line-height:1.2}.schedule-grid .sg-head{background:#15152a;color:#d9d9ee;font-weight:700;font-size:.56rem}.schedule-grid .sg-time{background:#11111a;color:var(--muted);display:flex;align-items:center;justify-content:center}.schedule-grid .sg-rest{color:#8a8a9c;background:#12121a}.schedule-grid .sg-sleep{color:#b9f58a;background:#18203d;font-weight:700}.schedule-grid .sg-break{background:#27252a;color:#b7b2b9}.schedule-grid .sg-phys{background:#8f141b;color:#fff}.schedule-grid .sg-geo{background:#0e9b5d;color:#071b11}.schedule-grid .sg-chem{background:#e7e900;color:#222}.schedule-grid .sg-trig{background:#9200c5;color:#fff}.schedule-grid .sg-alg{background:#f0a100;color:#241700}.schedule-grid .sg-arith{background:#2077a7;color:#fff}.schedule-grid .sg-verbal{background:#f3ae7a;color:#382010}.schedule-grid .sg-history{background:#98bf7d;color:#182215}.schedule-grid .sg-literature{background:#8f79c9;color:#171226}.schedule-grid .sg-language{background:#db69dc;color:#2b102c}.schedule-grid .sg-test{background:#ce0303;color:#fff}.schedule-grid .sg-check{cursor:pointer;position:relative;padding-right:10px!important}
+.schedule-card{margin:1rem 0 1.2rem;padding:1rem;background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.schedule-head{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:.85rem}
+.schedule-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;color:var(--text)}
+.schedule-meta{font-size:.52rem;color:var(--muted);margin-right:auto}
+.schedule-nav{border:1px solid var(--border);background:transparent;color:var(--text);border-radius:4px;padding:.22rem .55rem;cursor:pointer;font:inherit;font-size:.72rem;transition:all .15s}
+.schedule-nav:hover{border-color:var(--accent);color:var(--accent);background:rgba(99,102,241,.08)}
+
+.schedule-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:6px;background:#0c0c14}
+.schedule-grid{display:grid;grid-template-columns:56px repeat(7,minmax(120px,1fr));min-width:900px}
+.schedule-grid>div{
+  min-height:34px;
+  padding:.38rem .45rem;
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  text-align:center;
+  font-size:.55rem;
+  line-height:1.25;
+  color:var(--text);
+  transition:filter .12s;
+}
+.schedule-grid>div:last-child{border-right:none}
+
+/* Headers */
+.schedule-grid .sg-head{
+  background:linear-gradient(180deg,#1a1a28,#14141f);
+  color:var(--text);
+  font-weight:700;
+  font-size:.62rem;
+  letter-spacing:.02em;
+  position:sticky;top:0;z-index:2;
+}
+
+/* Columna de horas */
+.schedule-grid .sg-time{
+  background:#0e0e16;
+  color:var(--muted);
+  font-family:'DM Mono',monospace;
+  font-size:.52rem;
+  font-weight:500;
+  display:flex;align-items:center;justify-content:center;
+  border-right:2px solid var(--border);
+}
+
+/* Descansos */
+.schedule-grid .sg-rest{color:var(--muted);background:#101018;font-style:italic;font-size:.5rem}
+.schedule-grid .sg-sleep{color:#8ea4ff;background:#121a33;font-weight:700;letter-spacing:.05em}
+.schedule-grid .sg-break{background:#1a1a22;color:var(--muted);font-size:.48rem;font-style:italic}
+
+/* Materias — colores del sistema, fondo atenuado + texto a color */
+.schedule-grid .sg-phys{background:rgba(236,72,153,.18);color:#ff8ac1;border-left:3px solid var(--cf)}
+.schedule-grid .sg-geo{background:rgba(134,239,172,.16);color:#a8ffc8;border-left:3px solid var(--cg)}
+.schedule-grid .sg-chem{background:rgba(34,197,94,.16);color:#7dffa8;border-left:3px solid var(--cq)}
+.schedule-grid .sg-trig{background:rgba(167,139,250,.18);color:#c6b0ff;border-left:3px solid var(--ct)}
+.schedule-grid .sg-alg{background:rgba(251,146,60,.18);color:#ffbb80;border-left:3px solid var(--calg)}
+.schedule-grid .sg-arith{background:rgba(56,189,248,.18);color:#7dd3fc;border-left:3px solid var(--ca)}
+
+/* Letras / humanidades */
+.schedule-grid .sg-verbal{background:rgba(216,180,254,.16);color:#e0c4ff;border-left:3px solid var(--crv)}
+.schedule-grid .sg-hu{background:rgba(234,179,8,.16);color:#f5d76e;border-left:3px solid var(--chu)}
+.schedule-grid .sg-hp{background:rgba(239,68,68,.16);color:#ff8a8a;border-left:3px solid var(--chp)}
+.schedule-grid .sg-rm{background:rgba(250,204,21,.16);color:#fde047;border-left:3px solid var(--crm)}
+.schedule-grid .sg-literature{background:rgba(251,113,133,.16);color:#ff9fb0;border-left:3px solid var(--cli)}
+.schedule-grid .sg-language{background:rgba(6,182,212,.16);color:#67e8f9;border-left:3px solid var(--cle)}
+.schedule-grid .sg-eco{background:rgba(251,146,60,.16);color:#ffbb80;border-left:3px solid var(--calg)}
+.schedule-grid .sg-geog{background:rgba(20,184,166,.16);color:#5eead4;border-left:3px solid var(--cge)}
+.schedule-grid .sg-filo{background:rgba(168,85,247,.16);color:#d8b4fe;border-left:3px solid var(--cfi)}
+.schedule-grid .sg-act{background:rgba(99,102,241,.16);color:#a5b4fc;border-left:3px solid var(--cin)}
+
+/* Prueba y errores */
+.schedule-grid .sg-test{background:rgba(244,63,94,.22);color:#ff8a9a;font-weight:700;border-left:3px solid var(--accent2)}
+
+/* Checkbox dentro de la celda */
+.schedule-grid .sg-check{cursor:pointer;position:relative;padding-right:18px!important;user-select:none}
+.schedule-grid .sg-check:hover{filter:brightness(1.35)}
+.schedule-grid .sg-check-mark{position:absolute;top:3px;right:5px;font-size:.6rem;line-height:1;opacity:.4;pointer-events:none;color:var(--text);transition:opacity .15s,color .15s}
+.schedule-grid .sg-check.done .sg-check-mark{opacity:1;color:var(--accent3);text-shadow:0 0 6px rgba(52,211,153,.5)}
+
+.schedule-note{font-size:.5rem;color:var(--muted);margin-top:.65rem;line-height:1.5}
 .schedule-grid .sg-check:hover{filter:brightness(1.25)}
 .schedule-grid .sg-check-mark{position:absolute;top:1px;right:2px;font-size:.55rem;line-height:1;opacity:.35;pointer-events:none;color:#fff}
 .schedule-grid .sg-check.done .sg-check-mark{opacity:1;color:#3a3}.schedule-note{font-size:.49rem;color:var(--muted);margin-top:.6rem}
@@ -241,6 +316,24 @@ h1 span{color:var(--accent)}
 .tcard-action:hover{text-decoration:underline}
 
 /* POMO */
+/* POMO TABS + CRONÓMETRO */
+.pomo-tabs{display:flex;gap:.3rem;margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.pomo-tab{flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);padding:.35rem;font-family:inherit;font-size:.55rem;cursor:pointer;border-radius:4px;transition:all .15s}
+.pomo-tab:hover{border-color:var(--accent);color:var(--accent)}
+.pomo-tab.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700}
+.chrono-time{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:700;color:#fff;letter-spacing:-.03em;line-height:1}
+.chrono-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:.3rem;margin-bottom:.3rem}
+.chrono-bt{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.45rem .5rem;font-family:inherit;font-size:.52rem;cursor:pointer;border-radius:4px;display:flex;justify-content:space-between;align-items:center;transition:all .12s}
+.chrono-bt:hover{filter:brightness(1.3)}
+.chrono-bt:active{transform:scale(.97)}
+.chrono-bt.easy{border-color:var(--accent3);color:var(--accent3)}
+.chrono-bt.hard{border-color:var(--accent4);color:var(--accent4)}
+.chrono-bt.skip{border-color:#f0a500;color:#f0a500}
+.chrono-bt.fail{border-color:var(--accent2);color:var(--accent2)}
+.chrono-bt span{font-weight:700;font-family:'Syne',sans-serif;font-size:.75rem;line-height:1}
+
+/* POMO */
+.pomo-time{font-family:'Syne',sans-serif;font-size:2rem;font-weight:700;color:#fff;text-align:center;margin:.15rem 0;letter-spacing:-0.03em}
 .pomo-time{font-family:'Syne',sans-serif;font-size:2rem;font-weight:700;color:#fff;text-align:center;margin:.15rem 0;letter-spacing:-0.03em}
 .pomo-status{font-size:.52rem;color:var(--muted);text-align:center;margin-bottom:.25rem;height:.8rem}
 select.pcourse{width:100%;background:#0a0a0f;border:1px solid var(--border);color:var(--text);padding:.3rem .42rem;font-family:'DM Mono',monospace;font-size:.58rem;margin-top:.38rem;cursor:pointer}
@@ -298,12 +391,28 @@ select.pcourse{width:100%;background:#0a0a0f;border:1px solid var(--border);colo
 
 /* HEATMAP */
 .heatmap-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:.4rem}
-.hm-day{height:18px;background:var(--border);border-radius:2px;position:relative;cursor:default}
+.hm-day{height:22px;background:var(--border);border-radius:3px;position:relative;cursor:default;overflow:hidden;display:flex}
+.hm-seg{height:100%;flex-shrink:0;box-sizing:border-box}
+.hm-seg:not(:last-child){border-right:1px solid #fff}
 .hm-day:hover::after{content:attr(data-tip);position:absolute;bottom:22px;left:50%;transform:translateX(-50%);background:#111;border:1px solid var(--border);color:var(--text);font-size:.5rem;padding:.15rem .35rem;white-space:nowrap;z-index:10;pointer-events:none}
 .hm-lbl{font-size:.46rem;color:var(--muted);text-align:center}
 .hm-header{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:2px}
 #consistencyChart{min-height:4.5rem;padding:.15rem 0}
 
+/* VELOCIDAD POR TEMA */
+.speed-row{display:grid;grid-template-columns:2fr 60px 90px 60px 100px;gap:.35rem;align-items:center;padding:.35rem .5rem;border-bottom:1px solid var(--border);font-size:.52rem}
+.speed-row.head{color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;font-size:.46rem;background:var(--bg);border-bottom:1px solid var(--border-2,var(--border))}
+.speed-row:last-child{border-bottom:none}
+.speed-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.52rem}
+.speed-num{text-align:right;font-family:'DM Mono',monospace}
+.speed-cat{font-size:.48rem;padding:.08rem .3rem;border-radius:3px;text-align:center;white-space:nowrap}
+.speed-cat.ok{background:#0d1f12;color:var(--accent3);border:1px solid #1a4a28}
+.speed-cat.slow{background:#1f1a00;color:var(--accent4);border:1px solid #4a3a10}
+.speed-cat.fake{background:#1f1000;color:#f0a500;border:1px solid #4a2a10}
+.speed-cat.bad{background:#1f0a0f;color:var(--accent2);border:1px solid #4a1a28}
+.speed-row .speed-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:3px}
+.speed-empty{font-size:.58rem;color:var(--muted);padding:.6rem .3rem;text-align:center;line-height:1.5}
+@media(max-width:600px){.speed-row{grid-template-columns:1.5fr 45px 70px 45px 80px;font-size:.48rem}}
 /* PREDICCION */
 .pred-box{background:#0a0a0f;border:1px solid var(--border);padding:.5rem .7rem;font-size:.6rem;margin-top:.4rem}
 .pred-row{display:flex;justify-content:space-between;padding:.15rem 0;border-bottom:1px solid var(--border)}
@@ -327,6 +436,19 @@ select.pcourse{width:100%;background:#0a0a0f;border:1px solid var(--border);colo
 .bank-del{color:var(--border);cursor:pointer;font-size:.65rem}
 .bank-del:hover{color:var(--accent2)}
 .bank-content{color:var(--muted)}
+
+/* FLASHCARD CONFIDENCE */
+.fc-conf-wrap{margin:.5rem 0;padding:.5rem;background:var(--bg);border-radius:6px;border:1px dashed var(--border)}
+.fc-conf-wrap.shake{animation:confShake .4s}
+@keyframes confShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.fc-conf-label{font-size:.48rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem;text-align:center}
+.fc-conf-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:.3rem}
+.fc-conf-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.4rem .2rem;font-family:inherit;font-size:.75rem;cursor:pointer;border-radius:5px;transition:all .12s;line-height:1.2}
+.fc-conf-btn span{display:block;font-size:.45rem;margin-top:.1rem;letter-spacing:.02em}
+.fc-conf-btn:hover{transform:translateY(-1px)}
+.fc-conf-btn.low:hover,.fc-conf-btn.low.active{border-color:var(--accent2);color:var(--accent2);background:#1f0a0f}
+.fc-conf-btn.mid:hover,.fc-conf-btn.mid.active{border-color:var(--accent4);color:var(--accent4);background:#1f1a10}
+.fc-conf-btn.high:hover,.fc-conf-btn.high.active{border-color:var(--accent3);color:var(--accent3);background:#0d1f12}
 
 /* FLASHCARD MODE */
 .fc-card{background:var(--card);border:1px solid var(--border);padding:1.5rem;text-align:center;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;margin-bottom:.5rem;position:relative}
@@ -438,7 +560,11 @@ select.pcourse{width:100%;background:#0a0a0f;border:1px solid var(--border);colo
 .wdesc{font-size:.61rem;color:var(--muted);margin-top:.35rem;padding-left:108px;line-height:1.5}
 .wtopics{display:none;margin-top:.42rem;margin-left:108px;padding:.42rem .7rem;font-size:.6rem;color:#9090a8;border-left:2px solid var(--border)}
 .week.ex .wtopics{display:block}
-
+/* DEPENDENCIAS */
+.dep-badge{font-size:.5rem;cursor:pointer;margin-left:.25rem;vertical-align:middle;line-height:1;flex-shrink:0}
+.dep-badge.blocked{color:var(--accent2);filter:drop-shadow(0 0 3px rgba(244,63,94,.4))}
+.dep-badge.bottleneck{color:#ffd84a}
+.dep-badge:hover{transform:scale(1.25);transition:transform .12s}
 /* TOPIC */
 .ti{display:flex;align-items:flex-start;gap:.35rem;padding:.18rem 0;cursor:default}
 .tck{width:11px;height:11px;flex-shrink:0;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.46rem;margin-top:2px;cursor:pointer;transition:all .15s}
@@ -512,6 +638,14 @@ select.pcourse{width:100%;background:#0a0a0f;border:1px solid var(--border);colo
 .check-item{display:flex;align-items:center;gap:.4rem;padding:.22rem 0;cursor:pointer}
 .check-item input{accent-color:var(--accent3)}
 .ex-bar-wrap{width:36px;height:3px;background:var(--border);border-radius:2px;margin-top:2px;overflow:hidden}
+.ex-slider{-webkit-appearance:none;appearance:none;width:60px;height:12px;background:transparent;cursor:pointer;outline:none;vertical-align:middle;margin:0 .15rem}
+.ex-slider::-webkit-slider-runnable-track{height:3px;background:var(--border);border-radius:2px}
+.ex-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:9px;height:9px;background:var(--accent3);border-radius:50%;border:none;margin-top:-3px;transition:background .15s,transform .12s}
+.ex-slider::-webkit-slider-thumb:hover{background:var(--accent4);transform:scale(1.25)}
+.ex-slider::-moz-range-track{height:3px;background:var(--border);border-radius:2px;border:none}
+.ex-slider::-moz-range-thumb{width:9px;height:9px;background:var(--accent3);border-radius:50%;border:none;cursor:pointer;transition:background .15s}
+.ex-slider::-moz-range-thumb:hover{background:var(--accent4)}
+.ex-slider::-moz-range-progress{height:3px;background:var(--accent3);border-radius:2px}
 .ex-bar-fill{height:100%;background:var(--accent3);width:0;transition:width .3s}
 .ex-num.low{color:var(--accent2)}
 .fab-wrap{position:fixed;bottom:4.5rem;right:1rem;z-index:200;display:flex;flex-direction:column;gap:.35rem;align-items:flex-end}
@@ -752,12 +886,12 @@ body.print-week .week.print-hide{display:none!important}
       <button class="hc-action" style="border-color:var(--accent2);color:var(--accent2)" onclick="showView('stats',document.querySelector('.sb-btn[onclick*=stats]'))">Ver errores →</button>
     </div>
 
-    <!-- Flashcards pendientes -->
-    <div class="hc" style="--hc-accent:var(--accent)">
-      <div class="hc-label">Flashcards</div>
+   <!-- Flashcards pendientes -->
+<div class="hc" style="--hc-accent:var(--accent)">
+      <div class="hc-label">Flashcards hoy</div>
       <div class="hc-val accent" id="homeFCTotal">—</div>
       <div class="hc-sub" id="homeFCSub"></div>
-      <button class="hc-action" onclick="showView('flashcards',document.querySelector('.sb-btn[onclick*=flashcards]'))">Ir a flashcards →</button>
+      <button class="hc-action" onclick="showView('flashcards',document.querySelector('.sb-btn[onclick*=flashcards]'))">Ir a repasar →</button>
     </div>
 
     <!-- Problemas difíciles pendientes -->
@@ -843,23 +977,24 @@ body.print-week .week.print-hide{display:none!important}
   </div>
 
   <div class="legend">
-    <div class="li"><div class="ld" style="background: var(--ca);"></div>Aritmética</div>
-    <div class="li"><div class="ld" style="background: var(--calg);"></div>Álgebra</div>
-    <div class="li"><div class="ld" style="background: var(--cf);"></div>Física</div>
-    <div class="li"><div class="ld" style="background: var(--cg);"></div>Geometría</div>
-    <div class="li"><div class="ld" style="background: var(--ct);"></div>Trigonometría</div>
-    <div class="li"><div class="ld" style="background: var(--cq);"></div>Química</div>
-    <div class="li"><div class="ld" style="background: rgb(255, 221, 106);"></div>Simulacros</div>
-    <div class="li"><div class="ld" style="background: var(--accent2);"></div>Operación 🔴</div>
-    <div class="li"><div class="ld" style="background: var(--crm);"></div>Raz. Mat.</div>
-    <div class="li"><div class="ld" style="background: var(--crv);"></div>Raz. Verbal</div>
-    <div class="li"><div class="ld" style="background: var(--chu);"></div>Hist. Universal</div>
-    <div class="li"><div class="ld" style="background: var(--chp);"></div>Hist. Perú</div>
-    <div class="li"><div class="ld" style="background: var(--cge);"></div>Geografía</div>
-    <div class="li"><div class="ld" style="background: var(--cfi);"></div>Filosofía</div>
-    <div class="li"><div class="ld" style="background: var(--cli);"></div>Literatura</div>
-    <div class="li"><div class="ld" style="background: var(--cle);"></div>Lenguaje</div>
-    <div class="li"><div class="ld" style="background: var(--cin);"></div>Inglés</div>
+    
+<div class="li"><div class="ld" style="background: var(--ca);"></div>🔢 Aritmética</div>
+<div class="li"><div class="ld" style="background: var(--calg);"></div>🧮 Álgebra</div>
+<div class="li"><div class="ld" style="background: var(--cf);"></div>⚛️ Física</div>
+<div class="li"><div class="ld" style="background: var(--cg);"></div>📐 Geometría</div>
+<div class="li"><div class="ld" style="background: var(--ct);"></div>📏 Trigonometría</div>
+<div class="li"><div class="ld" style="background: var(--cq);"></div>🧪 Química</div>
+<div class="li"><div class="ld" style="background: rgb(255, 221, 106);"></div>📝 Simulacros</div>
+<div class="li"><div class="ld" style="background: var(--accent2);"></div>🔴 Operación</div>
+<div class="li"><div class="ld" style="background: var(--crm);"></div>🧠 Raz. Mat.</div>
+<div class="li"><div class="ld" style="background: var(--crv);"></div>📖 Raz. Verbal</div>
+<div class="li"><div class="ld" style="background: var(--chu);"></div>🌍 Hist. Universal</div>
+<div class="li"><div class="ld" style="background: var(--chp);"></div>🏔️ Hist. Perú</div>
+<div class="li"><div class="ld" style="background: var(--cge);"></div>🗺️ Geografía</div>
+<div class="li"><div class="ld" style="background: var(--cfi);"></div>💭 Filosofía</div>
+<div class="li"><div class="ld" style="background: var(--cli);"></div>📚 Literatura</div>
+<div class="li"><div class="ld" style="background: var(--cle);"></div>✍️ Lenguaje</div>
+<div class="li"><div class="ld" style="background: var(--cin);"></div>💂 Inglés</div>
   </div>
   <div class="weekly-plan-intro">20 semanas de temario + descansos, colchón y pre-examen · toca una semana para ver el detalle.</div>
 
@@ -873,7 +1008,7 @@ body.print-week .week.print-hide{display:none!important}
   <div class="health-panel" id="planHealth"></div>
   <div class="panel-box yesterday-box" id="yesterdayPanel"><h3>Ayer</h3><div id="yesterdaySummary">—</div></div>
   <div class="panel-box daily-caps-bar" id="dailyCapsPanel"><h3>Ritmo de caps</h3><div id="dailyCapsGoal">—</div></div>
-  <div class="panel-box spaced-panel" id="spacedReviewPanel"><h3>📅 Repaso espaciado</h3><div id="spacedReviewContent">Sin repasos pendientes.</div></div>
+<div class="panel-box spaced-panel" id="spacedReviewPanel"><h3>📅 Repaso espaciado</h3><div id="spacedReviewContent">Sin repasos pendientes.</div></div>
   <div class="panel-box exam-checklist" id="examChecklistPanel" style="display:none"><h3>🎯 Checklist pre-examen (9 ago)</h3><div id="examChecklist"></div></div>
 
 </div><!-- /view-plan -->
@@ -901,49 +1036,85 @@ body.print-week .week.print-hide{display:none!important}
   <div class="prog-bar"><div class="prog-fill" id="pfill" style="width: 4%;"></div></div>
 
   <div class="tools" style="margin-top:1rem">
-    <div class="tcard">
-      <div class="tcardtitle">Pomodoro</div>
-      <div class="pomo-time" id="pdisp">25:00</div>
-      <div class="pomo-status" id="pstatus"></div>
-      <select class="pcourse" id="pcourse" onchange="updateTopicList()">
-        <option value="">— curso activo —</option>
-        <option>Aritmética</option><option>Álgebra</option><option>Física</option>
-        <option>Geometría</option><option>Trigonometría</option><option>Química</option>
-        <option>Historia Universal</option><option>Historia del Perú</option><option>Geografía</option>
-        <option>Filosofía</option><option>Literatura</option><option>Lenguaje</option>
-        <option>Raz. Verbal</option><option>Raz. Matemático</option><option>Inglés</option>
-      </select>
-      <select class="pcourse" id="ptopic" style="margin-top:.28rem">
-        <option value="">— tema —</option>
-      </select>
-      <div class="session-type" style="margin-top:.4rem">
-        <button class="stype-btn active" id="stype-teoria" onclick="setStype(&#39;teoria&#39;)">teoría</button>
-        <button class="stype-btn" id="stype-ejercicios" onclick="setStype(&#39;ejercicios&#39;)">ejercicios</button>
-        <button class="stype-btn" id="stype-repaso" onclick="setStype(&#39;repaso&#39;)">repaso</button>
+ <div class="tcard">
+      <div class="pomo-tabs">
+        <button class="pomo-tab active" data-tab="pomo" onclick="setPomoTab('pomo')">⏱ Pomodoro</button>
+        <button class="pomo-tab" data-tab="chrono" onclick="setPomoTab('chrono')">⏲ Cronómetro</button>
       </div>
-      <div style="display: flex; gap: 0.3rem; margin-top: 0.35rem; font-size: 0.52rem; color: var(--muted); align-items: center;">
-        energía:
-        <button class="stype-btn" id="se-alta" onclick="setEnergy(&#39;alta&#39;)" style="flex:1">alta</button>
-        <button class="stype-btn" id="se-media" onclick="setEnergy(&#39;media&#39;)" style="flex:1">media</button>
-        <button class="stype-btn" id="se-baja" onclick="setEnergy(&#39;baja&#39;)" style="flex:1">baja</button>
+
+      <div id="pomoContent">
+        <div class="pomo-time" id="pdisp">25:00</div>
+        <div class="pomo-status" id="pstatus"></div>
+        <select class="pcourse" id="pcourse" onchange="updateTopicList()">
+          <option value="">— curso activo —</option>
+          <option>Aritmética</option><option>Álgebra</option><option>Física</option>
+          <option>Geometría</option><option>Trigonometría</option><option>Química</option>
+          <option>Historia Universal</option><option>Historia del Perú</option><option>Geografía</option>
+          <option>Filosofía</option><option>Literatura</option><option>Lenguaje</option>
+          <option>Raz. Verbal</option><option>Raz. Matemático</option><option>Inglés</option>
+        </select>
+        <select class="pcourse" id="ptopic" style="margin-top:.28rem">
+          <option value="">— tema —</option>
+        </select>
+        <div class="session-type" style="margin-top:.4rem">
+          <button class="stype-btn active" id="stype-teoria" onclick="setStype('teoria')">teoría</button>
+          <button class="stype-btn" id="stype-ejercicios" onclick="setStype('ejercicios')">ejercicios</button>
+          <button class="stype-btn" id="stype-repaso" onclick="setStype('repaso')">repaso</button>
+        </div>
+        <div style="display:flex;gap:.3rem;margin-top:.35rem;font-size:.52rem;color:var(--muted);align-items:center">
+          energía:
+          <button class="stype-btn" id="se-alta" onclick="setEnergy('alta')" style="flex:1">alta</button>
+          <button class="stype-btn" id="se-media" onclick="setEnergy('media')" style="flex:1">media</button>
+          <button class="stype-btn" id="se-baja" onclick="setEnergy('baja')" style="flex:1">baja</button>
+        </div>
+        <div class="pbts">
+          <button id="bstart" onclick="pa('start')">▶ iniciar</button>
+          <button onclick="pa('pause')">⏸ pausar</button>
+          <button onclick="pa('stop')">■ terminar</button>
+        </div>
+        <div style="display:flex;gap:.3rem;margin-top:.35rem;align-items:center">
+          <button onclick="adjPomo(-5)" class="pomo-adj-btn" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);padding:.28rem;font-family:'DM Mono',monospace;font-size:.55rem;cursor:pointer;transition:all .15s">−5 min</button>
+          <button onclick="adjPomo(5)" class="pomo-adj-btn plus" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);padding:.28rem;font-family:'DM Mono',monospace;font-size:.55rem;cursor:pointer;transition:all .15s">+5 min</button>
+          <button onclick="resetPomo()" class="pomo-adj-btn rst" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);padding:.28rem;font-family:'DM Mono',monospace;font-size:.55rem;cursor:pointer;transition:all .15s">reset</button>
+        </div>
+        <div id="pomoBreakSug" style="font-size:.52rem;color:var(--accent4);margin-top:.35rem;min-height:.8rem;text-align:center;letter-spacing:.03em"></div>
+        <div style="display:none">
+          <button id="bbreak" onclick="toggleBreak()">☕ iniciar descanso</button>
+          <div id="breakTimerWrap" style="display:none;margin-top:.38rem;text-align:center">
+            <div id="breakTimerDisp" style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;color:var(--accent4);letter-spacing:-0.02em">00:00</div>
+            <div id="breakTimerLabel" style="font-size:.48rem;color:var(--muted);letter-spacing:.03em;text-transform:uppercase">descanso en curso</div>
+          </div>
+        </div>
       </div>
-      <div class="pbts">
-        <button id="bstart" onclick="pa('start')">▶ iniciar</button>
-        <button onclick="pa('pause')">⏸ pausar</button>
-        <button onclick="pa('stop')">■ terminar</button>
-      </div>
-      <div style="display:flex;gap:.3rem;margin-top:.35rem;align-items:center">
-        <button onclick="adjPomo(-5)" class="pomo-adj-btn" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);padding:.28rem;font-family:'DM Mono',monospace;font-size:.55rem;cursor:pointer;transition:all .15s">−5 min</button>
-        <button onclick="adjPomo(5)" class="pomo-adj-btn plus" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);padding:.28rem;font-family:'DM Mono',monospace;font-size:.55rem;cursor:pointer;transition:all .15s">+5 min</button>
-        <button onclick="resetPomo()" class="pomo-adj-btn rst" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);padding:.28rem;font-family:'DM Mono',monospace;font-size:.55rem;cursor:pointer;transition:all .15s">reset</button>
-      </div>
-      <div id="pomoBreakSug" style="font-size:.52rem;color:var(--accent4);margin-top:.35rem;min-height:.8rem;text-align:center;letter-spacing:.03em"></div>
-      <!-- DESCANSO (botón oculto, lógica activa) -->
-      <div style="display:none">
-        <button id="bbreak" onclick="toggleBreak()">☕ iniciar descanso</button>
-        <div id="breakTimerWrap" style="display:none;margin-top:.38rem;text-align:center">
-          <div id="breakTimerDisp" style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;color:var(--accent4);letter-spacing:-0.02em">00:00</div>
-          <div id="breakTimerLabel" style="font-size:.48rem;color:var(--muted);letter-spacing:.03em;text-transform:uppercase">descanso en curso</div>
+
+      <div id="chronoContent" style="display:none">
+        <select class="pcourse" id="chronoCourse" onchange="updateChronoTopics()">
+          <option value="">— curso —</option>
+        </select>
+        <select class="pcourse" id="chronoTopic" style="margin-top:.28rem">
+          <option value="">— tema —</option>
+        </select>
+
+        <div style="text-align:center;margin:.7rem 0 .5rem">
+          <div style="font-size:.48rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.15rem">tiempo</div>
+          <div class="chrono-time" id="chronoDisp">00:00</div>
+          <div style="font-size:.5rem;color:var(--muted);margin-top:.2rem" id="chronoMeta">— sin problemas aún</div>
+        </div>
+
+        <div id="chronoCounters" style="display:none">
+          <div class="chrono-btn-row">
+            <button class="chrono-bt easy" onclick="chronoCount('easy')">✓ Fácil <span id="cEasy">0</span></button>
+            <button class="chrono-bt hard" onclick="chronoCount('hard')">⚠ Difícil <span id="cHard">0</span></button>
+          </div>
+          <div class="chrono-btn-row">
+            <button class="chrono-bt skip" onclick="chronoCount('skipped')">⏭ Salté <span id="cSkipped">0</span></button>
+            <button class="chrono-bt fail" onclick="chronoCount('failed')">✕ Fallé <span id="cFailed">0</span></button>
+          </div>
+        </div>
+
+        <div class="pbts" style="margin-top:.5rem">
+          <button id="chronoStart" onclick="chronoToggle()">▶ iniciar</button>
+          <button onclick="chronoReset()">↺ reset</button>
         </div>
       </div>
     </div>
@@ -986,6 +1157,14 @@ body.print-week .week.print-hide{display:none!important}
     <div class="tcard full">
       <div class="tcardtitle">Resumen por semana</div>
       <div class="ws-grid" id="wsgrid"></div>
+    </div>
+    <div class="tcard full">
+      <div class="tcardtitle">Velocidad por tema <button class="tcard-action" onclick="renderSpeedStats()">actualizar</button></div>
+      <div id="speedStatsBox"></div>
+    </div>
+    <div class="tcard full">
+      <div class="tcardtitle">Calibración metacognitiva <button class="tcard-action" onclick="renderCalibration()">actualizar</button></div>
+      <div id="calibrationBox"></div>
     </div>
     <div class="tcard full">
       <div class="tcardtitle">Puntuación de simulacros</div>
@@ -1178,7 +1357,7 @@ body.print-week .week.print-hide{display:none!important}
     <div class="tcard full">
       <div class="tcardtitle">
   Repasar tarjetas (<span id="fcCount">0</span>)
-  <button class="tcard-action" onclick="shuffleFC()">mezclar</button>
+  <button class="tcard-action" onclick="_fcQueue=null;renderFC()">🔄 recargar cola</button>
 </div>
 
 <div style="display:flex;gap:.4rem;margin-bottom:.6rem">
@@ -1190,6 +1369,7 @@ body.print-week .week.print-hide{display:none!important}
     <option value="">Todos</option>
   </select>
 </div>
+      <div id="fcStats" style="display:flex;gap:.6rem;flex-wrap:wrap;font-size:.5rem;color:var(--muted);margin-bottom:.6rem;padding:.4rem .6rem;background:var(--card);border:1px solid var(--border);border-radius:6px"></div>
       <div class="fc-card" id="fcCard" onclick="flipFC()">
         <div class="fc-front" id="fcFront">No hay tarjetas aún.</div>
         <div class="fc-back" id="fcBack"></div>
@@ -1245,8 +1425,19 @@ function makeTI(id){
   const lum='';
   const errBlock=`<div id="caperr-${id}"></div><div id="cap-epreset-${id}" class="cap-epreset-wrap" style="display:none"></div><div id="tierradd-${id}" style="display:none;margin-top:.15rem;align-items:center;gap:.2rem"><input id="ei-${id}" style="font-size:.44rem;padding:.1rem .3rem;background:#0a0a0f;border:1px solid var(--border);color:var(--text);border-radius:3px;width:130px" placeholder="error personalizado..." onclick="event.stopPropagation()"><button onclick="event.stopPropagation();saveCapError('${id}',document.getElementById('ei-${id}').value);document.getElementById('ei-${id}').value='';" style="font-size:.42rem;padding:.1rem .25rem;border:1px solid var(--accent2);color:var(--accent2);background:transparent;cursor:pointer;border-radius:3px">+error</button></div>`;
   const exBlock=`<span class="ex-badge" onclick="event.stopPropagation()" title="Ejercicios (meta según dificultad)"><input type="range" class="ex-slider" min="0" max="${getExGoal(id)}" value="${getExCount(id)}" oninput="setEx('${id}',this.value)"><span class="ex-num" id="exn-${id}">${getExCount(id)}/${getExGoal(id)}</span><span class="ex-bar-wrap"><span class="ex-bar-fill" id="exbf-${id}"></span></span></span>`;
+
+  // Ícono de dependencias
+  const depInfo=getTopicDependencyInfo(id);
+  let depIcon='';
+  if(depInfo.blocked){
+    const names=depInfo.weakPrereqs.map(p=>TOPICS[course]?.[p]||p).join(', ');
+    depIcon=`<span class="dep-badge blocked" onclick="event.stopPropagation();showDepInfo('${id}')" title="🔒 Bloqueado — prereq débil: ${names}">🔒</span>`;
+  } else if(depInfo.isBottleneck){
+    depIcon=`<span class="dep-badge bottleneck" onclick="event.stopPropagation();showDepInfo('${id}')" title="🎯 Cuello de botella — ${depInfo.dependents.length} dependientes">🎯</span>`;
+  }
+
   const safeName=name.replace(/'/g,"&#39;").replace(/"/g,"&quot;");
-  return`<div class="ti" data-id="${id}" data-course="${course}" data-name="${safeName}"><div class="tck" onclick="ck(event,'${id}')" title="Sesión 1"></div><div class="tck2" onclick="ck2(event,'${id}')" title="Sesión 2"></div><span class="tn">${name}${lum}</span>${exBlock}<button class="db-cycle" onclick="sd(event,'${id}')">◆</button><span class="tlast" id="tl-${id}"></span><button class="tfb" onclick="sf(event,'${safeName}','${course}')">⊞</button><span onclick="toggleCapErr('${id}');event.stopPropagation()" title="Añadir error a este cap" style="font-size:.42rem;cursor:pointer;color:var(--accent2);vertical-align:middle;margin-left:.15rem">⚠</span>${errBlock}<div class="tnotes-wrap" id="notes-${id}"><input class="tnote-input" placeholder="nota / duda..." onchange="saveNote('${id}',this.value)" onclick="event.stopPropagation()"></div></div>`;
+  return`<div class="ti" data-id="${id}" data-course="${course}" data-name="${safeName}"><div class="tck" onclick="ck(event,'${id}')" title="Sesión 1"></div><div class="tck2" onclick="ck2(event,'${id}')" title="Sesión 2"></div><span class="tn">${name}${lum}</span>${depIcon}${exBlock}<button class="db-cycle" onclick="sd(event,'${id}')">◆</button><span class="tlast" id="tl-${id}"></span><button class="tfb" onclick="sf(event,'${safeName}','${course}')">⊞</button><span onclick="toggleCapErr('${id}');event.stopPropagation()" title="Añadir error a este cap" style="font-size:.42rem;cursor:pointer;color:var(--accent2);vertical-align:middle;margin-left:.15rem">⚠</span>${errBlock}<div class="tnotes-wrap" id="notes-${id}"><input class="tnote-input" placeholder="nota / duda..." onchange="saveNote('${id}',this.value)" onclick="event.stopPropagation()"></div></div>`;
 }
 
 function renderPlanTopics(){
@@ -1262,8 +1453,8 @@ function renderPlanTopics(){
             const SCIENCE=['Aritmética','Álgebra','Física','Geometría','Trigonometría','Química'];
       el.innerHTML=groups.map(group=>{
         const grp=SCIENCE.includes(group.course)?'ciencias':'letras';
-        return '<div class="week-course-group" data-course="'+group.course+'" data-group="'+grp+'"><div class="week-course-label">'+group.course+'</div>'+group.ids.map(makeTI).join('')+'</div>';
-      }).join('');
+        return '<div class="week-course-group" data-course="'+group.course+'" data-group="'+grp+'"><div class="week-course-label">'+courseLabel(group.course)+'</div>'+group.ids.map(makeTI).join('')+'</div>';
+            }).join('');
     }
   }
 }
@@ -1271,6 +1462,209 @@ function renderPlanTopics(){
 
 <script>
   const KEY='uni-luis-v12';
+/* ═══ GRAFO DE DEPENDENCIAS ═══ */
+// Cada clave = tema que DEPENDE de los temas del array.
+// Solo los links críticos. Si un prereq está débil (<40% dominio), el tema queda bloqueado.
+
+const DEPENDENCIES = {
+  // ── ÁLGEBRA ──
+  'al3':['al2'],           // Productos notables depende de Exponentes
+  'al4':['al2','al3'],     // Polinomios depende de Exponentes y Productos notables
+  'al5':['al3','al4'],     // Divisiones depende de Productos y Polinomios
+  'al7':['al3','al5'],     // Factorización depende de Productos y Divisiones
+  'al8':['al2','al4'],     // Complejos I depende de Exponentes y Polinomios
+  'al10':['al7'],          // Ec. polinomiales depende de Factorización
+  'al11':['al7','al10'],   // Ec. grado superior depende de Factorización y Ec. polinomiales
+  'al13':['al12'],         // Inecuaciones depende de Desigualdades
+  'al16':['al2'],          // Logaritmos depende de Exponentes
+  'al17':['al16'],         // Funciones depende de Logaritmos (dominio, rango)
+  'al20':['al17'],         // Función inversa depende de Funciones
+
+  // ── ARITMÉTICA ──
+  'a5':['a1','a2'],        // Regla de mezcla depende de Razones y Magnitudes
+  'a6':['a4'],             // Interés depende de Tanto por cuanto
+  'a7':['a4'],             // Descuento depende de Tanto por cuanto
+  'a13':['a10','a12'],     // Divisibilidad depende de Numeración y Operaciones
+  'a14':['a13'],           // Clasificación Z+ depende de Divisibilidad
+  'a15':['a13','a14'],     // MCD/MCM depende de Divisibilidad y Clasificación
+  'a16':['a13'],           // Potenciación depende de Divisibilidad
+  'a19':['a18'],           // Análisis combinatorio depende de Estadística
+
+  // ── FÍSICA ──
+  'f3':['f1'],             // Cinemática 1D depende de Análisis dimensional
+  'f4':['f3','f2'],        // Cinemática 2D depende de Cinemática 1D y Vectores
+  'f5':['f3'],             // Gráficas depende de Cinemática
+  'f7':['f2','f3'],        // Dinámica depende de Vectores y Cinemática
+  'f8':['f7'],             // Trabajo/energía depende de Dinámica
+  'f9':['f7'],             // Impulso depende de Dinámica
+  'f11':['f7','f8'],       // Oscilaciones depende de Dinámica y Energía
+  'f15':['f14'],           // Termodinámica depende de Fenómenos térmicos
+  'f16':['f9'],            // Electrostática depende de Impulso
+  'f17':['f16'],           // Electrodinámica depende de Electrostática
+  'f18':['f17'],           // Electromagnetismo depende de Electrodinámica
+
+  // ── GEOMETRÍA ──
+  'g2':['g1'],             // Triángulos depende de Líneas y ángulos
+  'g3':['g2'],             // Polígonos depende de Triángulos
+  'g4':['g2','g3'],        // Cuadriláteros depende de Triángulos y Polígonos
+  'g5':['g1','g2'],        // Circunferencia depende de Líneas y Triángulos
+  'g6':['g5'],             // Polígonos inscritos depende de Circunferencia
+  'g7':['g2','g5'],        // Puntos notables depende de Triángulos y Circunferencia
+  'g8':['g2'],             // Proporcionalidad depende de Triángulos
+  'g9':['g5','g8'],        // Relaciones métricas depende de Circunferencia y Proporcionalidad
+  'g11':['g2','g4'],       // Áreas planas depende de Triángulos y Cuadriláteros
+  'g13':['g11'],           // Poliedros depende de Áreas
+  'g14':['g13'],           // Prismas/cilindros depende de Poliedros
+  'g15':['g13'],           // Pirámide/cono depende de Poliedros
+  'g16':['g13','g15'],     // Esfera depende de Poliedros y Pirámide
+  'g17':['g9'],            // Geometría analítica depende de Relaciones métricas
+
+  // ── TRIGONOMETRÍA ──
+  't2':['t1'],             // Razones trig depende de Medición angular
+  't3':['t1','t2'],        // Ángulo posición normal depende de anteriores
+  't4':['t3'],             // Identidades I depende de Ángulo posición
+  't5':['t4'],             // Identidades II depende de Identidades I
+  't6':['t2','t4'],        // Resolución triángulos depende de Razones e Identidades
+  't7':['t3'],             // Circunferencia trig depende de Ángulo posición
+  't8':['t7'],             // Funciones directas depende de Circunferencia trig
+  't9':['t8'],             // Funciones inversas depende de Funciones directas
+  't10':['t5','t8'],       // Ecuaciones trig depende de Identidades y Funciones
+  't11':['t9'],            // Secciones cónicas depende de Funciones inversas
+  't13':['t3','t5'],       // Complejos trig depende de Ángulo e Identidades
+
+  // ── QUÍMICA ──
+  'q3':['q2'],             // Estructura atómica depende de Modelos atómicos
+  'q4':['q3'],             // Modelo cuántico depende de Estructura
+  'q5':['q4'],             // Configuración electrónica depende de Cuántico
+  'q6':['q5'],             // Tabla periódica depende de Configuración
+  'q7':['q6'],             // Enlace químico depende de Tabla periódica
+  'q8':['q7'],             // Geometría molecular depende de Enlace
+  'q9':['q7'],             // Fuerzas intermoleculares depende de Enlace
+  'q11':['q10'],           // Cálculos depende de Nomenclatura
+  'q16':['q15'],           // Mezcla gases depende de Gaseoso
+  'q18':['q17'],           // Estequiometría depende de Reacciones
+  'q19':['q18'],           // Peso equivalente depende de Estequiometría
+  'q21':['q17'],           // Cinética depende de Reacciones
+  'q22':['q21'],           // Equilibrio depende de Cinética
+  'q23':['q22'],           // Ácidos/bases depende de Equilibrio
+  'q25':['q24'],           // Electroquímica depende de Celdas
+
+  // ── RM (críticos) ──
+  'rm4':['rm1'],           // Lógica proposicional depende de Razonamiento Lógico
+  'rm5':['rm4'],           // Lógica de clases depende de Proposicional
+  'rm8':['rm7'],           // Deductivo depende de Inductivo
+  'rm11':['rm7'],          // Planteo ecuaciones depende de Inductivo
+  'rm23':['rm22'],         // Suficiencia II depende de Suficiencia I
+};
+
+// Función: devuelve prereqs de un tema
+function getPrereqs(topicId){
+  return DEPENDENCIES[topicId]||[];
+}
+
+// Función: devuelve dependientes de un tema (reverse lookup)
+function getDependents(topicId){
+  const deps=[];
+  for(const [id,prereqs] of Object.entries(DEPENDENCIES)){
+    if(prereqs.includes(topicId))deps.push(id);
+  }
+  return deps;
+}
+
+// Función: dominio estimado de un tema (0-100)
+function getTopicMastery(topicId){
+  const t=(S.t||{})[topicId]||{};
+
+  // Si updateDominio ya calculó un nivel real, usarlo como fuente principal
+  if(typeof t.nivelDominio==='number' && t.nivelDominio>0){
+    let score=t.nivelDominio;
+    // Coherencia: si está marcado como done y el dominio es muy bajo (raro), elevar un poco
+    if(t.done && score<40)score=Math.round((score+60)/2);
+    return Math.min(100,Math.round(score));
+  }
+
+  // Fallback: sin datos reales de rendimiento aún
+  let score=t.done?70:0;
+  const ex=getExCount(topicId);
+  const goal=getExGoal(topicId);
+  if(goal)score+=Math.min(20,Math.round(ex/goal*20));
+  const speed=(S.speedSessions||[]).filter(s=>s.topicId===topicId);
+  if(speed.length){
+    const totalProbs=speed.reduce((a,s)=>a+(s.easy+s.hard+s.skipped+s.failed),0);
+    const aciertos=speed.reduce((a,s)=>a+(s.easy+s.hard),0);
+    if(totalProbs>0){
+      const acc=aciertos/totalProbs*100;
+      score=Math.round((score+acc)/2);
+    }
+  }
+  return Math.min(100,score);
+}
+// Devuelve {blocked:bool, weakPrereqs:[ids], dependents:[ids], isBottleneck:bool}
+function getTopicDependencyInfo(topicId){
+  const mastery=getTopicMastery(topicId);
+  const prereqs=getPrereqs(topicId);
+  const weakPrereqs=prereqs.filter(p=>getTopicMastery(p)<40);
+  const dependents=getDependents(topicId);
+  const weakDependents=dependents.filter(d=>getTopicMastery(d)<40);
+  const blocked=weakPrereqs.length>0&&mastery<70;
+  const isBottleneck=dependents.length>=2&&mastery<60;
+  return{blocked,weakPrereqs,dependents,weakDependents,isBottleneck,mastery};
+}
+/* Modal/detalle de dependencias de un tema */
+function showDepInfo(topicId){
+  const info=getTopicDependencyInfo(topicId);
+  const topicName=document.querySelector('[data-id="'+topicId+'"]')?.dataset.name||topicId;
+  const course=Object.keys(TOPICS).find(c=>TOPICS[c]?.[topicId]);
+  let msg='📌 '+topicName+'\n\n';
+
+  if(info.prereqs&&info.prereqs.length){
+    msg+='PREREQUISITOS:\n';
+    info.prereqs.forEach(p=>{
+      const name=TOPICS[course]?.[p]||p;
+      const m=getTopicMastery(p);
+      const icon=m<40?'🔴':m<70?'🟡':'🟢';
+      msg+=icon+' '+name+' (dominio: '+m+'%)\n';
+    });
+    msg+='\n';
+  }
+
+  const deps=getDependents(topicId);
+  if(deps.length){
+    msg+='DESBLOQUEA:\n';
+    deps.forEach(d=>{
+      const name=TOPICS[course]?.[d]||d;
+      const m=getTopicMastery(d);
+      const icon=m<40?'🔴':m<70?'🟡':'🟢';
+      msg+=icon+' '+name+' (dominio: '+m+'%)\n';
+    });
+    msg+='\n';
+  }
+
+  msg+='Tu dominio: '+info.mastery+'%\n';
+  if(info.blocked)msg+='\n🔒 BLOQUEADO por prereq débil.';
+  if(info.isBottleneck)msg+='\n🎯 CUELLO DE BOTELLA — estudiarlo rinde mucho.';
+
+  alert(msg);
+}
+  // ═══ EMOJIS GLOBALES DE CURSOS ═══
+const COURSE_EMOJIS={
+  'Aritmética':'🔢','Álgebra':'🧮','Física':'⚛️','Geometría':'📐',
+  'Trigonometría':'📏','Química':'🧪','Raz. Matemático':'🧠',
+  'Raz. Verbal':'📖','Historia Universal':'🌍','Historia del Perú':'🏔️',
+  'Geografía':'🗺️','Filosofía':'💭','Literatura':'📚','Lenguaje':'✍️','Inglés':'💂',
+  // Aliases por si hay datos viejos
+  'RV':'📖','RM':'🧠','Historia':'🌍','Ingles':'💂',
+  'Economía':'💰','Economia':'💰','Actualidad':'📰','Simulacros':'📝'
+};
+
+function courseEmoji(name){
+  return COURSE_EMOJIS[name]||'';
+}
+
+function courseLabel(name){
+  const em=courseEmoji(name);
+  return (em?em+' ':'')+(name||'');
+}
   // Mapas para sincronización calendario ↔ plan
 const SCHEDULE_COURSE_ROWS={
   'Física':[1,3,5],'Geometría':[1,3,5],'Química':[1,3,5],
@@ -1996,13 +2390,32 @@ function scheduleWeekFor(ds){
   const number=Math.floor(diff/7)+1; return{number,template:number%2?'impar':'par',start:addDays(start,(number-1)*7)};
 }
 function scheduleClass(text){
+  if(!text)return '';
   const s=text.toLowerCase();
-  if(text===REST||s.includes('descanso'))return 'sg-rest'; if(text==='Dormir')return 'sg-sleep';
-  if(s.includes('prueba'))return 'sg-test'; if(s.includes('física'))return 'sg-phys'; if(s.includes('geometr'))return 'sg-geo';
-  if(s.includes('química'))return 'sg-chem'; if(s.includes('trigo'))return 'sg-trig'; if(s.includes('álgebra'))return 'sg-alg';
-  if(s.includes('aritmética'))return 'sg-arith'; if(s.includes('historia'))return 'sg-history'; if(s.includes('literatura'))return 'sg-literature';
-  if(s.includes('lenguaje'))return 'sg-language'; if(text==='RV')return 'sg-verbal'; return '';
+  if(text===REST||s.includes('descanso'))return 'sg-rest';
+  if(text==='Dormir')return 'sg-sleep';
+  if(s.includes('prueba'))return 'sg-test';
+  // Ciencias
+  if(s.includes('física'))return 'sg-phys';
+  if(s.includes('geometr'))return 'sg-geo';
+  if(s.includes('química'))return 'sg-chem';
+  if(s.includes('trigo'))return 'sg-trig';
+  if(s.includes('álgebra'))return 'sg-alg';
+  if(s.includes('aritmética'))return 'sg-arith';
+  // Humanidades (orden importa: Historia del Perú ANTES que Historia Universal)
+  if(s.includes('historia del perú'))return 'sg-hp';
+  if(s.includes('historia universal'))return 'sg-hu';
+  if(text==='RM')return 'sg-rm';
+  if(text==='RV')return 'sg-verbal';
+  if(s.includes('literatura'))return 'sg-literature';
+  if(s.includes('lenguaje'))return 'sg-language';
+  if(s.includes('economia')||s.includes('economía'))return 'sg-eco';
+  if(s.includes('geografia')||s.includes('geografía'))return 'sg-geog';
+  if(s.includes('filosofía')||s.includes('filosofia'))return 'sg-filo';
+  if(s.includes('actualidad'))return 'sg-act';
+  return '';
 }
+
 function renderStudySchedule(){
   const el=document.getElementById('studySchedule');if(!el)return;
   const base=new Date(SCHEDULE_START+'T12:00:00'); const rangeEnd=new Date(SCHEDULE_END+'T12:00:00'); const current=mondayOf(new Date());
@@ -2111,6 +2524,8 @@ function save(){
   }catch(e){}
 }
 function migrateData(){
+  if(!S.fcConfig)S.fcConfig={newPerDay:20,reviewPerDay:200};
+if(!S.fcToday)S.fcToday={date:'',newDone:0,reviewDone:0};
   if(!S||typeof S!=='object')S={};
   if(!S.exCount)S.exCount={};
   if(!S.simLog)S.simLog=[];
@@ -2121,6 +2536,14 @@ function migrateData(){
   if(S._v>=DATA_VERSION){migrateSessionsFromHours();return;}
   S._v=DATA_VERSION;
   migrateSessionsFromHours();
+  if(S.fc)S.fc.forEach(c=>{
+  if(c.ease===undefined)c.ease=2.5;
+  if(c.interval===undefined)c.interval=0;
+  if(c.due===undefined)c.due=today();
+  if(c.state===undefined)c.state='new';
+  if(c.reps===undefined)c.reps=0;
+  if(c.lapses===undefined)c.lapses=0;
+});
 }
 function migrateSessionsFromHours(){
   if((S.sessions||[]).length)return;
@@ -2763,15 +3186,25 @@ function renderSessions(){
   const sessions=S.sessions||[];
   const el=document.getElementById('sessionLog');
   if(!el)return;
-  const colors={Aritmética:'var(--ca)',Álgebra:'var(--calg)',Física:'var(--cf)',Geometría:'var(--cg)',Trigonometría:'var(--ct)',Química:'var(--cq)',Simulacros:'#ffdd6a'};
-  const energyEmoji={alta:'🔥',media:'🟡',baja:'💤'};
+  const colors={
+    'Aritmética':'var(--ca)','Álgebra':'var(--calg)','Física':'var(--cf)',
+    'Geometría':'var(--cg)','Trigonometría':'var(--ct)','Química':'var(--cq)',
+    'Raz. Matemático':'var(--crm)','Raz. Verbal':'var(--crv)',
+    'Historia Universal':'var(--chu)','Historia del Perú':'var(--chp)',
+    'Geografía':'var(--cge)','Filosofía':'var(--cfi)',
+    'Literatura':'var(--cli)','Lenguaje':'var(--cle)','Inglés':'var(--cin)',
+    'RV':'var(--crv)','RM':'var(--crm)','Historia':'var(--chu)',
+    'Ingles':'var(--cin)','Economía':'var(--crm)','Actualidad':'var(--cle)',
+    'Simulacros':'#ffdd6a'
+  };
+    const energyEmoji={alta:'🔥',media:'🟡',baja:'💤'};
   if(!sessions.length){
     el.innerHTML='<div style="font-size:.6rem;color:var(--muted);padding:.3rem;line-height:1.5">Sin sesiones registradas aún.<br>Termina un pomodoro (&gt;30 s) en Estadísticas para guardar fecha, curso, tipo, energía y horas.</div>';
     return;
   }
   el.innerHTML=sessions.map(s=>{
     const col=colors[s.course]||'#888';
-    const courseLbl=s.course||'(sin curso)';
+    const courseLbl=courseLabel(s.course||'(sin curso)');
     const topicLabel=s.topic?'<span style="font-size:.48rem;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+s.topic+'</span>':'<span style="flex:1"></span>';
     const mig=s.fromHours?' <span style="font-size:.42rem;color:var(--border)">· hist.</span>':'';
     return'<div class="session-item"><span class="session-date">'+s.date+'</span><span class="session-course" style="background:transparent;color:'+col+';border:1px solid '+col+'">'+courseLbl+'</span>'+topicLabel+'<span class="session-detail">'+fmt(s.secs||0)+'</span><span class="session-type-badge">'+(s.type||'—')+'</span><span class="session-energy">'+(energyEmoji[s.energy]||'🟡')+mig+'</span></div>';
@@ -2831,7 +3264,7 @@ function renderErrByCourseGrid(){
   const col=COURSE_COLORS[c.name]||'#888';
   const active=_errCourseFilter===c.name;
     return'<div class="ecc" onclick="filterErrByCourse(\''+c.name+'\')" title="Filtrar errores de '+c.name+'" style="'+(active?'border-color:var(--accent2);background:#250f0f':'')+'">'
-      +'<div class="ecc-name" style="color:'+col+'">'+c.name+'</div>'
+      +'<div class="ecc-name" style="color:'+col+'">'+courseLabel(c.name)+'</div>'
       +(n>0?'<div class="ecc-num">'+n+'</div>':'<div class="ecc-zero">✓</div>')
       +'</div>';
   }).join('')+(byCourse['General']?'<div class="ecc" onclick="filterErrByCourse(\'General\')" title="Filtrar errores generales" style="'+(_errCourseFilter==='General'?'border-color:var(--accent2);background:#250f0f':'')+'">'
@@ -2896,7 +3329,8 @@ function renderE(){
       return'<div class="eitem"><div class="edot"></div>'+courseTag+'<span>'+displayText+'</span><span class="ecnt">'+(ercnt[realIdx]||1)+'x</span><span class="edel" onclick="delE('+realIdx+')">✕</span></div>';
     }).join('')
     :'<div style="font-size:.6rem;color:var(--muted);padding:.3rem">Sin errores aún.</div>';
-  document.getElementById('ferrlist').innerHTML=errs.length?errs.map(e=>'<div>· '+e+'</div>').join(''):'—';
+   document.getElementById('ferrlist').innerHTML=errs.length?errs.map(e=>'<div>· '+e+'</div>').join(''):'—';
+  renderMath(document.getElementById('elist'));
   updateSidebar();
   // Update home if visible
   if(document.getElementById('view-home')?.classList.contains('active')){
@@ -3017,16 +3451,18 @@ function sortErrors(){
 }
 
 // ── HEATMAP ──
-function getDominantCourse(k){
-  // Returns [rgb, courseName] of the course with most time that day
+// ── HEATMAP ──
+function getDaySegments(k){
   const segs=(S.dailySegments||{})[k]||{};
-  let best=null,bestSecs=0;
+  const arr=[];
   for(const [course,data] of Object.entries(segs)){
     const total=(data.teoria||0)+(data.ejercicios||0)+(data.repaso||0);
-    if(total>bestSecs){bestSecs=total;best=course;}
+    if(total>0)arr.push({course,total,rgb:COURSE_RGB[course]||[120,120,120]});
   }
-  return best?[COURSE_RGB[best]||[80,180,120],best]:[[80,180,120],''];
+  arr.sort((a,b)=>b.total-a.total);
+  return arr;
 }
+
 function renderHeatmap(){
   const days=['L','M','X','J','V','S','D'];
   const hdr=document.getElementById('hmHeader');
@@ -3036,44 +3472,42 @@ function renderHeatmap(){
   const cells=[];
   const allDays=[];
   for(let i=0;i<56;i++){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-55+i);allDays.push(d);}
-  const maxH=Math.max(...allDays.map(d=>(S.h||{})[localKey(d)]||0),1);
   const firstDow=(allDays[0].getDay()+6)%7;
-  for(let p=0;p<firstDow;p++) cells.push('<div class="hm-day" style="background:transparent;pointer-events:none"></div>');
+  // Relleno inicial para alinear el primer día al día de la semana correcto
+  for(let p=0;p<firstDow;p++){
+    cells.push('<div class="hm-day" style="background:transparent;pointer-events:none;border:none"></div>');
+  }
   for(let i=0;i<56;i++){
     const d=allDays[i];
     const k=localKey(d);
     const efSecs=(S.h||{})[k]||0;
     const brkSecs=(S.hBreak||{})[k]||0;
-    const totalSecs=efSecs+brkSecs;
-    let bg='var(--border)';
-    let border='none';
-    let textInside='';
+
     if(efSecs>0){
-      const [rgb,course]=getDominantCourse(k);
-      const intensity=Math.min(1,efSecs/maxH);
-      const minBright=0.22; // never go fully dark
-      const t=minBright+(1-minBright)*intensity;
-      const r=Math.round(rgb[0]*t),g=Math.round(rgb[1]*t),b=Math.round(rgb[2]*t);
-      bg='rgb('+r+','+g+','+b+')';
-      // Show a tiny dot for breaks if any
-      if(brkSecs>300)border='2px solid rgba(255,255,255,0.18)';
+      const segs=getDaySegments(k);
+      if(segs.length){
+        const totalAll=segs.reduce((a,s)=>a+s.total,0);
+        let inner='';
+        segs.forEach(seg=>{
+          const flex=seg.total/totalAll;
+          const col='rgb('+seg.rgb[0]+','+seg.rgb[1]+','+seg.rgb[2]+')';
+          inner+='<div class="hm-seg" style="flex:'+flex+';background:'+col+'"></div>';
+        });
+        const breakdown=segs.map(s=>s.course+': '+fmt(s.total)).join(' · ');
+        const brkStr=brkSecs>0?' · descanso '+fmt(brkSecs):'';
+        const tipFull=k+' — total: '+fmt(totalAll)+brkStr+' · '+breakdown;
+        cells.push('<div class="hm-day" title="'+tipFull+'" style="background:#fff">'+inner+'</div>');
+        continue;
+      }
     }
-    // Tooltip: effective hours + total hours
-    const efStr=efSecs?fmt(efSecs):'0h';
-    const totalStr=totalSecs?fmt(totalSecs):'—';
+    // Día sin estudio
     const brkStr=brkSecs>0?' · descanso '+fmt(brkSecs):'';
-    const [,course]=efSecs>0?getDominantCourse(k):[[],'' ];
-    const courseLabel=course?' · '+course:'';
-    const tip=k+' — efectivo: '+efStr+' / total: '+totalStr+brkStr+courseLabel;
-    // Show hours text inside cell if ≥1h
-    const showH=efSecs>=3600;
-    const hLabel=showH?'<span style="font-size:4px;line-height:1;color:rgba(255,255,255,0.85);display:block;text-align:center;margin-top:2px">'+Math.floor(efSecs/3600)+'h</span>':'';
-    cells.push('<div class="hm-day" style="background:'+bg+';border:'+border+';position:relative;box-sizing:border-box" data-tip="'+tip+'">'+hLabel+'</div>');
+      cells.push('<div class="hm-day" title="'+k+' — sin estudio'+brkStr+'"></div>');
   }
   grid.innerHTML=cells.join('');
-  // Render legend below heatmap
   renderHeatmapLegend();
 }
+
 function renderHeatmapLegend(){
   let el=document.getElementById('hmLegend');
   if(!el){
@@ -3082,100 +3516,112 @@ function renderHeatmapLegend(){
     el.style.cssText='display:flex;flex-wrap:wrap;gap:.3rem .6rem;margin-top:.5rem;font-size:.46rem;color:var(--muted)';
     document.getElementById('heatmapGrid').after(el);
   }
-  const courses=[
-    ['Aritmética','celeste'],['Álgebra','naranja'],['Trigonometría','morado'],
-    ['Física','fucsia'],['Geometría','verde claro'],['Química','verde oscuro']
-  ];
-  el.innerHTML=courses.map(([c])=>{
+  // Cursos con horas registradas (o los 6 principales si no hay datos aún)
+  const withHours=Object.keys(COURSE_RGB).filter(c=>(S.h||{})['c'+c]>0);
+  const courses=withHours.length?withHours:['Aritmética','Álgebra','Física','Geometría','Trigonometría','Química'];
+  el.innerHTML=courses.map(c=>{
     const rgb=COURSE_RGB[c]||[120,120,120];
     const col='rgb('+rgb[0]+','+rgb[1]+','+rgb[2]+')';
-    return `<span><span style="display:inline-block;width:8px;height:8px;background:${col};border-radius:2px;margin-right:2px;vertical-align:middle"></span>${c}</span>`;
+    return '<span><span style="display:inline-block;width:8px;height:8px;background:'+col+';border-radius:2px;margin-right:2px;vertical-align:middle"></span>'+c+'</span>';
   }).join('');
-  // Add effective/total explanation
-  el.innerHTML+='<span style="margin-left:.5rem;opacity:.6">· celda = horas efectivas · borde = incluye descansos</span>';
+  el.innerHTML+='<span style="margin-left:.5rem;opacity:.6">· barra = proporción de horas por curso · separador = blanco</span>';
 }
 
 // ── PREDICCION ──
 function renderPrediction(){
-  const courses=[
-    {name:'Aritmética',ids:['a1','a2','a3','a4','a5','a6','a7','a8','a9','a10','a11','a12','a13','a14','a15','a16','a17','a18','a19','a20'],start:'2026-05-24',end:'2026-05-31'},
-    {name:'Álgebra',ids:['al1','al2','al3','al4','al5','al6','al7','al8','al9','al10','al11','al12','al13','al14','al15','al16','al17','al18','al19','al20','al21','al22','al23','al24','al25','al26','al27','al28'],start:'2026-06-01',end:'2026-06-14'},
-    {name:'Física',ids:['f1','f2','f3','f4','f5','f6','f7','f8','f9','f10','f11','f12','f13','f14','f15','f16','f17','f18','f19','f20','f21'],start:'2026-06-15',end:'2026-06-25'},
-    {name:'Geometría',ids:['g1','g2','g3','g4','g5','g6','g7','g8','g9','g10','g11','g12','g13','g14','g15','g16','g17','g18'],start:'2026-06-26',end:'2026-07-05'},
-    {name:'Trigonometría',ids:['t1','t2','t3','t4','t5','t6','t7','t8','t9','t10'],start:'2026-07-06',end:'2026-07-10'},
-    {name:'Química',ids:['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','q11','q12','q13','q14','q15','q16','q17','q18','q19','q20','q21','q22','q23','q24','q25','q26','q27','q28','q29','q30'],start:'2026-07-11',end:'2026-08-08'},
-  ];
+  const el=document.getElementById('predBox');
+  if(!el)return;
   const td=today();
-  const todayDate=new Date();todayDate.setHours(0,0,0,0);
+  const todayDate=new Date(td+'T12:00:00');
 
-  // Build completedAt map
+  // Caps completados por día
   const doneByDay={};
   for(const[id,data]of Object.entries(S.t||{})){
     if(data.done&&data.completedAt){
-      const cd=new Date(data.completedAt);const d=localKey(cd);
+      const d=localKey(new Date(data.completedAt));
       doneByDay[d]=(doneByDay[d]||0)+1;
     }
   }
 
-  const rows=courses.map(c=>{
-    const done=c.ids.filter(id=>(S.t||{})[id]?.done).length;
-    const remaining=c.ids.length-done;
-    const planEnd=c.end;
-    const planStart=c.start;
-    const planStartDate=new Date(planStart+'T00:00:00');
-    const planEndDate=new Date(planEnd+'T00:00:00');
+  // Ritmo real: promedio caps/día últimos 7 días
+  let capsLast7=0;
+  for(let i=0;i<7;i++){
+    const d=new Date(todayDate);d.setDate(d.getDate()-i);
+    capsLast7+=(doneByDay[localKey(d)]||0);
+  }
+  const actualRate=capsLast7/7;
 
-    // Total planned days for this section
-    const planDays=Math.round((planEndDate-planStartDate)/(1000*60*60*24))+1;
-    // Planned rate: topics per day based on the section window
-    const plannedRate=c.ids.length/planDays;
+  const courses=Object.keys(TOPICS);
+  const rows=courses.map(name=>{
+    const ids=Object.keys(TOPICS[name]||{});
+    const total=ids.length;
+    const done=ids.filter(id=>(S.t||{})[id]?.done).length;
+    const remaining=total-done;
 
-    // How many days have passed since the section should have started
-    // (use planStart or today, whichever is earlier as reference start)
-    const refStart=todayDate<planStartDate?planStartDate:planStartDate;
-    const daysElapsedSinceStart=Math.max(0,Math.round((todayDate-planStartDate)/(1000*60*60*24)));
+    // Encontrar la ventana real del curso dentro de WSCHED
+    let firstWeek=null,lastWeek=null;
+    for(const w of WSCHED){
+      const has=w.topics.some(id=>TOPICS[name]?.[id]);
+      if(has){
+        if(!firstWeek)firstWeek=w;
+        lastWeek=w;
+      }
+    }
+    if(!firstWeek){
+      return{name,done,total,remaining,pred:'sin programar',cls:'pred-neutral'};
+    }
 
-    // How many topics should have been done by now according to the plan
-    const expectedDone=Math.min(c.ids.length,Math.round(plannedRate*daysElapsedSinceStart));
-    const ahead=done-expectedDone;
+    const planStart=firstWeek.s;
+    const planEnd=lastWeek.e;
+    const planStartDate=new Date(planStart+'T12:00:00');
+    const planEndDate=new Date(planEnd+'T12:00:00');
+    const totalDays=Math.max(1,Math.round((planEndDate-planStartDate)/86400000)+1);
+    const plannedRate=total/totalDays;
 
     let cls='pred-neutral',pred='—';
-    if(remaining===0){
-      cls='pred-ok';pred='✓ completado';
-    } else if(todayDate<planStartDate){
-      // Section hasn't started yet
-      const daysUntil=Math.round((planStartDate-todayDate)/(1000*60*60*24));
-      cls='pred-neutral';pred='empieza en '+daysUntil+' día'+(daysUntil===1?'':'s')+' ('+planStart+')';
-    } else {
-      // Section is active or overdue — predict finish based on actual pace
-      // Use last-7-days rate IF we have data, else fall back to planned rate
-      let capsLast7=0;
-      for(let i=0;i<7;i++){const d=new Date(todayDate);d.setDate(d.getDate()-i);capsLast7+=(doneByDay[localKey(d)]||0);}
-      const actualRate=capsLast7/7;
-      const rate=actualRate>0?actualRate:plannedRate;
 
+    if(remaining===0){
+      cls='pred-ok';
+      pred='✓ completado';
+    }else if(todayDate<planStartDate){
+      const daysUntil=Math.round((planStartDate-todayDate)/86400000);
+      pred='empieza en '+daysUntil+'d';
+    }else{
+      const daysElapsed=Math.round((todayDate-planStartDate)/86400000)+1;
+      const expectedDone=Math.min(total,Math.round(plannedRate*daysElapsed));
+      const ahead=done-expectedDone;
+
+      const rate=actualRate>0?actualRate:plannedRate;
       const daysNeeded=Math.ceil(remaining/rate);
-      const finishDate=new Date(todayDate);finishDate.setDate(finishDate.getDate()+daysNeeded);
+      const finishDate=new Date(todayDate);
+      finishDate.setDate(finishDate.getDate()+daysNeeded);
       const finish=localKey(finishDate);
 
-      // Pace label
-      let paceLabel='';
-      if(actualRate>0){
-        if(ahead>0)paceLabel=' (+'+ahead+' adelantado)';
-        else if(ahead<0)paceLabel=' ('+ahead+' atrasado)';
-        else paceLabel=' (al día)';
-      }
+      const pace=ahead>0?' (+'+ahead+')':ahead<0?' ('+ahead+')':'';
+      const daysLate=Math.round((finishDate-planEndDate)/86400000);
 
-      const daysLate=Math.round((finishDate-planEndDate)/(1000*60*60*24));
-      if(finish<=planEnd){cls='pred-ok';pred='✓ ~'+finish+paceLabel;}
-      else if(daysLate<=2){cls='pred-close';pred='~ '+finish+paceLabel+' (límite: '+planEnd+')';}
-      else{cls='pred-warn';pred='⚠ ~'+finish+paceLabel+' (límite: '+planEnd+')';}
+      if(finish<=planEnd){cls='pred-ok';pred='✓ '+finish+pace;}
+      else if(daysLate<=3){cls='pred-close';pred='~ '+finish+pace;}
+      else{cls='pred-warn';pred='⚠ '+finish+pace;}
     }
-    return'<div class="pred-row"><span>'+c.name+'</span><span>'+done+'/'+c.ids.length+'</span><span class="'+cls+'">'+pred+'</span></div>';
-  });
-  const head='<div class="pred-row" style="color:var(--muted);font-size:.52rem;border-bottom:1px solid var(--border)"><span>Curso</span><span>Caps</span><span>Predicción</span></div>';
-  document.getElementById('predBox').innerHTML=head+rows.join('');
+    return{name,done,total,remaining,pred,cls};
+  }).filter(r=>r.total>0);
+
+  const head='<div class="pred-row" style="color:var(--muted);font-size:.5rem;border-bottom:1px solid var(--border);font-weight:600">'
+    +'<span>Curso</span><span>Caps</span><span>Predicción</span></div>';
+  const body=rows.map(r=>{
+    return'<div class="pred-row">'
+      +'<span>'+r.name+'</span>'
+      +'<span style="color:var(--muted)">'+r.done+'/'+r.total+'</span>'
+      +'<span class="'+r.cls+'">'+r.pred+'</span>'
+      +'</div>';
+  }).join('');
+
+  el.innerHTML=head+body;
 }
+
+
+ 
 
 // ── WEEKLY SUMMARY ──
 function renderWS(){
@@ -3628,21 +4074,22 @@ function calculateExamScore(){
 
 // ── FLASHCARDS ──
 function initFCCourses(){
-
   const selects=[
     document.getElementById('fcCourse'),
     document.getElementById('fcFilterCourse')
   ];
-
-  Object.values(COURSES).forEach(c=>{
-    selects.forEach(select=>{
+  selects.forEach(select=>{
+    if(!select)return;
+    // Usar las claves reales de TOPICS — así nunca se desincroniza
+    Object.keys(TOPICS).forEach(name=>{
       const option=document.createElement('option');
-      option.value=c.name;
-      option.textContent=c.name;
+      option.value=name;
+      option.textContent=name;
       select.appendChild(option);
     });
   });
 }
+
 function updateFCTopics(){
   const course=document.getElementById('fcCourse').value;
   const select=document.getElementById('fcTopic');
@@ -3650,7 +4097,7 @@ function updateFCTopics(){
   if(!course||!TOPICS[course])return;
   Object.entries(TOPICS[course]).forEach(([id,name])=>{
     const option=document.createElement('option');
-    option.value=id;
+    option.value=name;
     option.textContent=name;
     select.appendChild(option);
   });
@@ -3660,11 +4107,12 @@ function updateFCFilterTopics(){
   const course=document.getElementById('fcFilterCourse').value;
   const select=document.getElementById('fcFilterTopic');
   select.innerHTML='<option value="">Todos</option>';
+  _fcQueue=null;
   if(!course){renderFC();return;}
   if(TOPICS[course]){
     Object.entries(TOPICS[course]).forEach(([id,name])=>{
       const option=document.createElement('option');
-      option.value=id;
+      option.value=name;
       option.textContent=name;
       select.appendChild(option);
     });
@@ -3672,111 +4120,286 @@ function updateFCFilterTopics(){
   renderFC();
 }
 
-let fcIdx=0;
+// ── MOTOR ANKI ──
+let _fcQueue=null;
 
-function getFilteredFC(){
-
+function getDueCards(){
   if(!S.fc)return[];
+  const t=today();
+  if(!S.fcConfig)S.fcConfig={newPerDay:20,reviewPerDay:200};
+  if(!S.fcToday||S.fcToday.date!==t){
+    S.fcToday={date:t,newDone:0,reviewDone:0};
+    save();
+  }
+  const course=document.getElementById('fcFilterCourse')?.value||'';
+  const topic=document.getElementById('fcFilterTopic')?.value||'';
 
-  const course=document.getElementById('fcFilterCourse').value;
-  const topic=document.getElementById('fcFilterTopic').value;
-
-  return S.fc.filter(card=>{
-    if(course && card.course!==course)return false;
-    if(topic && card.topic!==topic)return false;
-    return true;
+  const pool=S.fc.filter(c=>{
+    if(course && c.course!==course)return false;
+    if(topic && c.topic!==topic)return false;
+    return (c.due||today())<=t;
   });
+
+  const news=pool.filter(c=>c.state==='new');
+  const reviews=pool.filter(c=>c.state!=='new');
+
+  const newLimit=Math.max(0,S.fcConfig.newPerDay-S.fcToday.newDone);
+  const reviewLimit=Math.max(0,S.fcConfig.reviewPerDay-S.fcToday.reviewDone);
+
+  return [
+    ...reviews.slice(0,reviewLimit),
+    ...news.slice(0,newLimit)
+  ];
 }
 
-function addFC(){
+function getFilteredFC(){return getDueCards();}
 
+function addFC(){
   const course=document.getElementById('fcCourse').value;
   const topic=document.getElementById('fcTopic').value;
   const q=document.getElementById('fcQuestion').value.trim();
   const a=document.getElementById('fcAnswer').value.trim();
-
   if(!course||!topic||!q||!a)return;
-
   if(!S.fc)S.fc=[];
-
-  S.fc.push({course,topic,q,a});
-
+  S.fc.push({
+    course,topic,q,a,
+    ease:2.5,
+    interval:0,
+    due:today(),
+    state:'new',
+    reps:0,
+    lapses:0
+  });
   document.getElementById('fcQuestion').value='';
   document.getElementById('fcAnswer').value='';
-
-  fcIdx=S.fc.length-1;
-
+  _fcQueue=null;
   save();
   renderFC();
 }
 
 function renderFC(){
-
   if(!S.fc)S.fc=[];
+  if(!_fcQueue)_fcQueue=getDueCards();
+  const t=today();
+  _fcQueue=_fcQueue.filter(c=>(c.due||today())<=t);
 
-  const cards=getFilteredFC();
+  document.getElementById('fcCount').textContent=_fcQueue.length;
 
-  document.getElementById('fcCount').textContent=cards.length;
+  const cardEl=document.getElementById('fcCard');
+  const front=document.getElementById('fcFront');
+  const back=document.getElementById('fcBack');
+  const idx=document.getElementById('fcIdx');
+  const nav=document.querySelector('.fc-nav');
 
-  if(!cards.length){
+  // ⬇️ NUEVO: resetear confianza al cambiar de tarjeta
+  window._fcCurrentConfidence=null;
 
-    document.getElementById('fcFront').textContent='No hay tarjetas para este filtro.';
-    document.getElementById('fcBack').textContent='';
-    document.getElementById('fcIdx').textContent='0/0';
-
+  if(!_fcQueue.length){
+    front.innerHTML='<div style="font-size:.8rem;color:var(--accent3);text-align:center">✓ No hay tarjetas pendientes hoy.</div>';
+    back.innerHTML='';
+    idx.textContent='0/0';
+    cardEl.classList.remove('flipped');
+    cardEl.onclick=null;
+    if(nav)nav.style.display='none';
+    renderFCStats();
     return;
   }
 
-  if(fcIdx>=cards.length)fcIdx=0;
+  if(nav)nav.style.display='none';
+  const card=_fcQueue[0];
+  cardEl.classList.remove('flipped');
+  front.innerHTML='<button onclick="event.stopPropagation();delFC()" style="position:absolute;top:6px;right:6px;background:transparent;border:1px solid var(--border);color:var(--muted);font-size:.5rem;padding:.1rem .35rem;border-radius:4px;cursor:pointer;z-index:2" title="Borrar tarjeta">🗑 borrar</button>'
+    +'<div style="font-size:.7rem;color:var(--muted);margin-bottom:.4rem">'+card.course+' · '+card.topic+'</div>'
+    +'<div id="fcFrontContent" style="font-size:.8rem">'+card.q+'</div>'
+    +'<div class="fc-conf-wrap">'
+    +'  <div class="fc-conf-label">¿Qué tan seguro estás?</div>'
+    +'  <div class="fc-conf-btns">'
+    +'    <button class="fc-conf-btn low" onclick="event.stopPropagation();setFCConfidence(30)">🔴<br><span>adivinando</span></button>'
+    +'    <button class="fc-conf-btn mid" onclick="event.stopPropagation();setFCConfidence(60)">🟡<br><span>dudando</span></button>'
+    +'    <button class="fc-conf-btn high" onclick="event.stopPropagation();setFCConfidence(90)">🟢<br><span>seguro</span></button>'
+    +'  </div>'
+    +'</div>'
+    +'<div class="fc-hint">elegí confianza para ver la respuesta</div>';
+  renderMath(document.getElementById('fcFrontContent'));
+  back.innerHTML='';
+  cardEl.onclick=null;  // ⬅️ ya no voltea con clic — debe elegir confianza primero
+  idx.textContent=_fcQueue.length+' pendiente'+(_fcQueue.length===1?'':'s');
+  renderFCStats();
+}
 
-  const card=cards[fcIdx];
 
-  const el=document.getElementById('fcCard');
-  el.classList.remove('flipped');
 
-  document.getElementById('fcFront').textContent=card.q;
-  document.getElementById('fcBack').textContent=card.a;
-
-  document.getElementById('fcIdx').textContent=
-    (fcIdx+1)+'/'+cards.length;
+function previewIntervals(card){
+  const e=card.ease||2.5;
+  const i=card.interval||0;
+  const isNew=(card.state==='new'||i===0);
+  const fmt=d=>{
+    if(d<1)return '<1 min';
+    if(d===1)return '1 día';
+    if(d<30)return d+' días';
+    if(d<365)return Math.round(d/30)+' meses';
+    return (d/365).toFixed(1)+' años';
+  };
+  if(isNew)return{again:'1 min',hard:'6 min',good:'1 día',easy:'4 días'};
+  return{
+    again:'<1 min',
+    hard:fmt(Math.max(1,Math.round(i*1.2))),
+    good:fmt(Math.round(i*e)),
+    easy:fmt(Math.round(i*e*1.3))
+  };
 }
 
 function flipFC(){
-  document.getElementById('fcCard').classList.toggle('flipped');
-}
+  const cardEl=document.getElementById('fcCard');
+  if(!cardEl)return;
+  if(cardEl.classList.contains('flipped'))return;
 
-function fcNav(dir){
-
-  const cards=getFilteredFC();
-
-  if(!cards.length)return;
-
-  fcIdx=(fcIdx+dir+cards.length)%cards.length;
-
-  renderFC();
-}
-
-function shuffleFC(){
-
-  const cards=getFilteredFC();
-
-  if(cards.length<2)return;
-
-  for(let i=cards.length-1;i>0;i--){
-
-    const j=Math.floor(Math.random()*(i+1));
-
-    [cards[i],cards[j]]=[cards[j],cards[i]];
+  // Si no eligió confianza, no permite voltear
+  if(!window._fcCurrentConfidence){
+    const wrap=document.querySelector('.fc-conf-wrap');
+    if(wrap){wrap.classList.add('shake');setTimeout(()=>wrap.classList.remove('shake'),400);}
+    return;
   }
 
-  const positions=S.fc.map((card,index)=>cards.includes(card)?index:-1).filter(index=>index>=0);
-  cards.forEach((card,index)=>{S.fc[positions[index]]=card;});
+  const card=_fcQueue&&_fcQueue[0];
+  if(!card)return;
+  const back=document.getElementById('fcBack');
+  const iv=previewIntervals(card);
+  back.innerHTML='<div id="fcBackContent" style="font-size:.8rem;color:var(--accent3);margin-bottom:1rem;line-height:1.5">'+card.a+'</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-top:.5rem">'
+    +'<button onclick="event.stopPropagation();rateFC(\'again\')" style="background:#2a1515;border:1px solid var(--accent2);color:var(--accent2);padding:.55rem .3rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem;line-height:1.35">Otra vez<br><span style="font-size:.48rem;opacity:.75">'+iv.again+'</span></button>'
+    +'<button onclick="event.stopPropagation();rateFC(\'hard\')" style="background:#2a2510;border:1px solid var(--accent4);color:var(--accent4);padding:.55rem .3rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem;line-height:1.35">Difícil<br><span style="font-size:.48rem;opacity:.75">'+iv.hard+'</span></button>'
+    +'<button onclick="event.stopPropagation();rateFC(\'good\')" style="background:#1a3520;border:1px solid var(--accent3);color:var(--accent3);padding:.55rem .3rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem;line-height:1.35">Bien<br><span style="font-size:.48rem;opacity:.75">'+iv.good+'</span></button>'
+    +'<button onclick="event.stopPropagation();rateFC(\'easy\')" style="background:#1a2535;border:1px solid var(--accent);color:var(--accent);padding:.55rem .3rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem;line-height:1.35">Fácil<br><span style="font-size:.48rem;opacity:.75">'+iv.easy+'</span></button>'
+    +'</div>';
+  renderMath(document.getElementById('fcBackContent'));
+  cardEl.classList.add('flipped');
+}
 
-  fcIdx=0;
+function setFCConfidence(v){
+  window._fcCurrentConfidence=v;
+  document.querySelectorAll('.fc-conf-btn').forEach(b=>b.classList.remove('active'));
+  const cls=v===30?'low':v===60?'mid':'high';
+  const btn=document.querySelector('.fc-conf-btn.'+cls);
+  if(btn)btn.classList.add('active');
+  // Auto-voltear después de 300ms para fluir rápido
+  setTimeout(()=>flipFC(),300);
+}
 
+function rateFC(rating){
+  
+  if(!_fcQueue||!_fcQueue.length)return;
+  const card=_fcQueue[0];
+  if(!S.fc)S.fc=[];
+  const realCard=S.fc.find(c=>c===card)||S.fc.find(c=>c.q===card.q&&c.a===card.a&&c.course===card.course);
+  if(!realCard)return;
+
+  const e=realCard.ease||2.5;
+  const i=realCard.interval||0;
+  const isNew=(realCard.state==='new'||i===0);
+
+  if(rating==='again'){
+    realCard.ease=Math.max(1.3,e-0.20);
+    realCard.lapses=(realCard.lapses||0)+1;
+    realCard.state='learning';
+    realCard.interval=0;
+    realCard.due=localKey(new Date(Date.now()+60*1000));
+  }
+  else if(rating==='hard'){
+    realCard.ease=Math.max(1.3,e-0.15);
+    realCard.interval=isNew?1:Math.max(1,Math.round(i*1.2));
+    realCard.state='review';
+    realCard.due=localKey(new Date(Date.now()+realCard.interval*86400000));
+  }
+  else if(rating==='good'){
+    realCard.interval=isNew?1:Math.round(i*e);
+    realCard.state='review';
+    realCard.due=localKey(new Date(Date.now()+realCard.interval*86400000));
+  }
+  else if(rating==='easy'){
+    realCard.ease=Math.min(2.8,e+0.15);
+    realCard.interval=isNew?4:Math.round(i*e*1.3);
+    realCard.state='review';
+    realCard.due=localKey(new Date(Date.now()+realCard.interval*86400000));
+  }
+    if(!S.fcToday||S.fcToday.date!==today())S.fcToday={date:today(),newDone:0,reviewDone:0};
+  const wasNew=isNew;
+  if(wasNew)S.fcToday.newDone=(S.fcToday.newDone||0)+1;
+  else S.fcToday.reviewDone=(S.fcToday.reviewDone||0)+1;
+  realCard.reps=(realCard.reps||0)+1;
+  realCard.lastReview=today();
+
+    // Conectar con el grafo: actualizar dominio del tema según el rating
+  const perfMap={again:15, hard:55, good:80, easy:100};
+  const performance=perfMap[rating]!==undefined?perfMap[rating]:50;
+  const topicId=findTopicIdByCourseAndName(realCard.course, realCard.topic);
+  if(topicId){
+    StudyPrioritizer.updateDominio(topicId, performance);
+  }
+
+  // Calibración metacognitiva: guardar (confianza, acierto)
+  const confidence=window._fcCurrentConfidence||60;
+  const correct=(rating==='good'||rating==='easy');
+  if(!S.calibration)S.calibration=[];
+  S.calibration.push({
+    source:'fc',
+    topicId:topicId||null,
+    course:realCard.course,
+    topic:realCard.topic,
+    confidence,
+    correct,
+    rating,
+    date:today(),
+    ts:Date.now()
+  });
+  // Limitar a 2000 registros
+  if(S.calibration.length>2000)S.calibration=S.calibration.slice(-2000);
+  window._fcCurrentConfidence=null;
+
+  _fcQueue.shift();
   save();
   renderFC();
 }
+
+function fcNav(dir){/* deshabilitado — la cola Anki maneja el flujo */}
+
+function renderFCStats(){
+  const el=document.getElementById('fcStats');
+  if(!el)return;
+  if(!S.fc||!S.fc.length){el.innerHTML='<span style="color:var(--muted)">Sin tarjetas.</span>';return;}
+  const t=today();
+  if(!S.fcConfig)S.fcConfig={newPerDay:20,reviewPerDay:200};
+  if(!S.fcToday||S.fcToday.date!==t)S.fcToday={date:t,newDone:0,reviewDone:0};
+  const due=S.fc.filter(c=>(c.due||t)<=t).length;
+  const newCards=S.fc.filter(c=>c.state==='new').length;
+  const learning=S.fc.filter(c=>c.state==='learning').length;
+  const review=S.fc.filter(c=>c.state==='review').length;
+  const avgEase=S.fc.length?(S.fc.reduce((a,c)=>a+(c.ease||2.5),0)/S.fc.length).toFixed(2):'—';
+  const avgInterval=S.fc.length?Math.round(S.fc.reduce((a,c)=>a+(c.interval||0),0)/S.fc.length):0;
+  const newRemaining=Math.max(0,S.fcConfig.newPerDay-S.fcToday.newDone);
+  const reviewRemaining=Math.max(0,S.fcConfig.reviewPerDay-S.fcToday.reviewDone);
+  el.innerHTML=
+    '<span style="color:var(--accent4)"><b>'+due+'</b> pendientes hoy</span>'
+    +'<span>🆕 <b>'+S.fcToday.newDone+'/'+S.fcConfig.newPerDay+'</b> nuevas</span>'
+    +'<span>✅ <b>'+S.fcToday.reviewDone+'/'+S.fcConfig.reviewPerDay+'</b> repaso</span>'
+    +'<span>📚 <b>'+learning+'</b> aprend.</span>'
+    +'<span>ease: <b>'+avgEase+'</b></span>'
+    +'<span>interval: <b>'+avgInterval+'d</b></span>'
+    +'<span>total: <b>'+S.fc.length+'</b></span>';
+}
+
+function shuffleFC(){
+  if(!S.fc||S.fc.length<2)return;
+  for(let i=S.fc.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [S.fc[i],S.fc[j]]=[S.fc[j],S.fc[i]];
+  }
+  save();
+  _fcQueue=null;
+  renderFC();
+}
+
+
 // ── CALENDARIO (sincronizado con WSCHED del plan) ──
 const WEEK_CAL_LABELS={
   w1:'Arit',w2:'Alg.1',w3:'Alg.2',w4:'Fís.1',w5:'Fís.2',
@@ -3791,16 +4414,15 @@ function getWeekForDate(ds){
   return WSCHED.find(w=>ds>=w.s&&ds<=w.e)||null;
 }
 function getCalDayInfo(ds){
-  const scheduled=scheduleWeekFor(ds);
-  if(scheduled)return{label:'S'+scheduled.number+' · '+(scheduled.template==='impar'?'I':'P'),course:'Horario semanal '+scheduled.template,color:scheduled.template==='impar'?'var(--accent)':'var(--accent3)',weekId:'semana '+scheduled.number};
-  if(ds===EXAM_DATE)return{label:'EXAM',course:'Examen UNI',color:'var(--accent2)'};
+  if(ds===EXAM_DATE)return{label:'EXAM',course:'Examen UNI',color:'var(--accent2)',weekId:'exam'};
   const w=getWeekForDate(ds);
   if(!w)return null;
-  const firstTopic=w.topics[0];
-  const course=firstTopic?Object.keys(TOPICS).find(c=>TOPICS[c][firstTopic])||'':'';
-  const label=WEEK_CAL_LABELS[w.id]||(course?course.substring(0,4):'');
-  const color=COURSE_CAL_COLORS[course]||'var(--muted)';
-  return{label,course,color,weekId:w.id};
+  const weekNumber=parseInt(w.id.replace('w',''));
+  const special=PLAN_SPECIAL_WEEKS[weekNumber];
+  if(special){
+    return{label:'S'+weekNumber,course:special.badge,color:special.color,weekId:w.id};
+  }
+  return{label:'S'+weekNumber,course:'Temario nuevo',color:'var(--accent4)',weekId:w.id};
 }
 
 function renderCalendar(){
@@ -3846,6 +4468,7 @@ function renderCalendar(){
 // ── STATS VIEW ──
 function renderStats(){
   renderH();renderE();renderSim();renderSimLog();renderWS();renderHeatmap();renderPrediction();renderConsistencyChart();
+  renderSpeedStats();
   const dateEl=document.getElementById('simLogDate');
   if(dateEl&&!dateEl.value)dateEl.value=today();
   // Init preset chips with current course select value
@@ -3905,6 +4528,7 @@ function updateTopicList(){
   const topics=Object.values(TOPICS[course]||{});
 
   sel.innerHTML='<option value="">— tema —</option>'+topics.map(t=>'<option value="'+t+'">'+t+'</option>').join('');
+  _fcQueue=null;
 }
 // Initialize pomodoro with active topic
 function initPomoWithActiveTopic(){
@@ -5214,13 +5838,27 @@ function renderHomeFlashcards(){
   const el=document.getElementById('homeFCTotal');
   const sub=document.getElementById('homeFCSub');
   if(!el||!sub)return;
-  el.textContent=fc.length;
-  if(!fc.length){sub.textContent='Sin tarjetas creadas aún.';}
-  else{
-    const courses=[...new Set(fc.map(c=>c.course).filter(Boolean))];
-    sub.textContent=courses.length?'Cursos: '+courses.join(', '):'';
+  if(!fc.length){
+    el.textContent='0';
+    sub.textContent='Sin tarjetas creadas aún.';
+    return;
+  }
+  const t=today();
+  if(!S.fcConfig)S.fcConfig={newPerDay:20,reviewPerDay:200};
+  if(!S.fcToday||S.fcToday.date!==t)S.fcToday={date:t,newDone:0,reviewDone:0};
+  const due=fc.filter(c=>(c.due||t)<=t).length;
+  el.textContent=due;
+  if(due===0){
+    el.className='hc-val green';
+    sub.textContent='✓ Todo al día · '+fc.length+' totales';
+  }else{
+    el.className='hc-val accent';
+    const newRemaining=Math.max(0,S.fcConfig.newPerDay-S.fcToday.newDone);
+    const reviewRemaining=Math.max(0,S.fcConfig.reviewPerDay-S.fcToday.reviewDone);
+    sub.textContent=newRemaining+' nuevas + '+reviewRemaining+' repaso disponibles';
   }
 }
+
 
 function renderHomeDiffPending(){
   const el=document.getElementById('homeDiffPending');
@@ -5323,7 +5961,7 @@ function renderHomeErrCurso(){
     const hasErr=n>0;
     const bg=hasErr?'background:#1a0f0f;border-color:#3a1515':'background:#0d1a0f;border-color:#1a3a20';
     return'<div class="ecc" onclick="goToErrCourse(\''+name+'\')" title="'+(hasErr?'Ver errores de '+name:'Sin errores en '+name)+'" style="'+bg+'">'
-      +'<div class="ecc-name" style="color:'+col+'">'+name+'</div>'
+      +'<div class="ecc-name" style="color:'+col+'">'+courseLabel(name)+'</div>'
       +(hasErr
         ?'<div class="ecc-num">'+n+'</div><div style="font-size:.44rem;color:var(--muted)">err activos</div>'
         :'<div class="ecc-zero">✓</div>')
@@ -5338,6 +5976,7 @@ function renderHomeErrCurso(){
       +'</div>';
   }
   el.innerHTML=html;
+  renderMath(el);
 }
 
 function goToErrCourse(course){
@@ -5418,7 +6057,7 @@ function renderHomeWeeklyProgress(){
       const pct=total?Math.round(done/total*100):0;
       const col=COURSE_COLORS[name]||'var(--accent)';
       return'<div class="week-prog-row">'
-        +'<div class="wpr-label" style="color:'+col+'">'+name+'</div>'
+        +'<div class="wpr-label" style="color:'+col+'">'+courseLabel(name)+'</div>'
         +'<div class="wpr-bar"><div class="wpr-fill" style="width:'+pct+'%;background:'+col+'"></div></div>'
         +'<div class="wpr-pct">'+done+'/'+total+'</div>'
         +'</div>';
@@ -5462,6 +6101,7 @@ function renderAll(){renderPlanTopics();
   updateRhythmProjection();
   renderHighLoadAlerts();
   renderEnhancements();
+  renderSpeedStats();
   if(document.getElementById('view-home')?.classList.contains('active'))renderHome();
   if(document.getElementById('view-stats')?.classList.contains('active'))renderStats();
   if(document.getElementById('view-sessions')?.classList.contains('active'))renderSessions();
@@ -5469,7 +6109,7 @@ function renderAll(){renderPlanTopics();
 }
 
 // ── INIT ──
-buildWeeklyStudyPlan();renderPlanTopics();load();loadThemePreference();loadCustomTheme();refreshCourseRGB();renderAll();initPomo();initPWA();
+buildWeeklyStudyPlan();renderPlanTopics();load();loadThemePreference();loadCustomTheme();refreshCourseRGB();renderAll();initPomo();initChrono();initPWA();
 setPlanTab(S.planTab||'ciencias');
 // Load UNI folder handle from IndexedDB
 (async()=>{
@@ -5967,48 +6607,89 @@ const StudyPrioritizer={
   getRecommendation(){
     const td=today();
     const aw=WSCHED.find(w=>td>=w.s&&td<=w.e);
-    
+
     if(!aw){
       return{type:'none',reason:'Fuera de semana activa',curso:null,tema:null};
     }
-    
-    // Prioridad 1: Temas nunca vistos
-    const unseen=aw.topics.filter(id=>{
-      const topic=S.t?.[id];
-      return !topic||!topic.done;
+
+    // Prioridad 1: Desbloquear prereqs débiles
+    const blockedBy=aw.topics.filter(id=>{
+      const info=getTopicDependencyInfo(id);
+      return info.blocked;
     });
-    
-      if(unseen.length>0){
-      const nextId=unseen[0];
+    if(blockedBy.length>0){
+      const allWeakPrereqs=new Set();
+      blockedBy.forEach(id=>getPrereqs(id).forEach(p=>{
+        if(getTopicMastery(p)<40&&aw.topics.includes(p))allWeakPrereqs.add(p);
+      }));
+      const sorted=[...allWeakPrereqs].sort((a,b)=>getDependents(b).length-getDependents(a).length);
+      if(sorted.length){
+        const nextId=sorted[0];
+        const info=findTopicInfo(nextId);
+        return{
+          type:'unblock',
+          reason:'🔓 Desbloquea '+getDependents(nextId).length+' temas',
+          curso:info.curso,
+          tema:info.tema,
+          topicId:nextId
+        };
+      }
+    }
+
+    // Prioridad 2: Cuellos de botella (2+ dependientes, tú débil)
+    const bottlenecks=aw.topics.filter(id=>{
+      const info=getTopicDependencyInfo(id);
+      return info.isBottleneck;
+    }).sort((a,b)=>getDependents(b).length-getDependents(a).length);
+    if(bottlenecks.length>0){
+      const nextId=bottlenecks[0];
       const info=findTopicInfo(nextId);
       return{
-        type:'new',
-        reason:'Tema nuevo - nunca estudiado',
+        type:'bottleneck',
+        reason:'🎯 Cuello de botella — desbloquea '+getDependents(nextId).length+' temas',
         curso:info.curso,
         tema:info.tema,
         topicId:nextId
       };
     }
-    
-    // Prioridad 2: Temas débiles (nivelDominio < 50)
+
+    // Prioridad 3: Temas nuevos no bloqueados
+    const unseen=aw.topics.filter(id=>{
+      const topic=S.t?.[id];
+      if(topic&&topic.done)return false;
+      const info=getTopicDependencyInfo(id);
+      return !info.blocked;
+    });
+    if(unseen.length>0){
+      const nextId=unseen[0];
+      const info=findTopicInfo(nextId);
+      return{
+        type:'new',
+        reason:'Tema nuevo — prereqs OK',
+        curso:info.curso,
+        tema:info.tema,
+        topicId:nextId
+      };
+    }
+
+    // Prioridad 4: Temas débiles (dominio < 50)
     const weak=aw.topics.filter(id=>{
       const topic=S.t?.[id];
       return topic&&topic.done&&(topic.nivelDominio||0)<50;
     }).sort((a,b)=>(S.t[a].nivelDominio||0)-(S.t[b].nivelDominio||0));
-    
     if(weak.length>0){
       const nextId=weak[0];
       const info=findTopicInfo(nextId);
       return{
         type:'weak',
-        reason:'Tema débil - necesita refuerzo',
+        reason:'Tema débil — necesita refuerzo',
         curso:info.curso,
         tema:info.tema,
         topicId:nextId
       };
     }
-    
-    // Prioridad 3: Repasos pendientes (repetición espaciada)
+
+    // Prioridad 5: Repasos pendientes (repetición espaciada)
     const pendingReview=aw.topics.filter(id=>{
       const topic=S.t?.[id];
       if(!topic||!topic.reviewDates)return false;
@@ -6018,19 +6699,18 @@ const StudyPrioritizer={
         return reviewDate<=todayDate;
       });
     });
-    
-     if(pendingReview.length>0){
+    if(pendingReview.length>0){
       const nextId=pendingReview[0];
       const info=findTopicInfo(nextId);
       return{
         type:'review',
-        reason:'Repaso pendiente - repetición espaciada',
+        reason:'Repaso pendiente — repetición espaciada',
         curso:info.curso,
         tema:info.tema,
         topicId:nextId
       };
     }
-    
+
     // Si todo está completado, sugerir siguiente semana
     const nextWeekIdx=WSCHED.findIndex(w=>w.id===aw.id)+1;
     if(nextWeekIdx<WSCHED.length){
@@ -6039,13 +6719,13 @@ const StudyPrioritizer={
       const info=findTopicInfo(firstTopic);
       return{
         type:'next_week',
-        reason:'Semana actual completada - avanzando',
+        reason:'Semana actual completada — avanzando',
         curso:info.curso,
         tema:info.tema,
         topicId:firstTopic
       };
     }
-    
+
     return{type:'complete',reason:'¡Todo completado!',curso:null,tema:null};
   },
   
@@ -6053,21 +6733,11 @@ const StudyPrioritizer={
   updateDominio(topicId,performance){
     const topic=ensureTopicMetadata(topicId);
     const current=topic.nivelDominio||0;
-    
-    // performance: 0-100 (porcentaje de aciertos)
-    if(performance>=80){
-      topic.nivelDominio=Math.min(100,current+15);
-    }else if(performance>=60){
-      topic.nivelDominio=Math.min(100,current+10);
-    }else if(performance>=40){
-      topic.nivelDominio=Math.max(0,current-5);
-    }else{
-      topic.nivelDominio=Math.max(0,current-10);
-    }
-    
+    // Suavizado exponencial: cada respuesta mueve el dominio un 25% hacia el nuevo performance
+    const alpha=0.25;
+    topic.nivelDominio=Math.round(current*(1-alpha)+performance*alpha);
     topic.fechaUltimoEstudio=today();
     topic.vecesRepasado=(topic.vecesRepasado||0)+1;
-    
     save();
   },
   
@@ -6639,7 +7309,483 @@ renderAll=function(){
 
 // Inicializar AI components al cargar
 initAIComponents();
+/* ═══ CRONÓMETRO POR TEMA ═══ */
+let chronoInt=null, chronoSecs=0, chronoRun=false, chronoStart=null;
+let chronoCounts={easy:0,hard:0,skipped:0,failed:0};
 
+function setPomoTab(tab){
+  document.querySelectorAll('.pomo-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  const pc=document.getElementById('pomoContent');
+  const cc=document.getElementById('chronoContent');
+  if(pc)pc.style.display=tab==='pomo'?'':'none';
+  if(cc)cc.style.display=tab==='chrono'?'':'none';
+}
+
+function updateChronoTopics(){
+  const course=document.getElementById('chronoCourse').value;
+  const sel=document.getElementById('chronoTopic');
+  sel.innerHTML='<option value="">— tema —</option>';
+  if(!course||!TOPICS[course])return;
+  Object.entries(TOPICS[course]).forEach(([id,name])=>{
+    const opt=document.createElement('option');
+    opt.value=id;
+    opt.textContent=name;
+    sel.appendChild(opt);
+  });
+}
+
+function chronoToggle(){
+  if(chronoRun){
+    // Terminar sesión
+    chronoRun=false;
+    clearInterval(chronoInt);
+    const course=document.getElementById('chronoCourse').value;
+    const topicId=document.getElementById('chronoTopic').value;
+    if(!course||!topicId){alert('Selecciona curso y tema');chronoReset();return;}
+    const total=chronoCounts.easy+chronoCounts.hard+chronoCounts.skipped+chronoCounts.failed;
+    if(total===0){alert('No registraste ningún problema');chronoReset();return;}
+    if(chronoSecs<5){alert('Muy corto, no se guardó');chronoReset();return;}
+    if(!S.speedSessions)S.speedSessions=[];
+    const topicName=TOPICS[course]?.[topicId]||topicId;
+    S.speedSessions.push({
+      topicId, course, topic:topicName,
+      secs:chronoSecs,
+      easy:chronoCounts.easy, hard:chronoCounts.hard,
+      skipped:chronoCounts.skipped, failed:chronoCounts.failed,
+      date:today(), ts:Date.now()
+    });
+    save();
+    const tpp=Math.round(chronoSecs/total);
+    const aciertos=chronoCounts.easy+chronoCounts.hard;
+    const acc=Math.round(aciertos/total*100);
+    const skip=Math.round(chronoCounts.skipped/total*100);
+
+    // Conectar con el grafo: el acierto real actualiza el dominio del tema
+    // (los saltados cuentan como 40, entre fallo y acierto con esfuerzo)
+    const effectiveAcc=Math.round(
+      (chronoCounts.easy*100 + chronoCounts.hard*70 + chronoCounts.skipped*40 + chronoCounts.failed*10) / total
+    );
+    StudyPrioritizer.updateDominio(topicId, effectiveAcc);
+
+    alert('✓ Sesión guardada\n\n'+
+      total+' problemas en '+Math.floor(chronoSecs/60)+'m '+(chronoSecs%60)+'s\n'+
+      'Tiempo/problema: '+tpp+'s\n'+
+      'Acierto: '+acc+'%\n'+
+      'Saltados: '+skip+'%\n'+
+      'Dominio actualizado: '+effectiveAcc+'%');
+    chronoReset();
+    if(typeof renderSpeedStats==='function')renderSpeedStats();
+    refreshPlanIcons();
+  } else {
+    // Iniciar sesión
+    const course=document.getElementById('chronoCourse').value;
+    const topicId=document.getElementById('chronoTopic').value;
+    if(!course||!topicId){alert('Selecciona curso y tema primero');return;}
+    chronoRun=true;
+    chronoStart=Date.now();
+    chronoSecs=0;
+    chronoCounts={easy:0,hard:0,skipped:0,failed:0};
+    updateChronoCounts();
+    document.getElementById('chronoStart').textContent='■ terminar';
+    document.getElementById('chronoStart').classList.add('on');
+    document.getElementById('chronoCounters').style.display='block';
+    updateChronoDisp();
+    chronoInt=setInterval(()=>{
+      chronoSecs=Math.floor((Date.now()-chronoStart)/1000);
+      updateChronoDisp();
+    },500);
+  }
+}
+
+function chronoCount(kind){
+  if(!chronoRun)return;
+  chronoCounts[kind]=(chronoCounts[kind]||0)+1;
+  updateChronoCounts();
+}
+
+function updateChronoCounts(){
+  ['easy','hard','skipped','failed'].forEach(k=>{
+    const el=document.getElementById('c'+k.charAt(0).toUpperCase()+k.slice(1));
+    if(el)el.textContent=chronoCounts[k]||0;
+  });
+  const total=chronoCounts.easy+chronoCounts.hard+chronoCounts.skipped+chronoCounts.failed;
+  const meta=document.getElementById('chronoMeta');
+  if(meta)meta.textContent=total?(total+' problema'+(total===1?'':'s')+' registrados'):(chronoRun?'— sin problemas aún':'— sin problemas aún');
+}
+
+function updateChronoDisp(){
+  const m=String(Math.floor(chronoSecs/60)).padStart(2,'0');
+  const s=String(chronoSecs%60).padStart(2,'0');
+  const el=document.getElementById('chronoDisp');
+  if(el)el.textContent=m+':'+s;
+  updateChronoCounts();
+}
+
+function chronoReset(){
+  chronoRun=false;
+  clearInterval(chronoInt);
+  chronoSecs=0;
+  chronoCounts={easy:0,hard:0,skipped:0,failed:0};
+  const disp=document.getElementById('chronoDisp');
+  if(disp)disp.textContent='00:00';
+  const btn=document.getElementById('chronoStart');
+  if(btn){btn.textContent='▶ iniciar';btn.classList.remove('on');}
+  const ctr=document.getElementById('chronoCounters');
+  if(ctr)ctr.style.display='none';
+  updateChronoCounts();
+}
+
+function initChrono(){
+  const sel=document.getElementById('chronoCourse');
+  if(!sel)return;
+  // Limpiar y repoblar
+  sel.innerHTML='<option value="">— curso —</option>';
+  Object.keys(TOPICS).forEach(name=>{
+    const opt=document.createElement('option');
+    opt.value=name;
+    opt.textContent=name;
+    sel.appendChild(opt);
+  });
+}
+
+// ═══ HELPER KATEX GLOBAL ═══
+function renderMath(el){
+  if(!el||typeof renderMathInElement==='undefined')return;
+  try{
+    renderMathInElement(el,{
+      delimiters:[
+        {left:'$$',right:'$$',display:true},
+        {left:'$',right:'$',display:false},
+        {left:'\\[',right:'\\]',display:true},
+        {left:'\\(',right:'\\)',display:false}
+      ],
+      throwOnError:false,
+      errorColor:'#f87171',
+      ignoredTags:['script','noscript','style','textarea','pre','code','option']
+    });
+  }catch(e){}
+}
+
+// Renderiza KaTeX en todos los contenedores de contenido libre
+function renderMathEverywhere(){
+  const targets=[
+    'fcFrontContent','fcBackContent',        // flashcards
+    'bankList',                              // banco
+    'elist','homeErrRecientes','homeErrCapActual', // errores
+    'globalNotes',                           // notas globales
+    'aiTextResult'                           // IA
+  ];
+  targets.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)renderMath(el);
+  });
+  // Notas por tema (clase tnote-input)
+  document.querySelectorAll('.tnote-input').forEach(inp=>{
+    if(inp.value)renderMath(inp.parentElement);
+  });
+}
+function delFC(){
+  if(!_fcQueue||!_fcQueue.length){alert('No hay tarjeta activa.');return;}
+  const card=_fcQueue[0];
+  if(!confirm('¿Borrar esta tarjeta?\n\n'+card.q.slice(0,80)))return;
+  const idx=S.fc.findIndex(c=>c===card||(c.q===card.q&&c.a===card.a&&c.course===card.course));
+  if(idx>=0)S.fc.splice(idx,1);
+  _fcQueue.shift();
+  save();
+  renderFC();
+}
+// ═══ EMOJIS GLOBALES DE CURSOS ═══
+
+
+
+function courseEmoji(name){
+  return COURSE_EMOJIS[name]||'';
+}
+
+function courseLabel(name){
+  const em=courseEmoji(name);
+  return (em?em+' ':'')+(name||'');
+}
+
+// Decora los <option> de todos los selects (funciona en vivo)
+(function(){
+  function decorate(){
+    document.querySelectorAll('option').forEach(opt=>{
+      const raw=opt.textContent.trim();
+      const plain=raw.replace(/^[\p{Emoji}\u200d\ufe0f]+\s*/u,'').trim();
+      const em=COURSE_EMOJIS[plain];
+      if(em && !raw.startsWith(em)){
+        // ⚠️ CRÍTICO: si el option no tenía value explícito, fijarlo
+        // ANTES de modificar el texto. Si no, el value queda con emoji.
+        if(!opt.hasAttribute('value')){
+          opt.value = plain;
+        }
+        opt.textContent = em + ' ' + plain;
+      }
+    });
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',decorate);
+  }else{
+    decorate();
+  }
+  const mo=new MutationObserver(()=>decorate());
+  mo.observe(document.body,{childList:true,subtree:true});
+})();
+
+/* ═══ VELOCIDAD POR TEMA — Stats ═══ */
+
+// Target de segundos por problema según curso (aproximado UNI)
+const SPEED_TARGETS={
+  'Aritmética':90,'Álgebra':135,'Física':165,'Geometría':150,
+  'Trigonometría':135,'Química':105,'Raz. Matemático':105,
+  'Raz. Verbal':90,'Historia Universal':75,'Historia del Perú':75,
+  'Geografía':75,'Filosofía':75,'Literatura':75,'Lenguaje':75,'Inglés':75
+};
+
+function renderSpeedStats(){
+  const el=document.getElementById('speedStatsBox');
+  if(!el)return;
+  const sessions=S.speedSessions||[];
+  if(!sessions.length){
+    el.innerHTML='<div class="speed-empty">Sin sesiones de cronómetro aún.<br>Usá el tab <strong>⏲ Cronómetro</strong> en el panel Pomodoro para registrar velocidad por tema.</div>';
+    return;
+  }
+  // Agrupar por tema
+  const byTopic={};
+  sessions.forEach(s=>{
+    const key=s.topicId;
+    if(!byTopic[key])byTopic[key]={
+      topicId:key,course:s.course,topic:s.topic,
+      secs:0,total:0,easy:0,hard:0,skipped:0,failed:0,sessions:0,lastDate:s.date
+    };
+    const t=byTopic[key];
+    t.secs+=s.secs;
+    t.total+=(s.easy+s.hard+s.skipped+s.failed);
+    t.easy+=s.easy;t.hard+=s.hard;t.skipped+=s.skipped;t.failed+=s.failed;
+    t.sessions++;
+    if(s.date>t.lastDate)t.lastDate=s.date;
+  });
+
+  // Calcular métricas y clasificar
+  const rows=Object.values(byTopic).map(t=>{
+    const aciertos=t.easy+t.hard;
+    const acc=t.total?Math.round(aciertos/t.total*100):0;
+    const skip=t.total?Math.round(t.skipped/t.total*100):0;
+    const tpp=t.total?Math.round(t.secs/t.total):0;
+    const target=SPEED_TARGETS[t.course]||120;
+    const ratio=target?tpp/target:1;
+
+    // Clasificar
+    let cat='ok',catLabel='✓ dominado';
+    if(acc<60){
+      cat='bad';catLabel='🔴 a teoría';
+    }else if(skip>=20){
+      cat='fake';catLabel='🟡 saltás mucho';
+    }else if(ratio>1.3){
+      cat='slow';catLabel='⚠ velocidad';
+    }
+    return{...t,acc,skip,tpp,target,ratio,cat,catLabel};
+  }).sort((a,b)=>a.acc-b.acc);
+
+  // Render
+  let html='<div class="speed-row head">'
+    +'<span>Tema</span>'
+    +'<span class="speed-num">Acierto</span>'
+    +'<span class="speed-num">Tiempo/prob</span>'
+    +'<span class="speed-num">Skip</span>'
+    +'<span style="text-align:center">Estado</span>'
+    +'</div>';
+  html+=rows.map(r=>{
+    const shortTopic=r.topic.replace(/^Cap\.\s*/,'').substring(0,32);
+    const targetTxt=Math.round(r.target)+'s';
+    const tppTxt=r.tpp+'s';
+    const tppColor=r.ratio>1.3?'var(--accent4)':(r.ratio<0.8?'var(--accent3)':'var(--text)');
+    const accColor=r.acc>=80?'var(--accent3)':(r.acc>=60?'var(--accent4)':'var(--accent2)');
+    const skipColor=r.skip>=20?'#f0a500':(r.skip>=10?'var(--accent4)':'var(--muted)');
+    return'<div class="speed-row" title="'+r.course+' · '+r.topic+'\n'+r.sessions+' sesión(es) · target '+targetTxt+'/prob">'
+      +'<span class="speed-name">'+shortTopic+'</span>'
+      +'<span class="speed-num" style="color:'+accColor+'">'+r.acc+'%</span>'
+      +'<span class="speed-num" style="color:'+tppColor+'">'+tppTxt+'</span>'
+      +'<span class="speed-num" style="color:'+skipColor+'">'+r.skip+'%</span>'
+      +'<span class="speed-cat '+r.cat+'">'+r.catLabel+'</span>'
+      +'</div>';
+  }).join('');
+
+  // Resumen arriba
+  const totalSess=sessions.length;
+  const totalProbs=rows.reduce((a,r)=>a+r.total,0);
+  const avgAcc=rows.length?Math.round(rows.reduce((a,r)=>a+r.acc*r.total,0)/Math.max(1,totalProbs)):0;
+  const problemas=rows.filter(r=>r.cat!=='ok').length;
+
+  html='<div style="display:flex;flex-wrap:wrap;gap:.6rem;font-size:.5rem;color:var(--muted);margin-bottom:.6rem;padding:.4rem .6rem;background:var(--bg);border-radius:4px">'
+    +'<span>📊 <b style="color:var(--text)">'+totalSess+'</b> sesiones</span>'
+    +'<span>🧩 <b style="color:var(--text)">'+totalProbs+'</b> problemas</span>'
+    +'<span>🎯 Acierto prom: <b style="color:'+(avgAcc>=70?'var(--accent3)':'var(--accent4)')+'">'+avgAcc+'%</b></span>'
+    +(problemas?'<span style="color:#f0a500">⚠ <b>'+problemas+'</b> tema'+(problemas===1?'':'s')+' con problemas</span>':'<span style="color:var(--accent3)">✓ todos en verde</span>')
+    +'</div>'
+    +html;
+
+  el.innerHTML=html;
+}
+/* Helper: encuentra el topicId dado curso y nombre de tema */
+function findTopicIdByCourseAndName(course, name){
+  if(!TOPICS[course])return null;
+  for(const [id, tname] of Object.entries(TOPICS[course])){
+    if(tname===name)return id;
+  }
+  return null;
+}
+
+/* Actualiza los íconos de dependencia sin re-renderizar todo el plan */
+function refreshPlanIcons(){
+  document.querySelectorAll('.ti[data-id]').forEach(el=>{
+    const id=el.dataset.id;
+    const course=el.dataset.course;
+    const info=getTopicDependencyInfo(id);
+    let badge=el.querySelector('.dep-badge');
+
+    // Si ya no aplica ningún ícono, borrarlo
+    if(!info.blocked && !info.isBottleneck){
+      if(badge)badge.remove();
+      return;
+    }
+
+    // Determinar qué mostrar
+    let icon='', cls='', title='';
+    if(info.blocked){
+      icon='🔒'; cls='blocked';
+      const names=info.weakPrereqs.map(p=>TOPICS[course]?.[p]||p).join(', ');
+      title='🔒 Bloqueado — prereq débil: '+names;
+    } else {
+      icon='🎯'; cls='bottleneck';
+      title='🎯 Cuello de botella — '+info.dependents.length+' dependientes';
+    }
+
+    if(badge){
+      badge.className='dep-badge '+cls;
+      badge.textContent=icon;
+      badge.title=title;
+    } else {
+      const tn=el.querySelector('.tn');
+      if(tn){
+        const span=document.createElement('span');
+        span.className='dep-badge '+cls;
+        span.textContent=icon;
+        span.title=title;
+        span.onclick=(e)=>{e.stopPropagation();showDepInfo(id);};
+        tn.after(span);
+      }
+    }
+  });
+}
+/* ═══ CALIBRACIÓN METACOGNITIVA ═══ */
+
+function renderCalibration(){
+  const el=document.getElementById('calibrationBox');
+  if(!el)return;
+  const data=S.calibration||[];
+
+  if(data.length<5){
+    el.innerHTML='<div class="speed-empty">Necesitás al menos 5 respuestas con confianza registrada.<br>Repasá flashcards y elegí 🟢/🟡/🔴 antes de voltear.</div>';
+    return;
+  }
+
+  // ── Brier score global ──
+  // Brier = promedio de (confianza/100 - (acierto?1:0))²
+  // 0 = perfecto, 0.25 = aleatorio, 0.5+ = peor que adivinar
+  let brierSum=0;
+  data.forEach(r=>{
+    const c=(r.confidence||60)/100;
+    const a=r.correct?1:0;
+    brierSum+=Math.pow(c-a,2);
+  });
+  const brier=(brierSum/data.length).toFixed(3);
+
+  // ── Confianza promedio vs acierto promedio (global) ──
+  const avgConf=data.reduce((a,r)=>a+(r.confidence||60),0)/data.length;
+  const avgAcc=data.filter(r=>r.correct).length/data.length*100;
+  const biasGlobal=Math.round(avgConf-avgAcc);
+
+  // ── Por tema ──
+  const byTopic={};
+  data.forEach(r=>{
+    const key=r.topicId||r.course||'otros';
+    if(!byTopic[key])byTopic[key]={
+      course:r.course, topic:r.topic, topicId:r.topicId,
+      confSum:0, correct:0, total:0, highConfFails:0
+    };
+    byTopic[key].confSum+=r.confidence||60;
+    byTopic[key].correct+=r.correct?1:0;
+    byTopic[key].total++;
+    if((r.confidence||60)>=80 && !r.correct)byTopic[key].highConfFails++;
+  });
+
+  const rows=Object.values(byTopic).map(t=>{
+    const confAvg=Math.round(t.confSum/t.total);
+    const acc=Math.round(t.correct/t.total*100);
+    const bias=confAvg-acc;
+    let cat='ok', label='✓ calibrado';
+    if(bias>=20){cat='over';label='🔴 sobreconfianza';}
+    else if(bias<=-20){cat='under';label='🟡 subconfianza';}
+    return{...t,confAvg,acc,bias,cat,label};
+  }).filter(r=>r.total>=3)
+    .sort((a,b)=>Math.abs(b.bias)-Math.abs(a.bias));
+
+  // ── Resumen ──
+  let html='<div style="display:flex;flex-wrap:wrap;gap:.6rem;font-size:.5rem;color:var(--muted);margin-bottom:.6rem;padding:.4rem .6rem;background:var(--bg);border-radius:4px">'
+    +'<span>📊 <b style="color:var(--text)">'+data.length+'</b> respuestas</span>'
+    +'<span>🎯 Brier: <b style="color:'+(brier<=0.15?'var(--accent3)':brier<=0.25?'var(--accent4)':'var(--accent2)')+'">'+brier+'</b> <span style="opacity:.6">(menor=mejor)</span></span>'
+    +'<span>📈 Confianza prom: <b style="color:var(--text)">'+Math.round(avgConf)+'%</b></span>'
+    +'<span>✓ Acierto prom: <b style="color:var(--text)">'+Math.round(avgAcc)+'%</b></span>'
+    +'<span style="color:'+(Math.abs(biasGlobal)>15?'#f0a500':'var(--accent3)')+'">Bias: <b>'+(biasGlobal>0?'+':'')+biasGlobal+'</b></span>'
+    +'</div>';
+
+  if(!rows.length){
+    html+='<div class="speed-empty">Necesitás al menos 3 respuestas por tema para diagnosticar.</div>';
+    el.innerHTML=html;
+    return;
+  }
+
+  html+='<div class="speed-row head">'
+    +'<span>Tema</span>'
+    +'<span class="speed-num">Conf.</span>'
+    +'<span class="speed-num">Acierto</span>'
+    +'<span class="speed-num">Bias</span>'
+    +'<span style="text-align:center">Estado</span>'
+    +'</div>';
+
+  rows.forEach(r=>{
+    const shortTopic=(r.topic||'—').replace(/^Cap\.\s*/,'').substring(0,32);
+    const biasColor=r.bias>=20?'var(--accent2)':r.bias<=-20?'#f0a500':'var(--muted)';
+    const biasTxt=(r.bias>0?'+':'')+r.bias;
+    html+='<div class="speed-row" title="'+r.course+' · '+r.topic+'\nFallos con alta confianza: '+r.highConfFails+'">'
+      +'<span class="speed-name">'+shortTopic+'</span>'
+      +'<span class="speed-num">'+r.confAvg+'%</span>'
+      +'<span class="speed-num">'+r.acc+'%</span>'
+      +'<span class="speed-num" style="color:'+biasColor+'">'+biasTxt+'</span>'
+      +'<span class="speed-cat '+(r.cat==='over'?'bad':r.cat==='under'?'slow':'ok')+'">'+r.label+'</span>'
+      +'</div>';
+  });
+
+  // ── Zona ciega: fallos con alta confianza ──
+  const blindSpots=data.filter(r=>(r.confidence||60)>=80 && !r.correct);
+  if(blindSpots.length){
+    html+='<div style="margin-top:.7rem;padding:.5rem .7rem;background:#1f0a0f;border-left:3px solid var(--accent2);border-radius:4px">'
+      +'<div style="font-size:.5rem;color:var(--accent2);font-weight:700;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.05em">⚠ Zona ciega — creías saber y fallaste ('+blindSpots.length+')</div>'
+      +'<div style="font-size:.5rem;color:var(--muted);line-height:1.5">Estos son los temas que MÁS te van a doler en el examen. No los estudiás porque creés que los sabés.</div>'
+      +'</div>';
+  }
+
+  el.innerHTML=html;
+}
+
+// Llamar en renderStats
+const _origRenderStats=renderStats;
+renderStats=function(){
+  _origRenderStats();
+  if(typeof renderCalibration==='function')renderCalibration();
+};
 </script>
 </body>
 </html>
