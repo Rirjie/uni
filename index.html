@@ -3519,6 +3519,7 @@ function addEFromPreset(course,preset,el){
   const wk2=wkey();if(!S.ws)S.ws={};S.ws[wk2]=S.ws[wk2]||{h:0,caps:0,errors:0};
   S.ws[wk2].errors=(S.ws[wk2].errors||0)+1;
   save();renderE();renderWS();
+  maybeOfferFlashcard(formatted);
   // flash chip
   if(el){el.classList.add('selected');setTimeout(()=>el.classList.remove('selected'),500);}
 }
@@ -3533,7 +3534,90 @@ function renderCapErrPresets(id,course){
   ).join('')
   +`<span class="cap-epreset-chip" style="color:var(--muted);border-color:var(--border)" onclick="event.stopPropagation();toggleCapErrInput('${id}')">+ personalizado</span>`;
 }
+// ═══ ERROR RECURRENTE → OFERTA DE FLASHCARD ═══
+function countErrorOccurrences(errorText){
+  let total = 0;
+  (S.errors || []).forEach((e, i) => {
+    if (e === errorText) total += (S.errcnt || {})[i] || 1;
+  });
+  return total;
+}
 
+function maybeOfferFlashcard(errorText){
+  if (!errorText) return;
+  const count = countErrorOccurrences(errorText);
+  if (count < 3) return;
+  if (!S.errorFlashOffered) S.errorFlashOffered = {};
+  if (S.errorFlashOffered[errorText]) return;
+  S.errorFlashOffered[errorText] = true;
+  save();
+  showFlashcardOfferModal(errorText, count);
+}
+
+function showFlashcardOfferModal(errorText, count){
+  document.getElementById('_flashOfferModal')?.remove();
+  const m = document.createElement('div');
+  m.id = '_flashOfferModal';
+  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:3500;display:flex;align-items:center;justify-content:center;padding:1rem';
+  m.onclick = (e) => { if (e.target === m) closeFlashOfferModal(); };
+  const safe = errorText.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+  m.innerHTML = `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.4rem 1.5rem;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+      <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.9rem;border-bottom:1px solid var(--border);padding-bottom:.7rem">
+        <span style="font-size:1.1rem">🃏</span>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;color:var(--accent);flex:1">Error recurrente detectado</div>
+        <button onclick="closeFlashOfferModal()" style="background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;border-radius:4px;font-size:.72rem;padding:.1rem .35rem;line-height:1">✕</button>
+      </div>
+      <div style="font-size:.72rem;color:var(--muted);line-height:1.5;margin-bottom:.6rem">
+        Este error aparece <strong style="color:var(--accent2)">${count} veces</strong> en tu registro. Ya no es ruido, es un patrón.
+      </div>
+      <div style="font-size:.74rem;color:var(--text);background:#1a0a0f;border-left:3px solid var(--accent2);padding:.55rem .7rem;border-radius:4px;margin-bottom:.8rem;line-height:1.5">
+        ${errorText}
+      </div>
+      <div style="font-size:.72rem;color:var(--muted);line-height:1.5;margin-bottom:1rem">
+        ¿Convertirlo en flashcard? Vas a poder editar la pregunta y escribir la respuesta. La tarjeta entra al sistema que ya usas.
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">
+        <button onclick="closeFlashOfferModal()" style="padding:.55rem;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;cursor:pointer;font-family:inherit;font-size:.64rem">Dejar por ahora</button>
+        <button onclick="acceptFlashcardOffer('${safe}')" style="padding:.55rem;background:var(--accent3);color:#000;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.64rem;font-weight:700">Crear flashcard</button>
+      </div>
+    </div>`;
+  document.body.appendChild(m);
+}
+
+function closeFlashOfferModal(){
+  document.getElementById('_flashOfferModal')?.remove();
+}
+
+function acceptFlashcardOffer(errorText){
+  closeFlashOfferModal();
+  let course = '';
+  const matchId = errorText.match(/^\[([a-z]+\d+)\]/);
+  const matchCourse = errorText.match(/^\[([A-Za-záéíóúÁÉÍÓÚñÑ.\s]+)\]/);
+  if (matchId) {
+    const info = getTopic(matchId[1]);
+    if (info && info.course) course = info.course;
+  } else if (matchCourse) {
+    const c = matchCourse[1].trim();
+    if (TOPICS[c]) course = c;
+  }
+  const clean = errorText.replace(/^\[[^\]]+\]\s*/, '').trim();
+  showView('flashcards', document.querySelector('.sb-btn[onclick*="flashcards"]'));
+  setTimeout(() => {
+    const fcCourse = document.getElementById('fcCourse');
+    const fcQuestion = document.getElementById('fcQuestion');
+    const fcAnswer = document.getElementById('fcAnswer');
+    if (fcCourse && course) {
+      fcCourse.value = course;
+      if (typeof updateFCTopics === 'function') updateFCTopics();
+    }
+    if (fcQuestion) fcQuestion.value = clean;
+    if (fcAnswer) {
+      fcAnswer.focus();
+      fcAnswer.scrollIntoView({behavior: 'smooth', block: 'center'});
+    }
+  }, 180);
+}
 function saveCapErrorPreset(id,preset){
   saveCapError(id,preset);
   // brief flash of the cap error area
@@ -3559,6 +3643,7 @@ function addE(){
   const wk2=wkey();if(!S.ws)S.ws={};S.ws[wk2]=S.ws[wk2]||{h:0,caps:0,errors:0};
   S.ws[wk2].errors=(S.ws[wk2].errors||0)+1;
   inp.value='';document.getElementById('errCourseSelect').value='';save();renderE();renderWS();
+  maybeOfferFlashcard(formatted);
 }
 function delE(i){
   // Also remove from errcnt if exists
@@ -5876,14 +5961,77 @@ function renderHomePendienteHoy(){
   const el=document.getElementById('homePendienteHoy');
   const sub=document.getElementById('homePendienteHoySub');
   if(!el||!sub)return;
+
   if(diff<=0){
     el.textContent='¡Meta cumplida!';el.className='hc-val green';
-    sub.textContent='Llevas '+fmt(hoy)+' hoy (meta: '+mh+'h)';
-  }else{
-    const h=Math.floor(diff/3600),m=Math.floor((diff%3600)/60);
-    el.textContent=h+'h '+m+'m';el.className='hc-val orange';
-    sub.textContent='Llevas '+fmt(hoy)+' · Meta: '+mh+'h/día';
+    sub.textContent='Llevas '+fmt(hoy)+' hoy · meta '+mh+'h/día';
+    return;
   }
+  const h=Math.floor(diff/3600),m=Math.floor((diff%3600)/60);
+  el.textContent=h+'h '+m+'m';el.className='hc-val orange';
+
+  const dow=(new Date().getDay()+6)%7; // 0=lun ... 6=dom
+
+  // Antes del miércoles: solo horas, sin veredicto
+  if(dow<2){
+    sub.textContent='Llevas '+fmt(hoy)+' hoy · meta '+mh+'h/día';
+    return;
+  }
+
+  const CRASH_WEEKS=['w10']; // semana de cirugía
+  const isExcluded = (ds)=>{
+    const w = WSCHED.find(x=>ds>=x.s&&ds<=x.e);
+    if(!w) return true;
+    if(OP_WEEKS.includes(w.id)) return true;
+    if(CRASH_WEEKS.includes(w.id)) return true;
+    return false;
+  };
+
+  // Ventana: lunes de esta semana hasta ayer, sin domingos
+  const weekStart = new Date();
+  weekStart.setDate(weekStart.getDate() - dow);
+  let secs=0, diasEfectivos=0;
+  for(let i=0; i<dow; i++){ // i=0 es lunes; llega hasta ayer
+    const d = new Date(weekStart);
+    d.setDate(d.getDate() + i);
+    if(d.getDay()===0) continue;              // domingo fuera
+    const ds = localKey(d);
+    if(isExcluded(ds)) continue;              // op-week / cirugía fuera
+    diasEfectivos++;
+    secs += (S.h||{})[ds]||0;                 // definición A: cuenta aunque sea 0
+  }
+
+  const ritmoReal = diasEfectivos>0 ? secs/diasEfectivos : 0;
+
+  // Horas que faltan para el objetivo semanal
+  const weekTotal = (S.h||{})['w'+wkey()]||0;
+  const weekRemaining = Math.max(0, ms - weekTotal);
+
+  // Días restantes: de hoy a sábado inclusive, menos domingos
+  let diasRestantes=0;
+  for(let i=0; i<=(6-dow); i++){
+    const d=new Date(); d.setDate(d.getDate()+i);
+    if(d.getDay()===0) continue;
+    const ds = localKey(d);
+    if(isExcluded(ds)) continue;
+    diasRestantes++;
+  }
+
+  const necesario = diasRestantes>0 ? weekRemaining/diasRestantes : weekRemaining;
+
+  let ratio = 1;
+  if(necesario>0 && ritmoReal>0) ratio = ritmoReal/necesario;
+  else if(necesario>0 && ritmoReal===0) ratio = 0;
+  else ratio = 1;
+
+  let vlabel, vcolor;
+  if(ratio>=1){vlabel='✓ ritmo viable';vcolor='var(--accent3)';}
+  else if(ratio>=0.6){vlabel='⚠ ritmo justo ('+Math.round(ratio*100)+'%)';vcolor='var(--accent4)';}
+  else{vlabel='✗ no cierra a este ritmo ('+Math.round(ratio*100)+'%)';vcolor='var(--accent2)';}
+
+  sub.innerHTML='Llevas '+fmt(hoy)+' hoy · meta '+mh+'h/día<br>'
+    +'Ritmo real: <strong>'+fmt(Math.round(ritmoReal))+'</strong>/día · necesario: <strong>'+fmt(Math.round(necesario))+'</strong>/día<br>'
+    +'<span style="color:'+vcolor+';font-weight:700">'+vlabel+'</span>';
 }
 
 function renderHomeProgSem(){
