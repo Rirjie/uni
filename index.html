@@ -680,7 +680,7 @@ body.print-week .week.print-hide{display:none!important}
   <div class="fcourse" id="fcourse">—</div>
   <div class="ftopic" id="ftopic">Selecciona un tema con ⊞</div>
   <div class="ftimer" id="ftimer">25:00</div>
-  <div class="ferrors"><div class="ferrtitle">Errores frecuentes</div><div class="ferrlist" id="ferrlist"><div>· Lei mal el enunciado</div><div>· Me confundi al operar</div><div>· Me tranqueo mucho en problemas q se pueden resolver mas facilmente</div></div></div>
+<div class="ferrors"><div class="ferrtitle">Errores frecuentes</div><div class="ferrlist" id="ferrlist"></div></div>
   <div class="fbts">
     <button onclick="pa(&#39;start&#39;)">▶ iniciar</button>
     <button onclick="pa(&#39;pause&#39;)">⏸ pausar</button>
@@ -957,10 +957,10 @@ body.print-week .week.print-hide{display:none!important}
 
    <div id="alertBox"></div>
 
-  <div class="rhythm-bar">
-    <span>Meta hoy:</span><span class="rv" id="rMeta">5h 0m</span>
-    <span>Llevas:</span><span class="rv" id="rLlevas">2h 48m</span>
-    <span class="rs rs-behind" id="rStatus">2h 11m pendiente</span>
+<div class="rhythm-bar">
+    <span>Meta hoy:</span><span class="rv" id="rMeta">—</span>
+    <span>Llevas:</span><span class="rv" id="rLlevas">—</span>
+    <span class="rs rs-behind" id="rStatus">—</span>
     <button onclick="whatNext()" style="margin-left:auto;font-size:.52rem;padding:.2rem .6rem;border:1px solid var(--accent3);color:var(--accent3);background:transparent;border-radius:3px;cursor:pointer;white-space:nowrap" title="Ir al siguiente tema pendiente">&#9654; &#xBF;qu&#xE9; estudio ahora?</button>
   </div>
   <div style="font-size:.52rem;padding:.2rem .4rem;min-height:.8rem;transition:opacity .5s" id="whatNextResult"></div>
@@ -1026,14 +1026,14 @@ body.print-week .week.print-hide{display:none!important}
     <div class="stat"><div class="stat-val o" id="sCaps">0</div><div class="stat-label">Completado</div></div>
   </div>
   <div class="stats-row">
-    <div class="stat"><div class="stat-val" id="statTotalH">3h 13m</div><div class="stat-label">Total acumulado</div></div>
-    <div class="stat"><div class="stat-val r" id="statErrCount">3</div><div class="stat-label">Errores registrados</div></div>
-    <div class="stat"><div class="stat-val g" id="statConsist">29%</div><div class="stat-label">Consistencia semana</div></div>
-    <div class="stat"><div class="stat-val o" id="statAvgH">0h 27m</div><div class="stat-label">Prom. h/día (7d)</div></div>
+    <div class="stat"><div class="stat-val" id="statTotalH">—</div><div class="stat-label">Total acumulado</div></div>
+    <div class="stat"><div class="stat-val r" id="statErrCount">—</div><div class="stat-label">Errores registrados</div></div>
+    <div class="stat"><div class="stat-val g" id="statConsist">—</div><div class="stat-label">Consistencia semana</div></div>
+    <div class="stat"><div class="stat-val o" id="statAvgH">—</div><div class="stat-label">Prom. h/día (7d)</div></div>
   </div>
 
-  <div class="prog-hdr"><span>Progreso general</span><span id="ppct">4%</span></div>
-  <div class="prog-bar"><div class="prog-fill" id="pfill" style="width: 4%;"></div></div>
+  <div class="prog-hdr"><span>Progreso general</span><span id="ppct">—</span></div>
+  <div class="prog-bar"><div class="prog-fill" id="pfill" style="width: 0%;"></div></div>
 
   <div class="tools" style="margin-top:1rem">
  <div class="tcard">
@@ -1202,7 +1202,7 @@ body.print-week .week.print-hide{display:none!important}
       </div>
       <!-- Errores recientes -->
       <div style="font-size:.46rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem">Errores recientes</div>
-      <div class="elist" id="elist"><div class="eitem"><div class="edot"></div><span>Lei mal el enunciado</span><span class="ecnt">2x</span><span class="edel" onclick="delE(0)">✕</span></div><div class="eitem"><div class="edot"></div><span>Me confundi al operar</span><span class="ecnt">1x</span><span class="edel" onclick="delE(1)">✕</span></div><div class="eitem"><div class="edot"></div><span>Me tranqueo mucho en problemas q se pueden resolver mas facilmente</span><span class="ecnt">1x</span><span class="edel" onclick="delE(2)">✕</span></div></div>
+      <div class="elist" id="elist"></div>
       <div class="einput-row">
         <select id="errCourseSelect" style="background:#0a0a0f;border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:.52rem;padding:.15rem .3rem;cursor:pointer;margin-right:.3rem">
           <option value="">— curso —</option>
