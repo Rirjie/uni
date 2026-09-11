@@ -334,7 +334,6 @@ h1 span{color:var(--accent)}
 
 /* POMO */
 .pomo-time{font-family:'Syne',sans-serif;font-size:2rem;font-weight:700;color:#fff;text-align:center;margin:.15rem 0;letter-spacing:-0.03em}
-.pomo-time{font-family:'Syne',sans-serif;font-size:2rem;font-weight:700;color:#fff;text-align:center;margin:.15rem 0;letter-spacing:-0.03em}
 .pomo-status{font-size:.52rem;color:var(--muted);text-align:center;margin-bottom:.25rem;height:.8rem}
 select.pcourse{width:100%;background:#0a0a0f;border:1px solid var(--border);color:var(--text);padding:.3rem .42rem;font-family:'DM Mono',monospace;font-size:.58rem;margin-top:.38rem;cursor:pointer}
 .pbts{display:flex;gap:.32rem;margin-top:.45rem}
@@ -1029,7 +1028,7 @@ body.print-week .week.print-hide{display:none!important}
     <div class="stat"><div class="stat-val" id="statTotalH">—</div><div class="stat-label">Total acumulado</div></div>
     <div class="stat"><div class="stat-val r" id="statErrCount">—</div><div class="stat-label">Errores registrados</div></div>
     <div class="stat"><div class="stat-val g" id="statConsist">—</div><div class="stat-label">Consistencia semana</div></div>
-    <div class="stat"><div class="stat-val o" id="statAvgH">—</div><div class="stat-label">Prom. h/día (7d)</div></div>
+<div class="stat"><div class="stat-val o" id="statAvgH">—</div><div class="stat-label">Prom. h/día (sem)</div></div>
   </div>
 
   <div class="prog-hdr"><span>Progreso general</span><span id="ppct">—</span></div>
@@ -2331,6 +2330,7 @@ function buildWeeklyStudyPlan(){
   }).join('');
 }
 const EXAM_DATE='2027-02-15';
+const STUDY_DAYS=[1,2,3,4,5,6]; // 0=dom, 1=lun... (domingo NO cuenta)
 
 // ── HORARIO SEMANAL ALTERNADO ──
 // El lunes 10 de agosto de 2026 es la semana 1 (impar). A partir de allí las
@@ -2709,7 +2709,8 @@ function getLastStudyDays(){
   while(days<30){
     const k=localKey(d);
     if(S.h[k]&&S.h[k]>0)return days;
-    d.setDate(d.getDate()-1);days++;
+    d.setDate(d.getDate()-1);
+    if(STUDY_DAYS.includes(d.getDay()))days++;
   }
   return days;
 }
@@ -3148,14 +3149,28 @@ function renderH(){
     return'<div class="hrow"><span>'+c+'</span><span>'+fmt(s)+'</span></div>'
       +'<div class="hbar"><div class="hbarfill" style="width:'+Math.round(s/mxTotal*100)+'%;background:'+col+'"></div></div>';
   }).join('');
-  // avg last 7 days
-  let total7=0,days7=0;
-  for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()-i);const k=localKey(d);if(S.h[k]){total7+=S.h[k];days7++;}}
-  const avg7=days7?Math.round(total7/7):0;document.getElementById('statAvgH').textContent=fmt(avg7);
-  // consistency
-  let studyDays=0;
-  for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()-i);const k=localKey(d);if((S.h[k]||0)>0)studyDays++;}
-  document.getElementById('statConsist').textContent=Math.round(studyDays/7*100)+'%';
+  // Promedio h/día esta semana (lun–sáb, solo días transcurridos)
+  let totalWeek=0,eligWeek=0;
+  const _tw=new Date();
+  const _dw=(_tw.getDay()+6)%7;
+  for(let i=0;i<=_dw;i++){
+    const d=new Date(_tw);d.setDate(d.getDate()-i);
+    if(!STUDY_DAYS.includes(d.getDay()))continue;
+    eligWeek++;
+    totalWeek+=S.h[localKey(d)]||0;
+  }
+  document.getElementById('statAvgH').textContent=fmt(eligWeek?Math.round(totalWeek/eligWeek):0);
+  // consistency — semana actual (desde el lunes hasta hoy, sin domingos)
+  let studyDays=0,eligibleDays=0;
+  const _t=new Date();
+  const _dow=(_t.getDay()+6)%7; // 0=lun, 6=dom
+  for(let i=0;i<=_dow;i++){
+    const d=new Date(_t);d.setDate(d.getDate()-i);
+    if(!STUDY_DAYS.includes(d.getDay()))continue;
+    eligibleDays++;
+    if((S.h[localKey(d)]||0)>0)studyDays++;
+  }
+  document.getElementById('statConsist').textContent=(eligibleDays?Math.round(studyDays/eligibleDays*100):0)+'%';
 }
 
 // ── SESSIONS ──
@@ -3502,7 +3517,7 @@ function renderHeatmap(){
     }
     // Día sin estudio
     const brkStr=brkSecs>0?' · descanso '+fmt(brkSecs):'';
-      cells.push('<div class="hm-day" title="'+k+' — sin estudio'+brkStr+'"></div>');
+        cells.push('<div class="hm-day" title="'+k+(STUDY_DAYS.includes(d.getDay())?' — sin estudio':' — descanso')+brkStr+'"'+(STUDY_DAYS.includes(d.getDay())?'':' style="opacity:.2"')+'></div>');
   }
   grid.innerHTML=cells.join('');
   renderHeatmapLegend();
@@ -5296,15 +5311,18 @@ function renderConsistencyChart(){
     const k=localKey(d);
     const h=(S.h||{})[k]||0;
     const isOp=OP_WEEKS.some(wid=>{const w=WSCHED.find(w=>w.id===wid);return w&&k>=w.s&&k<=w.e;});
-    bars.push({k,h,isOp});
+    const isStudy=STUDY_DAYS.includes(d.getDay());
+    bars.push({k,h,isOp,isStudy});
     if(h>0)studiedDays++;
-    else if(!isOp)missedDays++;
+    else if(!isOp&&isStudy)missedDays++;
   }
-  const pct=daysPassed>0?Math.round(studiedDays/daysPassed*100):0;
+  const eligible=bars.filter(b=>b.isStudy||b.h>0).length;
+  const pct=eligible>0?Math.round(studiedDays/eligible*100):0;
   const maxH=Math.max(...bars.map(b=>b.h),1);
   // Render mini bar chart (last 30 days shown)
   const show=bars.slice(-42);
-  const barsHtml=show.map(({k,h,isOp})=>{
+  const barsHtml=show.map(({k,h,isOp,isStudy})=>{
+    if(!isStudy&&h===0)return'<div style="width:5px;height:2px;background:var(--border);opacity:.3;flex-shrink:0;border-radius:1px 1px 0 0;align-self:flex-end"></div>';
     const ht=h>0?Math.max(4,Math.round(h/maxH*28)):2;
     const col=isOp?'var(--border)':h>0?(h>=4*3600?'var(--accent3)':h>=2*3600?'var(--accent4)':'#3a5a3a'):'var(--accent2)';
     const op=isOp?0.3:1;
@@ -5407,7 +5425,7 @@ function renderPlanHealth(){
     const d=new Date(startDate);d.setDate(d.getDate()+i);
     const k=localKey(d);
     const isOp=OP_WEEKS.some(wid=>{const w=WSCHED.find(w=>w.id===wid);return w&&k>=w.s&&k<=w.e;});
-    if(!isOp){eligible++;if((S.h||{})[k]>0)studied++;}
+     if(!isOp&&STUDY_DAYS.includes(d.getDay())){eligible++;if((S.h||{})[k]>0)studied++;}
   }
   const consist=eligible?Math.round(studied/eligible*100):0;
   const aw=getActiveWeek();
@@ -6097,6 +6115,7 @@ function renderAll(){renderPlanTopics();
   renderBank();renderFC();renderTopicTimes();
   renderAllCapErrors();
   renderAllExBadges();
+  renderAllTopicSpeeds();
   renderPreOpReview();
   updateRhythmProjection();
   renderHighLoadAlerts();
@@ -7355,6 +7374,22 @@ function chronoToggle(){
       date:today(), ts:Date.now()
     });
     save();
+
+    // ⬇️ NUEVO: enviar info al plan de estudio
+    const resolved=chronoCounts.easy+chronoCounts.hard;
+    if(resolved>0){
+      if(!S.exCount)S.exCount={};
+      const goal=getExGoal(topicId);
+      S.exCount[topicId]=Math.min(goal,(S.exCount[topicId]||0)+resolved);
+      renderExBadge(topicId);
+    }
+    if(!S.t)S.t={};S.t[topicId]=S.t[topicId]||{};
+    S.t[topicId].speedSecs=(S.t[topicId].speedSecs||0)+chronoSecs;
+    S.t[topicId].speedProbs=(S.t[topicId].speedProbs||0)+total;
+    S.t[topicId].speedLast=today();
+    save();
+    renderTopicSpeed(topicId);
+
     const tpp=Math.round(chronoSecs/total);
     const aciertos=chronoCounts.easy+chronoCounts.hard;
     const acc=Math.round(aciertos/total*100);
@@ -7786,6 +7821,35 @@ renderStats=function(){
   _origRenderStats();
   if(typeof renderCalibration==='function')renderCalibration();
 };
+/* ═══ BADGE DE VELOCIDAD EN EL PLAN ═══ */
+function renderTopicSpeed(id){
+  const el=document.querySelector('[data-id="'+id+'"]');if(!el)return;
+  const t=(S.t||{})[id]||{};
+  let badge=el.querySelector('.topic-speed-badge');
+  if(!t.speedSecs||!t.speedProbs){
+    if(badge)badge.remove();
+    return;
+  }
+  const avg=Math.round(t.speedSecs/t.speedProbs);
+  const course=el.dataset.course;
+  const target=(typeof SPEED_TARGETS!=='undefined'&&SPEED_TARGETS[course])||120;
+  const ratio=avg/target;
+  const color=ratio<0.8?'var(--accent3)':ratio<1.3?'var(--muted)':'var(--accent4)';
+  const icon=ratio<0.8?'⚡':ratio<1.3?'⏱':'🐢';
+  if(!badge){
+    badge=document.createElement('span');
+    badge.className='topic-speed-badge';
+    const tn=el.querySelector('.tn');
+    if(tn)tn.appendChild(badge);else return;
+  }
+  badge.textContent=icon+' '+avg+'s';
+  badge.title='Velocidad: '+avg+'s/problema · target '+target+'s · '+t.speedProbs+' problemas resueltos';
+  badge.style.cssText='font-size:.42rem;color:'+color+';border:1px solid '+color+'40;padding:.02rem .22rem;margin-left:.3rem;white-space:nowrap;vertical-align:middle;cursor:default;font-family:"DM Mono",monospace';
+}
+
+function renderAllTopicSpeeds(){
+  document.querySelectorAll('.ti[data-id]').forEach(el=>renderTopicSpeed(el.dataset.id));
+}
 </script>
 </body>
 </html>
