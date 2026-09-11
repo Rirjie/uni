@@ -68,7 +68,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace,sans
 .plan-kb-hint{font-size:.48rem;color:var(--muted);line-height:1.45;text-align:center;letter-spacing:.02em}
 .schedule-card{margin:1rem 0 1.2rem;padding:1rem;background:var(--card);border:1px solid var(--border);border-radius:6px;overflow:hidden}
 .schedule-head{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:.75rem}.schedule-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem}.schedule-meta{font-size:.52rem;color:var(--muted);margin-right:auto}.schedule-nav{border:1px solid var(--border);background:transparent;color:var(--text);border-radius:3px;padding:.16rem .45rem;cursor:pointer;font:inherit;font-size:.65rem}.schedule-nav:hover{border-color:var(--accent);color:var(--accent)}
-.schedule-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:4px}.schedule-grid{display:grid;grid-template-columns:48px repeat(7,minmax(108px,1fr));min-width:805px}.schedule-grid>div{min-height:25px;padding:.23rem .28rem;border-right:1px solid #292938;border-bottom:1px solid #292938;text-align:center;font-size:.48rem;line-height:1.2}.schedule-grid .sg-head{background:#15152a;color:#d9d9ee;font-weight:700;font-size:.56rem}.schedule-grid .sg-time{background:#11111a;color:var(--muted);display:flex;align-items:center;justify-content:center}.schedule-grid .sg-rest{color:#8a8a9c;background:#12121a}.schedule-grid .sg-sleep{color:#b9f58a;background:#18203d;font-weight:700}.schedule-grid .sg-break{background:#27252a;color:#b7b2b9}.schedule-grid .sg-phys{background:#8f141b;color:#fff}.schedule-grid .sg-geo{background:#0e9b5d;color:#071b11}.schedule-grid .sg-chem{background:#e7e900;color:#222}.schedule-grid .sg-trig{background:#9200c5;color:#fff}.schedule-grid .sg-alg{background:#f0a100;color:#241700}.schedule-grid .sg-arith{background:#2077a7;color:#fff}.schedule-grid .sg-verbal{background:#f3ae7a;color:#382010}.schedule-grid .sg-history{background:#98bf7d;color:#182215}.schedule-grid .sg-literature{background:#8f79c9;color:#171226}.schedule-grid .sg-language{background:#db69dc;color:#2b102c}.schedule-grid .sg-test{background:#ce0303;color:#fff}.schedule-note{font-size:.49rem;color:var(--muted);margin-top:.6rem}
+.schedule-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:4px}.schedule-grid{display:grid;grid-template-columns:48px repeat(7,minmax(108px,1fr));min-width:805px}.schedule-grid>div{min-height:25px;padding:.23rem .28rem;border-right:1px solid #292938;border-bottom:1px solid #292938;text-align:center;font-size:.48rem;line-height:1.2}.schedule-grid .sg-head{background:#15152a;color:#d9d9ee;font-weight:700;font-size:.56rem}.schedule-grid .sg-time{background:#11111a;color:var(--muted);display:flex;align-items:center;justify-content:center}.schedule-grid .sg-rest{color:#8a8a9c;background:#12121a}.schedule-grid .sg-sleep{color:#b9f58a;background:#18203d;font-weight:700}.schedule-grid .sg-break{background:#27252a;color:#b7b2b9}.schedule-grid .sg-phys{background:#8f141b;color:#fff}.schedule-grid .sg-geo{background:#0e9b5d;color:#071b11}.schedule-grid .sg-chem{background:#e7e900;color:#222}.schedule-grid .sg-trig{background:#9200c5;color:#fff}.schedule-grid .sg-alg{background:#f0a100;color:#241700}.schedule-grid .sg-arith{background:#2077a7;color:#fff}.schedule-grid .sg-verbal{background:#f3ae7a;color:#382010}.schedule-grid .sg-history{background:#98bf7d;color:#182215}.schedule-grid .sg-literature{background:#8f79c9;color:#171226}.schedule-grid .sg-language{background:#db69dc;color:#2b102c}.schedule-grid .sg-test{background:#ce0303;color:#fff}.schedule-grid .sg-check{cursor:pointer;position:relative;padding-right:10px!important}
+.schedule-grid .sg-check:hover{filter:brightness(1.25)}
+.schedule-grid .sg-check-mark{position:absolute;top:1px;right:2px;font-size:.55rem;line-height:1;opacity:.35;pointer-events:none;color:#fff}
+.schedule-grid .sg-check.done .sg-check-mark{opacity:1;color:#3a3}.schedule-note{font-size:.49rem;color:var(--muted);margin-top:.6rem}
 .weekly-plan-intro{font-size:.54rem;color:var(--muted);margin:.7rem 0}.week-course-group{border-top:1px solid rgba(255,255,255,.05);padding:.35rem 0 .1rem}.week-course-label{font-size:.52rem;font-weight:700;margin-bottom:.18rem}.week-course-label::before{content:'●';margin-right:.35rem}.week-course-group[data-course="Aritmética"] .week-course-label{color:var(--ca)}.week-course-group[data-course="Álgebra"] .week-course-label{color:var(--calg)}.week-course-group[data-course="Física"] .week-course-label{color:var(--cf)}.week-course-group[data-course="Geometría"] .week-course-label{color:var(--cg)}.week-course-group[data-course="Trigonometría"] .week-course-label{color:var(--ct)}.week-course-group[data-course="Química"] .week-course-label{color:var(--cq)}.week-course-group[data-course="Raz. Matemático"] .week-course-label{color:var(--crm)}.week-course-group[data-course="Raz. Verbal"] .week-course-label{color:var(--crv)}.week-course-group[data-course="Historia Universal"] .week-course-label{color:var(--chu)}.week-course-group[data-course="Historia del Perú"] .week-course-label{color:var(--chp)}.week-course-group[data-course="Geografía"] .week-course-label{color:var(--cge)}.week-course-group[data-course="Filosofía"] .week-course-label{color:var(--cfi)}.week-course-group[data-course="Literatura"] .week-course-label{color:var(--cli)}.week-course-group[data-course="Lenguaje"] .week-course-label{color:var(--cle)}.week-course-group[data-course="Inglés"] .week-course-label{color:var(--cin)}
 #view-plan>.month{display:none}
 .noise{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
@@ -440,6 +443,7 @@ select.pcourse{width:100%;background:#0a0a0f;border:1px solid var(--border);colo
 .ti{display:flex;align-items:flex-start;gap:.35rem;padding:.18rem 0;cursor:default}
 .tck{width:11px;height:11px;flex-shrink:0;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.46rem;margin-top:2px;cursor:pointer;transition:all .15s}
 .ti.done .tck{background:var(--accent3);border-color:var(--accent3);color:#000}
+.ti .tck2{width:11px;height:11px;flex-shrink:0;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.46rem;margin-top:2px;cursor:pointer;transition:all .15s;border-radius:50%}.ti .tck2.done{background:var(--accent4);border-color:var(--accent4);color:#000}
 .ti.done .tn{text-decoration:line-through;color:var(--muted)}
 .ti.search-match{background:#1f1a10;margin:0;padding-left:3px}
 .tn{flex:1;font-size:.6rem}
@@ -1242,7 +1246,7 @@ function makeTI(id){
   const errBlock=`<div id="caperr-${id}"></div><div id="cap-epreset-${id}" class="cap-epreset-wrap" style="display:none"></div><div id="tierradd-${id}" style="display:none;margin-top:.15rem;align-items:center;gap:.2rem"><input id="ei-${id}" style="font-size:.44rem;padding:.1rem .3rem;background:#0a0a0f;border:1px solid var(--border);color:var(--text);border-radius:3px;width:130px" placeholder="error personalizado..." onclick="event.stopPropagation()"><button onclick="event.stopPropagation();saveCapError('${id}',document.getElementById('ei-${id}').value);document.getElementById('ei-${id}').value='';" style="font-size:.42rem;padding:.1rem .25rem;border:1px solid var(--accent2);color:var(--accent2);background:transparent;cursor:pointer;border-radius:3px">+error</button></div>`;
   const exBlock=`<span class="ex-badge" onclick="event.stopPropagation()" title="Ejercicios (meta según dificultad)"><input type="range" class="ex-slider" min="0" max="${getExGoal(id)}" value="${getExCount(id)}" oninput="setEx('${id}',this.value)"><span class="ex-num" id="exn-${id}">${getExCount(id)}/${getExGoal(id)}</span><span class="ex-bar-wrap"><span class="ex-bar-fill" id="exbf-${id}"></span></span></span>`;
   const safeName=name.replace(/'/g,"&#39;").replace(/"/g,"&quot;");
-  return`<div class="ti" data-id="${id}" data-course="${course}" data-name="${safeName}"><div class="tck" onclick="ck(event,'${id}')"></div><span class="tn">${name}${lum}</span>${exBlock}<button class="db-cycle" onclick="sd(event,'${id}')">◆</button><span class="tlast" id="tl-${id}"></span><button class="tfb" onclick="sf(event,'${safeName}','${course}')">⊞</button><span onclick="toggleCapErr('${id}');event.stopPropagation()" title="Añadir error a este cap" style="font-size:.42rem;cursor:pointer;color:var(--accent2);vertical-align:middle;margin-left:.15rem">⚠</span>${errBlock}<div class="tnotes-wrap" id="notes-${id}"><input class="tnote-input" placeholder="nota / duda..." onchange="saveNote('${id}',this.value)" onclick="event.stopPropagation()"></div></div>`;
+  return`<div class="ti" data-id="${id}" data-course="${course}" data-name="${safeName}"><div class="tck" onclick="ck(event,'${id}')" title="Sesión 1"></div><div class="tck2" onclick="ck2(event,'${id}')" title="Sesión 2"></div><span class="tn">${name}${lum}</span>${exBlock}<button class="db-cycle" onclick="sd(event,'${id}')">◆</button><span class="tlast" id="tl-${id}"></span><button class="tfb" onclick="sf(event,'${safeName}','${course}')">⊞</button><span onclick="toggleCapErr('${id}');event.stopPropagation()" title="Añadir error a este cap" style="font-size:.42rem;cursor:pointer;color:var(--accent2);vertical-align:middle;margin-left:.15rem">⚠</span>${errBlock}<div class="tnotes-wrap" id="notes-${id}"><input class="tnote-input" placeholder="nota / duda..." onchange="saveNote('${id}',this.value)" onclick="event.stopPropagation()"></div></div>`;
 }
 
 function renderPlanTopics(){
@@ -1267,6 +1271,35 @@ function renderPlanTopics(){
 
 <script>
   const KEY='uni-luis-v12';
+  // Mapas para sincronización calendario ↔ plan
+const SCHEDULE_COURSE_ROWS={
+  'Física':[1,3,5],'Geometría':[1,3,5],'Química':[1,3,5],
+  'Trigonometría':[7,9,11],'Álgebra':[7,9,11],'Aritmética':[7,9,11]
+};
+const SESION_FIELD={
+  'Física':{0:'done',3:'done2'},'Geometría':{1:'done',4:'done2'},'Química':{2:'done',5:'done2'},
+  'Trigonometría':{0:'done',3:'done2'},'Álgebra':{1:'done',4:'done2'},'Aritmética':{2:'done',5:'done2'}
+};
+const PRUEBA_AM={0:'Física',1:'Geometría',2:'Química',3:'Física',4:'Geometría',5:'Química'};
+const PRUEBA_PM={0:'Trigonometría',1:'Álgebra',2:'Aritmética',3:'Trigonometría',4:'Álgebra',5:'Aritmética'};
+function getCourseForCell(label,row,dow){
+  if(!label)return null;
+  const s=label.toLowerCase();
+  if(label===REST||label==='Dormir'||s.includes('descanso'))return null;
+  if(s.includes('física'))return 'Física';
+  if(s.includes('geometr'))return 'Geometría';
+  if(s.includes('química'))return 'Química';
+  if(s.includes('trigo'))return 'Trigonometría';
+  if(s.includes('álgebra'))return 'Álgebra';
+  if(s.includes('aritmética'))return 'Aritmética';
+  if(label==='Prueba y errores')return (row===5?PRUEBA_AM:dow?PRUEBA_PM:PRUEBA_PM)[dow]||null;
+  if(row===13){
+    const m={'RM':'Raz. Matemático','RV':'Raz. Verbal','Historia del Perú':'Historia del Perú','Historia Universal':'Historia Universal','Literatura':'Literatura','Lenguaje':'Lenguaje','Economia':'Economía','Geografia':'Geografía','Filosofía':'Filosofía','Actualidad':'Actualidad'};
+    return m[label]||null;
+  }
+  return null;
+}
+function dowFromDs(ds){return (new Date(ds+'T12:00:00').getDay()+6)%7;}
 
 // ── CURSOS ──
 const COURSES = {
@@ -1984,11 +2017,81 @@ function renderStudySchedule(){
   const template=info.template==='impar'?SCHEDULE_ODD:SCHEDULE_EVEN;
   const end=addDays(weekStart,6); const fmt=d=>d.toLocaleDateString('es-PE',{day:'numeric',month:'short'}).replace('.','');
   let grid='<div class="schedule-grid"><div class="sg-head">Hora</div>'+SCHEDULE_DAYS.map((d,i)=>'<div class="sg-head">'+d+'<br><span style="font-weight:400;color:var(--muted)">'+fmt(addDays(weekStart,i))+'</span></div>').join('');
-  SCHEDULE_TIMES.forEach((time,row)=>{grid+='<div class="sg-time">'+time+'</div>'+template[row].map(item=>'<div class="'+scheduleClass(item)+'">'+item+'</div>').join('');});
+    SCHEDULE_TIMES.forEach((time,row)=>{
+    grid+='<div class="sg-time">'+time+'</div>';
+    template[row].forEach((item,dow)=>{
+      const cls=scheduleClass(item);
+      const course=getCourseForCell(item,row,dow);
+      if(!course||dow===6){
+        grid+='<div class="'+cls+'">'+item+'</div>';
+        return;
+      }
+      const dateDs=localKey(addDays(weekStart,dow));
+      const key=dateDs+'::'+row;
+      const done=!!((S.scheduleChecks||{})[key]);
+      grid+='<div class="'+cls+' sg-check'+(done?' done':'')+'" data-key="'+key+'" onclick="toggleScheduleCheck(\''+key+'\')" title="'+dateDs+' · '+time+'">'+item+'<span class="sg-check-mark">'+(done?'✓':'○')+'</span></div>';
+    });
+  });
   grid+='</div>';
   el.innerHTML='<div class="schedule-head"><div class="schedule-title">Horario semanal · semana '+info.number+' ('+info.template+')</div><div class="schedule-meta">'+fmt(weekStart)+' – '+fmt(end)+' · periodo: 10 ago 2026 – 15 feb 2027</div><button class="schedule-nav" onclick="moveScheduleWeek(-1)">←</button><button class="schedule-nav" onclick="moveScheduleWeek(1)">→</button></div><div class="schedule-scroll">'+grid+'</div><div class="schedule-note">La plantilla superior se aplica en semanas impares; la inferior, en semanas pares. El calendario cubre hasta el 15 de febrero de 2027.</div>';}
 function moveScheduleWeek(delta){scheduleWeekOffset+=delta;renderStudySchedule();}
-
+function toggleScheduleCheck(key){
+  if(!S.scheduleChecks)S.scheduleChecks={};
+  S.scheduleChecks[key]=!S.scheduleChecks[key];
+  save();
+  renderStudySchedule();
+  syncPlanFromDay(key);
+  if(document.getElementById('view-home')?.classList.contains('active'))renderHomeCapActual();
+}
+function findFirstPendingTopicOfCourse(course){
+  const td=today();
+  const aw=WSCHED.find(w=>td>=w.s&&td<=w.e);
+  if(!aw)return null;
+  return aw.topics.find(id=>{
+    const c=Object.keys(TOPICS).find(k=>TOPICS[k]&&TOPICS[k][id]);
+    return c===course && !(S.t||{})[id]?.done;
+  })||null;
+}
+function syncPlanFromDay(key){
+  const parts=key.split('::');
+  const ds=parts[0];
+  const row=Number(parts[1]);
+  const info=scheduleWeekFor(ds);
+  if(!info)return;
+  const template=info.template==='impar'?SCHEDULE_ODD:SCHEDULE_EVEN;
+  const dow=dowFromDs(ds);
+  if(dow===6)return;
+  const course=getCourseForCell(template[row][dow],row,dow);
+  if(!course||!SCHEDULE_COURSE_ROWS[course])return;
+  const fieldMap=SESION_FIELD[course];
+  const field=fieldMap[dow];
+  if(!field)return;
+  const rows=SCHEDULE_COURSE_ROWS[course];
+  const allDone=rows.every(r=>S.scheduleChecks[ds+'::'+r]);
+  const topicId=findFirstPendingTopicOfCourse(course);
+  if(!topicId)return;
+  if(!S.t)S.t={};S.t[topicId]=S.t[topicId]||{};
+  S.t[topicId][field]=allDone;
+  if(field==='done'&&allDone)S.t[topicId].completedAt=Date.now();
+  save();renderT();
+}
+function markSessionBlocks(course, sessionIdx, value){
+  const td=today();
+  const aw=WSCHED.find(w=>td>=w.s&&td<=w.e);
+  if(!aw)return;
+  const info=scheduleWeekFor(td);
+  if(!info)return;
+  const dowMap={ 'Física':[0,3],'Geometría':[1,4],'Química':[2,5],'Trigonometría':[0,3],'Álgebra':[1,4],'Aritmética':[2,5] };
+  const dow=dowMap[course]?.[sessionIdx];
+  if(dow===undefined)return;
+  const rows=SCHEDULE_COURSE_ROWS[course];
+  if(!rows)return;
+  const monday=addDays(new Date(info.start),0);
+  const dateDs=localKey(addDays(monday,dow));
+  if(!S.scheduleChecks)S.scheduleChecks={};
+  rows.forEach(r=>{ S.scheduleChecks[dateDs+'::'+r]=value; });
+  save();renderStudySchedule();
+}
 function load(){
   try{
     let raw=localStorage.getItem(KEY);
@@ -2018,6 +2121,7 @@ function migrateData(){
   if(!S.checklist)S.checklist={};
   if(!S.sessions)S.sessions=[];
   if(!S.dailySegments)S.dailySegments={};
+  if(!S.scheduleChecks)S.scheduleChecks={};
   if(S._v>=DATA_VERSION){migrateSessionsFromHours();return;}
   S._v=DATA_VERSION;
   migrateSessionsFromHours();
@@ -2207,6 +2311,15 @@ function updateRhythm(){
 }
 
 // ── TOPIC CHECK ──
+function ck2(e,id){
+  e.stopPropagation();
+  if(!S.t)S.t={};S.t[id]=S.t[id]||{};
+  S.t[id].done2=!S.t[id].done2;
+  S.t[id].ls2=Date.now();
+  const info=findTopicInfo(id);
+  if(info.curso)markSessionBlocks(info.curso,1,S.t[id].done2);
+  renderT();save();ls();renderStudySchedule();
+}
 function ck(e,id){
   e.stopPropagation();
   if(!S.t)S.t={};S.t[id]=S.t[id]||{};
@@ -2244,6 +2357,8 @@ function ck(e,id){
   renderT();save();prog();ls();updateRhythm();detectWeek();
   renderSpacedReviewAlert();
   renderAllExBadges();
+  const info=findTopicInfo(id);
+  if(info.curso)markSessionBlocks(info.curso,0,S.t[id].done);
   if(weekPendingFilter)filterWeekPending(true);
 }
 function sd(e,id){
@@ -2316,6 +2431,11 @@ function renderT(){
     const ck=el.querySelector('.tck');
     if(data.done){el.classList.add('done');ck.textContent='✓';}
     else{el.classList.remove('done');ck.textContent='';}
+    const ck2=el.querySelector('.tck2');
+    if(ck2){
+      if(data.done2){ck2.classList.add('done');ck2.textContent='✓';}
+      else{ck2.classList.remove('done');ck2.textContent='';}
+    }
     const db=el.querySelector('.db-cycle');
     if(db){
       db.classList.remove('df','dm','dp');
@@ -2346,8 +2466,10 @@ function ls(){
   if(!S.t)return;
   const now=Date.now();
   for(const[id,data]of Object.entries(S.t)){
-    const el=document.getElementById('tl-'+id);if(!el||!data.ls)continue;
-    const d=Math.floor((now-data.ls)/86400000);
+    const el=document.getElementById('tl-'+id);if(!el)continue;
+    const lastTs=Math.max(data.ls||0,data.ls2||0);
+    if(!lastTs)continue;
+    const d=Math.floor((now-lastTs)/86400000);
     if(d===0){el.textContent='hoy';el.className='tlast';}
     else if(d===1){el.textContent='ayer';el.className='tlast';}
     else{el.textContent='hace '+d+'d';el.className='tlast'+(d>=7?' warn':'');}
@@ -4941,20 +5063,83 @@ function renderHomeAccion(){
   el.textContent='Continuar: '+topicName;
   sub.textContent=course+' · Faltan '+pending.length+' caps · Meta hoy: '+need+' cap'+(need===1?'':'s');
 }
-
+function timeToMinByRow(rowIdx,timeStr){
+  const parts=timeStr.split(':');
+  const h=Number(parts[0]),m=Number(parts[1]);
+  let hh=h;
+  if(rowIdx<=5) hh=h;
+  else if(rowIdx===6) hh=12;
+  else if(rowIdx>=7&&rowIdx<=16) hh=h+12;
+  else if(rowIdx===17) hh=23;
+  return hh*60+m;
+}
+function getCurrentScheduleTopic(){
+  const now=new Date();
+  const ds=localKey(now);
+  const info=scheduleWeekFor(ds);
+  if(!info)return null;
+  const template=info.template==='impar'?SCHEDULE_ODD:SCHEDULE_EVEN;
+  const dow=(now.getDay()+6)%7;
+  if(dow===6)return null;
+  const nowMin=now.getHours()*60+now.getMinutes();
+  const mins=SCHEDULE_TIMES.map((t,i)=>timeToMinByRow(i,t));
+  let row=-1;
+  for(let i=0;i<mins.length;i++){if(mins[i]<=nowMin)row=i;else break;}
+  if(row<0)return null;
+  const blockLabel=template[row][dow];
+  if(!blockLabel)return null;
+  const s=blockLabel.toLowerCase();
+  if(blockLabel===REST||blockLabel==='Dormir'||s.includes('descanso'))return null;
+  let course=null;
+  if(s.includes('física'))course='Física';
+  else if(s.includes('geometr'))course='Geometría';
+  else if(s.includes('química'))course='Química';
+  else if(s.includes('trigo'))course='Trigonometría';
+  else if(s.includes('álgebra'))course='Álgebra';
+  else if(s.includes('aritmética'))course='Aritmética';
+  else if(blockLabel==='RM')course='Raz. Matemático';
+  else if(blockLabel==='RV')course='Raz. Verbal';
+  else if(s.includes('historia del perú'))course='Historia del Perú';
+  else if(s.includes('historia universal'))course='Historia Universal';
+  else if(s.includes('economia')||s.includes('economía'))course='Economía';
+  else if(s.includes('literatura'))course='Literatura';
+  else if(s.includes('lenguaje'))course='Lenguaje';
+  else if(s.includes('geografia')||s.includes('geografía'))course='Geografía';
+  else if(s.includes('filosofía')||s.includes('filosofia'))course='Filosofía';
+  return {course,blockLabel,time:SCHEDULE_TIMES[row],dow,row};
+}
 function renderHomeCapActual(){
-  const aw=getActiveWeek();
   const el=document.getElementById('homeCapActual');
   const sub=document.getElementById('homeCursoActual');
-  if(!el||!sub||!aw)return;
+  if(!el||!sub)return;
+  const aw=getActiveWeek();
+  const current=getCurrentScheduleTopic();
+
+  // 1) Si hay bloque en el horario ahora, úsalo
+  if(current && current.course && aw){
+    const topicId=aw.topics.find(id=>{
+      const c=Object.keys(TOPICS).find(k=>TOPICS[k]&&TOPICS[k][id]);
+      return c===current.course && !(S.t||{})[id]?.done;
+    });
+    if(topicId){
+      const info=findTopicInfo(topicId);
+      el.textContent=info.tema;
+      sub.textContent=info.curso+' · ahora: '+current.blockLabel+' ('+current.time+')';
+      return;
+    }
+    el.textContent=current.blockLabel;
+    sub.textContent='Ahora: '+current.time+' · sin caps pendientes de '+current.course;
+    return;
+  }
+
+  // 2) Fallback: primer capítulo pendiente de la semana
+  if(!aw){el.textContent='—';sub.textContent='Sin semana activa';return;}
   const pending=aw.topics.filter(id=>!(S.t||{})[id]?.done);
   if(!pending.length){el.textContent='Semana ✓';sub.textContent='Todos los caps completados.';return;}
   const id=pending[0];
-  const topicEl=document.querySelector('[data-id="'+id+'"]');
-  const name=topicEl?.dataset.name||id;
-  const course=topicEl?.dataset.course||'';
-  el.textContent=name;
-  sub.textContent=course+' · Semana '+aw.id+' ('+aw.s+' – '+aw.e+')';
+  const info=findTopicInfo(id);
+  el.textContent=info.tema;
+  sub.textContent=info.curso+' · Semana '+aw.id+' ('+aw.s+' – '+aw.e+')';
 }
 
 function renderHomePendienteHoy(){
@@ -5263,7 +5448,7 @@ setPlanTab(S.planTab||'ciencias');
   const origSV=showView;
   window.showView=function(name,btn){origSV(name,btn);localStorage.setItem('uni-last-view',name);};
 })();
-setInterval(ls,3600000);setInterval(updateRhythm,60000);setInterval(updateSidebar,60000);
+setInterval(()=>{if(document.getElementById('view-home')?.classList.contains('active'))renderHomeCapActual();},60000);
 setInterval(()=>{updateRhythmProjection();renderHighLoadAlerts();renderPreOpReview();renderEnhancements();},120000);
 
 // ── FASE 1: MOTOR IA + PRESETS + INTEGRACIÓN GEMINI ──
