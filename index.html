@@ -791,33 +791,9 @@ body.print-week .week.print-hide{display:none!important}
 <button class="sb-btn" onclick="showView('flashcards',this)"><span class="icon">🃏</span>Flashcards</button>
 <button class="sb-btn" onclick="showView('calendar',this)"><span class="icon">📅</span>Calendario</button>
 <button class="sb-btn" onclick="showView('notes',this)"><span class="icon">✏️</span>Notas globales</button>
-  <div class="sb-section">Herramientas</div>
-  <button class="sb-btn" onclick="enterF()"><span class="icon">⊞</span>Modo enfoque</button>
-  <button class="sb-btn" onclick="enterExamMode()"><span class="icon">🎯</span>Modo examen</button>
-  <button class="sb-btn" onclick="window.print()"><span class="icon">🖨</span>Imprimir plan</button>
-  <button class="sb-btn" onclick="exportTxt()"><span class="icon">📄</span>Exportar resumen</button>
-  <button class="sb-btn" onclick="exportB()"><span class="icon">⬇</span>Backup JSON</button>
-  <button class="sb-btn" onclick="document.getElementById(&#39;importfile&#39;).click()"><span class="icon">⬆</span>Importar backup</button>
-  <input type="file" id="importfile" accept=".json" style="display:none" onchange="importB(this)">
-  <button class="sb-btn" onclick="toggleTheme()"><span class="icon">◐</span>Tema claro / oscuro</button>
-  <button class="sb-btn" onclick="printActiveWeek()"><span class="icon">🖨</span>Imprimir semana activa</button>
-  <button class="sb-btn" onclick="exportB()"><span class="icon">☁</span>Backup (sincronizar)</button>
-  
-  <div class="sb-section">Sync automático</div>
-  <div id="syncStatus" style="font-size:.5rem;color:var(--muted);padding:.2rem .4rem;margin-bottom:.2rem">○ sin configurar</div>
-  <button class="sb-btn" onclick="openSyncConfig()"><span class="icon">☁</span>Configurar sync</button>
-  <button class="sb-btn" onclick="pullFromCloud({notify:true})"><span class="icon">⬇</span>Forzar pull</button>
-  <button class="sb-btn" onclick="pushToCloud()"><span class="icon">⬆</span>Forzar push</button>
-  <button class="sb-btn" onclick="clearSyncConfig()"><span class="icon">✕</span>Borrar config sync</button>
-  <div class="sb-section">Sync manual (WhatsApp)</div>
-  <button class="sb-btn" onclick="exportForSync()"><span class="icon">📤</span>Exportar para WhatsApp</button>
-  <button class="sb-btn" onclick="document.getElementById(&#39;syncfile&#39;).click()"><span class="icon">📥</span>Importar desde WhatsApp</button>
-  <input type="file" id="syncfile" accept=".json" style="display:none" onchange="importFromSync(this.files[0])">
-  
-  <div class="sb-section">Personalización</div>
-  <button class="sb-btn" onclick="openThemeConfig()"><span class="icon">🎨</span>Configurar tema</button>
-  <button class="sb-btn" onclick="resetTheme()"><span class="icon">↺</span>Resetear tema</button>
-  <div class="sb-sub" id="syncHint" style="margin-top:.3rem;line-height:1.4"></div>
+<div class="sb-section">Sistema</div>
+<button class="sb-btn" onclick="openConfigPanel()"><span class="icon">⚙</span>Configuración<span id="cfgSyncDot" style="color:var(--muted);margin-left:auto;font-size:.55rem">○</span></button>
+<input type="file" id="syncfile" accept=".json" style="display:none" onchange="importFromSync(this.files[0])">
 </aside>
 
 <!-- MAIN -->
@@ -1238,10 +1214,9 @@ body.print-week .week.print-hide{display:none!important}
   </div>
 
   <div class="backup-row">
-    <button class="backup-btn" onclick="exportB()">⬇ exportar backup</button>
-    <button class="backup-btn imp" onclick="document.getElementById(&#39;importfile2&#39;).click()">⬆ importar backup</button>
+    <button class="backup-btn" onclick="exportForSync()">⬇ exportar backup</button>
+    <button class="backup-btn imp" onclick="document.getElementById('syncfile').click()">⬆ importar backup</button>
     <button class="backup-btn" onclick="exportTxt()" style="border-color: var(--accent3); color: var(--accent3);">📄 exportar resumen TXT</button>
-    <input type="file" id="importfile2" accept=".json" style="display:none" onchange="importB(this)">
   </div>
 </div><!-- /view-stats -->
 
@@ -3802,7 +3777,7 @@ function exitF(){document.getElementById('fov').classList.remove('on');}
 let emTimerInt=null,emSec=300,emRunning=false;
 function enterExamMode(){
   const errs=S.errors||[];
-  if(!errs.length){alert('Añade errores al registro primero.');return;}
+  if(!errs.length){showToast('Añade errores al registro primero.');return;}
   emSec=300;emRunning=false;
   document.getElementById('examOv').classList.add('on');
   emNext();
@@ -3930,11 +3905,11 @@ async function selectUniFolder(){
     await saveDirHandle(uniDirHandle);
     document.getElementById('uniFolderStatus').textContent='✓ Seleccionada';
     document.getElementById('uniFolderStatus').style.color='var(--accent3)';
-    alert('Carpeta UNI seleccionada correctamente.');
+    showToast('Carpeta UNI seleccionada correctamente.');
     save();
   }catch(err){
     if(err.name!=='AbortError'){
-      alert('Error al seleccionar carpeta: '+err.message);
+      showToast('Error al seleccionar carpeta: '+err.message);
     }
   }
 }
@@ -4724,7 +4699,7 @@ function clearAllData(){
     S={};
     save();
     renderAll();
-    alert('Datos borrados. La página se recargará.');
+    showToast('Datos borrados. La página se recargará.');
     location.reload();
   }
 }
@@ -5020,11 +4995,11 @@ async function importFromSync(file){
         loadThemePreference();
       }
       renderAll();
-      alert('✓ Datos sincronizados correctamente. La página se recargará.');
+      showToast('✓ Datos sincronizados correctamente. La página se recargará.', 'success');
       setTimeout(()=>location.reload(),1000);
     }
   }catch(err){
-    alert('Error al importar datos: '+err.message);
+    showToast('Error al importar datos: '+err.message, 'error');
   }
 }
 
@@ -5556,7 +5531,7 @@ function addSimLogEntry(){
   const type=typeEl?.value||'Mixto';
   const score=parseInt(scoreEl?.value,10);
   const fails=(failsEl?.value||'').split(',').map(s=>s.trim()).filter(Boolean);
-  if(isNaN(score)){alert('Ingresa una nota válida (0-100)');return;}
+  if(isNaN(score)){showToast('Ingresa una nota válida (0-100)');return;}
   if(!S.simLog)S.simLog=[];
   S.simLog.unshift({date,type,score,fails,ts:Date.now()});
   if(S.simLog.length>50)S.simLog=S.simLog.slice(0,50);
@@ -5591,7 +5566,7 @@ function generateMiniSimFromErrors(){
     }
   }
   const pool=[...errs.map(e=>'Error: '+e),...heavy.map(n=>'Repasar cap pesado: '+n)];
-  if(!pool.length){alert('No hay errores ni caps pesados para generar mini-sim.');return;}
+  if(!pool.length){showToast('No hay errores ni caps pesados para generar mini-sim.');return;}
   const n=Math.min(8,pool.length);
   const picked=[];
   const copy=pool.slice();
@@ -5600,11 +5575,11 @@ function generateMiniSimFromErrors(){
   if(el){
     showView('bank',null);
     el.innerHTML='<div style="margin-top:.5rem"><strong>Mini-simulacro ('+n+' ítems)</strong><ol style="margin:.4rem 0 0 1rem;font-size:.58rem">'+picked.map((p,i)=>'<li style="margin:.2rem 0">'+p+'</li>').join('')+'</ol></div>';
-  }else alert(picked.join('\n'));
+  }else showToast(picked.join('\n'));
 }
 function printActiveWeek(){
   const aw=getActiveWeek();
-  if(!aw){alert('No hay semana activa.');return;}
+  if(!aw){showToast('No hay semana activa.');return;}
   const wasPendingFilter=weekPendingFilter;
   document.querySelectorAll('.week').forEach(w=>{
     const isActive=w.id==='week-'+aw.id;
@@ -5626,13 +5601,11 @@ function printActiveWeek(){
   },800);
 }
 function renderSyncHint(){
-  const el=document.getElementById('syncHint');
-  if(!el)return;
-  const t=S._savedAt?new Date(S._savedAt).toLocaleString('es-PE'):'nunca';
-  let hint='Último guardado: '+t+'. Exporta backup para copiar a otro dispositivo.';
-  const td=today();
-  if(td>='2026-07-01'&&td<='2026-07-31')hint+=' · '+SURGERY_NOTE;
-  el.textContent=hint;
+  const el=document.getElementById('cfgSyncHint');
+  if(el){
+    const t=S._savedAt?new Date(S._savedAt).toLocaleString('es-PE'):'nunca';
+    el.textContent='Último guardado local: '+t;
+  }
 }
 function toggleFab(){document.getElementById('fabWrap')?.classList.toggle('open');}
 function fabAction(kind){
@@ -6832,7 +6805,7 @@ function handleContinueStudy(){
   const rec=StudyPrioritizer.getRecommendation();
   
   if(rec.type==='none'||rec.type==='complete'){
-    alert(rec.reason);
+    showToast(rec.reason);
     return;
   }
   
@@ -7308,16 +7281,6 @@ function injectAIStyles(){
 function initAIComponents(){
   injectAIStyles();
   renderContinueStudyButton();
-  
-  // Agregar botón de configuración AI al sidebar
-  const sidebar=document.querySelector('.sidebar');
-  if(sidebar){
-    const aiConfigBtn=document.createElement('button');
-    aiConfigBtn.className='sb-btn';
-    aiConfigBtn.innerHTML='<span class="icon">🤖</span>Configurar IA';
-    aiConfigBtn.onclick=openAIConfig;
-    sidebar.appendChild(aiConfigBtn);
-  }
 }
 
 
@@ -7356,10 +7319,10 @@ function chronoToggle(){
     clearInterval(chronoInt);
     const course=document.getElementById('chronoCourse').value;
     const topicId=document.getElementById('chronoTopic').value;
-    if(!course||!topicId){alert('Selecciona curso y tema');chronoReset();return;}
+    if(!course||!topicId){showToast('Selecciona curso y tema');chronoReset();return;}
     const total=chronoCounts.easy+chronoCounts.hard+chronoCounts.skipped+chronoCounts.failed;
-    if(total===0){alert('No registraste ningún problema');chronoReset();return;}
-    if(chronoSecs<5){alert('Muy corto, no se guardó');chronoReset();return;}
+    if(total===0){showToast('No registraste ningún problema');chronoReset();return;}
+    if(chronoSecs<5){showToast('Muy corto, no se guardó');chronoReset();return;}
     if(!S.speedSessions)S.speedSessions=[];
     const topicName=TOPICS[course]?.[topicId]||topicId;
     S.speedSessions.push({
@@ -7414,7 +7377,7 @@ function chronoToggle(){
     // Iniciar sesión
     const course=document.getElementById('chronoCourse').value;
     const topicId=document.getElementById('chronoTopic').value;
-    if(!course||!topicId){alert('Selecciona curso y tema primero');return;}
+    if(!course||!topicId){showToast('Selecciona curso y tema primero');return;}
     // Aviso si el pomodoro está activo: no duplica horas, pero es bueno saberlo
     if(pRun){
       const meta=document.getElementById('chronoMeta');
@@ -7526,7 +7489,7 @@ function renderMathEverywhere(){
   });
 }
 function delFC(){
-  if(!_fcQueue||!_fcQueue.length){alert('No hay tarjeta activa.');return;}
+  if(!_fcQueue||!_fcQueue.length){showToast('No hay tarjeta activa.');return;}
   const card=_fcQueue[0];
   if(!confirm('¿Borrar esta tarjeta?\n\n'+card.q.slice(0,80)))return;
   const idx=S.fc.findIndex(c=>c===card||(c.q===card.q&&c.a===card.a&&c.course===card.course));
@@ -7905,14 +7868,6 @@ function setSyncConfig(c){localStorage.setItem(SYNC_KEY,JSON.stringify(c));}
 function hasSyncConfig(){const c=getSyncConfig();return !!(c.token&&c.gistId);}
 let _syncDebounce=null;
 
-function updateSyncStatusUI(state,msg){
-  const el=document.getElementById('syncStatus');
-  if(!el)return;
-  const icons={idle:'○',syncing:'⟳',ok:'●',error:'⚠'};
-  const colors={idle:'var(--muted)',syncing:'var(--accent4)',ok:'var(--accent3)',error:'var(--accent2)'};
-  el.innerHTML='<span style="color:'+colors[state]+'">'+icons[state]+'</span> '+(msg||'');
-}
-
 function schedulePush(){
   if(!hasSyncConfig())return;
   clearTimeout(_syncDebounce);
@@ -7944,7 +7899,7 @@ async function pullFromCloud(opts){
   opts=opts||{};
   const cfg=getSyncConfig();
   if(!cfg.token||!cfg.gistId){
-    if(opts.notify)alert('Configurá el sync primero.');
+    if(opts.notify)showToast('Configurá el sync primero.');
     return false;
   }
   updateSyncStatusUI('syncing','bajando...');
@@ -7957,7 +7912,7 @@ async function pullFromCloud(opts){
     const data=await res.json();
     const file=data.files['uni-state.json'];
     if(!file||!file.content||file.content.trim()==='{}'){
-      if(opts.notify)alert('El gist está vacío. Subiendo estado local...');
+      if(opts.notify)showToast('El gist está vacío. Subiendo estado local...');
       await pushToCloud();
       return true;
     }
@@ -7968,43 +7923,19 @@ async function pullFromCloud(opts){
       S=remote;
       localStorage.setItem(KEY,JSON.stringify(S));
       updateSyncStatusUI('ok','aplicando remoto...');
-      if(opts.notify)alert('Estado remoto aplicado. Recargando...');
+      if(opts.notify)showToast('Estado remoto aplicado. Recargando...');
       location.reload();
       return true;
     }else{
       await pushToCloud();
-      if(opts.notify)alert('Tu estado local es más reciente. Subido al gist.');
+      if(opts.notify)showToast('Tu estado local es más reciente. Subido al gist.');
       return true;
     }
   }catch(e){
     updateSyncStatusUI('error','falló: '+e.message);
-    if(opts.notify)alert('Error: '+e.message);
+    if(opts.notify)showToast('Error: '+e.message);
     return false;
   }
-}
-
-function openSyncConfig(){
-  const cfg=getSyncConfig();
-  const token=prompt(
-    'Pegá tu token de GitHub (scope: gist)\n\n'+
-    'Si no tenés:\n'+
-    '1. github.com/settings/tokens → Generate new token (classic)\n'+
-    '2. Marcá SOLO la casilla "gist"\n'+
-    '3. Copiá el ghp_... acá',
-    cfg.token||''
-  );
-  if(token===null)return;
-  const gistId=prompt(
-    'Pegá el ID del gist\n\n'+
-    'Creá uno en gist.github.com con un archivo llamado exactamente "uni-state.json" que contenga {}\n'+
-    'El ID es la parte final de la URL: gist.github.com/usuario/ESTE_ES_EL_ID',
-    cfg.gistId||''
-  );
-  if(gistId===null)return;
-  setSyncConfig({token:token.trim(),gistId:gistId.trim()});
-  updateSyncStatusUI('ok','configurado');
-  alert('✓ Configurado. Probando conexión...');
-  pullFromCloud({notify:true});
 }
 
 function clearSyncConfig(){
@@ -8012,7 +7943,159 @@ function clearSyncConfig(){
   localStorage.removeItem(SYNC_KEY);
   updateSyncStatusUI('idle','sin configurar');
 }
+function updateSyncStatusUI(state,msg){
+  const el=document.getElementById('cfgSyncDot');
+  const icons={idle:'○',syncing:'⟳',ok:'●',error:'⚠'};
+  const colors={idle:'var(--muted)',syncing:'var(--accent4)',ok:'var(--accent3)',error:'var(--accent2)'};
+  if(el){
+    el.textContent=icons[state];
+    el.style.color=colors[state];
+    el.title=msg||'';
+  }
+  const panelStatus=document.getElementById('cfgSyncStatus');
+  if(panelStatus){
+    const t=msg||icons[state];
+    panelStatus.innerHTML='<span style="color:'+colors[state]+'">'+icons[state]+'</span> '+t;
+  }
+}
 
+function openConfigPanel(){
+  document.getElementById('_cfgPanel')?.remove();
+  const cfg=getSyncConfig();
+  const hasIA=hasGeminiApiKey();
+  const curModel=localStorage.getItem('uni-gemini-model')||'';
+
+  const m=document.createElement('div');
+  m.id='_cfgPanel';
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:3000;display:flex;align-items:center;justify-content:center;padding:1rem';
+  m.onclick=(e)=>{if(e.target===m)closeConfigPanel();};
+
+  const sectionTitle=(icon,txt,first)=>{
+    return '<div style="font-size:.55rem;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:.6rem;'+(first?'':'border-top:1px solid var(--border);padding-top:1rem;margin-top:.4rem')+'">'+icon+' '+txt+'</div>';
+  };
+
+  m.innerHTML=`
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;max-width:560px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+      <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:.7rem">
+        <span style="font-size:1.2rem">⚙</span>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;color:var(--accent);flex:1">Configuración</div>
+        <button onclick="closeConfigPanel()" style="background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;border-radius:4px;font-size:.7rem;padding:.15rem .4rem;line-height:1">✕</button>
+      </div>
+
+      ${sectionTitle('☁','Sincronización (GitHub Gist)',true)}
+
+      <div id="cfgSyncStatus" style="padding:.5rem .7rem;background:var(--bg);border-radius:6px;font-size:.55rem;color:var(--muted);margin-bottom:.7rem;line-height:1.5">
+        ${(cfg.token&&cfg.gistId)?'● Configurado':'○ Sin configurar'}
+      </div>
+
+      <label style="display:block;font-size:.5rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.25rem">Token de GitHub (classic, scope: gist)</label>
+      <input type="password" id="_cfgToken" value="${(cfg.token||'').replace(/"/g,'&quot;')}" placeholder="ghp_..." style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:.45rem .55rem;font-family:'DM Mono',monospace;font-size:.55rem;border-radius:4px;outline:none;margin-bottom:.5rem">
+
+      <label style="display:block;font-size:.5rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.25rem">Gist ID</label>
+      <input type="text" id="_cfgGist" value="${(cfg.gistId||'').replace(/"/g,'&quot;')}" placeholder="abc123..." style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:.45rem .55rem;font-family:'DM Mono',monospace;font-size:.55rem;border-radius:4px;outline:none;margin-bottom:.5rem">
+
+      <div style="font-size:.48rem;color:var(--muted);line-height:1.5;margin-bottom:.6rem;padding:.5rem .6rem;background:var(--bg);border-radius:4px">
+        <strong style="color:var(--text)">Setup:</strong> token classic (<code style="background:var(--card);padding:.05rem .25rem;border-radius:2px">github.com/settings/tokens</code>, marcá solo <code style="background:var(--card);padding:.05rem .25rem;border-radius:2px">gist</code>) + gist secreto con archivo <code style="background:var(--card);padding:.05rem .25rem;border-radius:2px">uni-state.json</code> que contenga <code style="background:var(--card);padding:.05rem .25rem;border-radius:2px">{}</code>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.4rem">
+        <button onclick="cfgSaveSync()" style="padding:.5rem;background:var(--accent);color:#000;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem;font-weight:700">💾 Guardar</button>
+        <button onclick="cfgTestSync()" style="padding:.5rem;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem">🔍 Probar</button>
+        <button onclick="pullFromCloud({notify:true})" style="padding:.5rem;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem">⬇ Bajar</button>
+        <button onclick="pushToCloud()" style="padding:.5rem;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem">⬆ Subir</button>
+      </div>
+
+      <button onclick="cfgClearSync()" style="width:100%;padding:.35rem;background:transparent;border:1px solid #4a1a1a;color:var(--accent2);border-radius:6px;cursor:pointer;font-family:inherit;font-size:.5rem">✕ Borrar config de sync</button>
+
+      ${sectionTitle('🤖','IA (Gemini)')}
+
+      <div id="cfgIAStatus" style="padding:.5rem .7rem;background:var(--bg);border-radius:6px;font-size:.55rem;color:var(--muted);margin-bottom:.7rem;line-height:1.5">
+        ${hasIA?'● API key configurada'+(curModel?' · modelo: <strong>'+curModel+'</strong>':''):'○ Sin configurar'}
+      </div>
+
+      <label style="display:block;font-size:.5rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.25rem">API Key (aistudio.google.com)</label>
+      <input type="password" id="_cfgIAKey" value="${(getGeminiApiKey()||'').replace(/"/g,'&quot;')}" placeholder="AIza..." style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:.45rem .55rem;font-family:'DM Mono',monospace;font-size:.55rem;border-radius:4px;outline:none;margin-bottom:.5rem">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">
+        <button onclick="cfgSaveIA()" style="padding:.5rem;background:var(--accent3);color:#000;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem;font-weight:700">💾 Guardar key</button>
+        <button onclick="openAIConfig()" style="padding:.5rem;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem">🔍 Elegir modelo</button>
+      </div>
+
+      ${sectionTitle('💾','Backup manual (WhatsApp)')}
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">
+        <button onclick="exportForSync()" style="padding:.5rem;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem">📤 Exportar</button>
+        <button onclick="document.getElementById('syncfile').click()" style="padding:.5rem;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem">📥 Importar</button>
+      </div>
+
+      ${sectionTitle('🛠','Herramientas')}
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">
+        <button onclick="window.print();closeConfigPanel()" style="padding:.5rem;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem">🖨 Imprimir plan</button>
+        <button onclick="printActiveWeek();closeConfigPanel()" style="padding:.5rem;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem">🖨 Semana activa</button>
+        <button onclick="exportTxt()" style="padding:.5rem;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem">📄 Resumen TXT</button>
+        <button onclick="toggleTheme()" style="padding:.5rem;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem">◐ Tema claro/oscuro</button>
+      </div>
+
+      ${sectionTitle('🎨','Personalización del tema')}
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">
+        <button onclick="openThemeConfig()" style="padding:.5rem;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem">🎨 Configurar colores</button>
+        <button onclick="resetTheme()" style="padding:.5rem;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:6px;cursor:pointer;font-family:inherit;font-size:.55rem">↺ Resetear tema</button>
+      </div>
+
+      <div id="cfgSyncHint" style="font-size:.45rem;color:var(--muted);margin-top:1rem;line-height:1.4;text-align:center"></div>
+    </div>`;
+
+  document.body.appendChild(m);
+
+  const hintEl=document.getElementById('cfgSyncHint');
+  if(hintEl){
+    const t=S._savedAt?new Date(S._savedAt).toLocaleString('es-PE'):'nunca';
+    hintEl.textContent='Último guardado local: '+t;
+  }
+}
+
+function closeConfigPanel(){
+  document.getElementById('_cfgPanel')?.remove();
+}
+
+function cfgSaveSync(){
+  const token=(document.getElementById('_cfgToken')?.value||'').trim();
+  const gistId=(document.getElementById('_cfgGist')?.value||'').trim();
+  if(!token||!gistId){showToast('Completá los dos campos','error');return;}
+  if(!token.startsWith('ghp_')){
+    showToast('El token debe empezar con ghp_ (classic, no fine-grained)','error');
+    return;
+  }
+  setSyncConfig({token,gistId});
+  updateSyncStatusUI('syncing','probando...');
+  showToast('Guardado. Probando conexión...','success');
+  pullFromCloud({notify:true});
+}
+
+function cfgTestSync(){
+  const c=getSyncConfig();
+  if(!c.token||!c.gistId){showToast('Guardá primero','error');return;}
+  pullFromCloud({notify:true});
+}
+
+function cfgClearSync(){
+  if(!confirm('¿Borrar la configuración de sync de este dispositivo?\n\nEl gist en GitHub no se toca.'))return;
+  localStorage.removeItem(SYNC_KEY);
+  updateSyncStatusUI('idle','sin configurar');
+  closeConfigPanel();
+  showToast('Config de sync borrada','success');
+}
+
+function cfgSaveIA(){
+  const key=(document.getElementById('_cfgIAKey')?.value||'').trim();
+  if(!key){showToast('Pegá la API key','error');return;}
+  setGeminiApiKey(key);
+  showToast('API key guardada','success');
+  const st=document.getElementById('cfgIAStatus');
+  if(st)st.innerHTML='● API key configurada';
+}
 // ═══ FIN SYNC ═══
 
 // ── INIT ──
