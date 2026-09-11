@@ -2480,43 +2480,7 @@ function toggleSchedEdit(){
       : 'Arrastrá bloques para reorganizar tu horario.';
   }
 }
-// ── MODO EDICIÓN DEL HORARIO ──
-let _schedEditMode = false;
 
-function getSchedTpl(kind){
-  if(S.schedTpl && S.schedTpl[kind]) return S.schedTpl[kind];
-  return kind==='odd' ? SCHEDULE_ODD : SCHEDULE_EVEN;
-}
-function ensureSchedTpl(kind){
-  if(!S.schedTpl) S.schedTpl={};
-  if(!S.schedTpl[kind]){
-    const src = kind==='odd' ? SCHEDULE_ODD : SCHEDULE_EVEN;
-    S.schedTpl[kind] = src.map(r=>[...r]);
-  }
-  return S.schedTpl[kind];
-}
-function resetSchedTpl(){
-  if(!S.schedTpl) return;
-  S.schedTpl = {};
-  save();
-  renderStudySchedule();
-  showToast('✓ Horario restablecido','success');
-}
-function toggleSchedEdit(){
-  _schedEditMode = !_schedEditMode;
-  renderStudySchedule();
-  const btn = document.getElementById('schedEditBtn');
-  if(btn){
-    btn.textContent = _schedEditMode ? '✓ Terminar edición' : '✎ Editar horario';
-    btn.classList.toggle('active', _schedEditMode);
-  }
-  const hint = document.getElementById('schedEditHint');
-  if(hint){
-    hint.textContent = _schedEditMode
-      ? 'Arrastrá los bloques para reorganizar tu horario. Los cambios aplican a todas las semanas del mismo tipo.'
-      : 'Arrastrá bloques para reorganizar tu horario.';
-  }
-}
 function scheduleClass(text){
   if(!text)return '';
   const s=text.toLowerCase();
