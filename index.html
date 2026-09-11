@@ -13,16 +13,6 @@
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 <style>
-.schedule-grid .sg-cell{touch-action:manipulation}
-.schedule-grid .sg-cell[draggable="true"]{touch-action:none}
-.schedule-grid .sg-cell{transition:opacity .15s,outline .12s,background .12s}
-.schedule-grid .sg-cell[draggable="true"]{cursor:grab}
-.schedule-grid .sg-cell[draggable="true"]:active{cursor:grabbing}
-.schedule-grid .sg-cell.dragging{opacity:.35}
-.schedule-grid .sg-cell.drag-over{outline:2px dashed var(--accent);outline-offset:-2px;background:rgba(99,102,241,.12)}
-#schedEditBtn{font-size:.52rem;padding:.25rem .65rem;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:4px;cursor:pointer;font-family:'DM Mono',monospace;transition:all .15s}
-#schedEditBtn:hover{border-color:var(--accent);color:var(--accent)}
-#schedEditBtn.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700}
 .study-guided-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:2000;align-items:center;justify-content:center}
 .study-guided-modal.on{display:flex}  
 /* Plan tabs (Brawler-style) */
@@ -813,9 +803,15 @@ body.print-week .week.print-hide{display:none!important}
   <button class="sb-btn" onclick="printActiveWeek()"><span class="icon">🖨</span>Imprimir semana activa</button>
   <button class="sb-btn" onclick="exportB()"><span class="icon">☁</span>Backup (sincronizar)</button>
   
-  <div class="sb-section">Sincronización</div>
-  <button class="sb-btn" onclick="exportForSync()"><span class="icon">☁</span>Exportar para sync</button>
-  <button class="sb-btn" onclick="document.getElementById(&#39;syncfile&#39;).click()"><span class="icon">⬇</span>Importar desde sync</button>
+  <div class="sb-section">Sync automático</div>
+  <div id="syncStatus" style="font-size:.5rem;color:var(--muted);padding:.2rem .4rem;margin-bottom:.2rem">○ sin configurar</div>
+  <button class="sb-btn" onclick="openSyncConfig()"><span class="icon">☁</span>Configurar sync</button>
+  <button class="sb-btn" onclick="pullFromCloud({notify:true})"><span class="icon">⬇</span>Forzar pull</button>
+  <button class="sb-btn" onclick="pushToCloud()"><span class="icon">⬆</span>Forzar push</button>
+  <button class="sb-btn" onclick="clearSyncConfig()"><span class="icon">✕</span>Borrar config sync</button>
+  <div class="sb-section">Sync manual (WhatsApp)</div>
+  <button class="sb-btn" onclick="exportForSync()"><span class="icon">📤</span>Exportar para WhatsApp</button>
+  <button class="sb-btn" onclick="document.getElementById(&#39;syncfile&#39;).click()"><span class="icon">📥</span>Importar desde WhatsApp</button>
   <input type="file" id="syncfile" accept=".json" style="display:none" onchange="importFromSync(this.files[0])">
   
   <div class="sb-section">Personalización</div>
@@ -1391,15 +1387,7 @@ body.print-week .week.print-hide{display:none!important}
   <div class="tag">Calendario</div>
   <h1>Vista <span>mensual</span></h1>
   <div class="subtitle" style="margin-bottom:1.5rem">10 de agosto de 2026 – 15 de febrero de 2027 · horario alternado.</div>
-  <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
-  <span id="schedEditHint" style="font-size:.54rem;color:var(--muted)">Arrastrá bloques para reorganizar tu horario.</span>
-  <div style="margin-left:auto;display:flex;gap:.35rem">
-    <button id="schedEditBtn" onclick="toggleSchedEdit()">✎ Editar horario</button>
-    <button onclick="resetSchedTpl()" style="font-size:.52rem;padding:.25rem .65rem;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:4px;cursor:pointer;font-family:'DM Mono',monospace">↺ Resetear</button>
-  </div>
-</div>
-
-<div class="schedule-card" id="studySchedule" aria-label="Horario semanal alternado"></div>
+  <div class="schedule-card" id="studySchedule" aria-label="Horario semanal alternado"></div>
   <div id="calContainer"></div>
 </div>
 
@@ -1649,7 +1637,7 @@ function getTopicDependencyInfo(topicId){
 function showDepInfo(topicId){
   const info=getTopicDependencyInfo(topicId);
   const topicName=getTopic(topicId).name||topicId;
-  const course=getTopic(topicId).course;
+  const course=Object.keys(TOPICS).find(c=>TOPICS[c]?.[topicId]);
   let msg='📌 '+topicName+'\n\n';
 
   if(info.prereqs&&info.prereqs.length){
@@ -2492,7 +2480,43 @@ function toggleSchedEdit(){
       : 'Arrastrá bloques para reorganizar tu horario.';
   }
 }
+// ── MODO EDICIÓN DEL HORARIO ──
+let _schedEditMode = false;
 
+function getSchedTpl(kind){
+  if(S.schedTpl && S.schedTpl[kind]) return S.schedTpl[kind];
+  return kind==='odd' ? SCHEDULE_ODD : SCHEDULE_EVEN;
+}
+function ensureSchedTpl(kind){
+  if(!S.schedTpl) S.schedTpl={};
+  if(!S.schedTpl[kind]){
+    const src = kind==='odd' ? SCHEDULE_ODD : SCHEDULE_EVEN;
+    S.schedTpl[kind] = src.map(r=>[...r]);
+  }
+  return S.schedTpl[kind];
+}
+function resetSchedTpl(){
+  if(!S.schedTpl) return;
+  S.schedTpl = {};
+  save();
+  renderStudySchedule();
+  showToast('✓ Horario restablecido','success');
+}
+function toggleSchedEdit(){
+  _schedEditMode = !_schedEditMode;
+  renderStudySchedule();
+  const btn = document.getElementById('schedEditBtn');
+  if(btn){
+    btn.textContent = _schedEditMode ? '✓ Terminar edición' : '✎ Editar horario';
+    btn.classList.toggle('active', _schedEditMode);
+  }
+  const hint = document.getElementById('schedEditHint');
+  if(hint){
+    hint.textContent = _schedEditMode
+      ? 'Arrastrá los bloques para reorganizar tu horario. Los cambios aplican a todas las semanas del mismo tipo.'
+      : 'Arrastrá bloques para reorganizar tu horario.';
+  }
+}
 function scheduleClass(text){
   if(!text)return '';
   const s=text.toLowerCase();
@@ -2554,139 +2578,7 @@ function renderStudySchedule(){
     });
   });
   grid+='</div>';
-    el.innerHTML='<div class="schedule-head"><div class="schedule-title">Horario semanal · semana '+info.number+' ('+info.template+')</div><div class="schedule-meta">'+fmt(weekStart)+' – '+fmt(end)+' · periodo: 10 ago 2026 – 15 feb 2027</div><button class="schedule-nav" onclick="moveScheduleWeek(-1)">←</button><button class="schedule-nav" onclick="moveScheduleWeek(1)">→</button></div><div class="schedule-scroll">'+grid+'</div><div class="schedule-note">La plantilla superior se aplica en semanas impares; la inferior, en semanas pares. El calendario cubre hasta el 15 de febrero de 2027.</div>';
-  attachScheduleDragHandlers(el);
-}
-// ── DRAG AND DROP DEL HORARIO (solo en modo edición) ──
-let _schedDragSrc = null;
-let _schedTouchSrc = null;
-let _schedGhost = null;
-let _schedDropTarget = null;
-function attachScheduleDragHandlers(root){
-  root.querySelectorAll('.sg-cell').forEach(cell=>{
-    const row = Number(cell.dataset.row);
-    const dow = Number(cell.dataset.dow);
-    const item = cell.dataset.item;
-
-    // Click normal → toggle check (fuera de modo edición)
-    if(cell.dataset.hasCheck === '1'){
-      cell.addEventListener('click', e=>{
-        if(_schedEditMode) return;
-        if(cell.dataset.justDragged === '1'){ delete cell.dataset.justDragged; return; }
-        toggleScheduleCheck(cell.dataset.key);
-      });
-    }
-
-    if(cell.draggable){
-      // ── Drag nativo (mouse) ──
-      cell.addEventListener('dragstart', e=>{
-        _schedDragSrc = { row, dow, kind: cell.dataset.kind };
-        e.dataTransfer.setData('text/plain', JSON.stringify(_schedDragSrc));
-        e.dataTransfer.effectAllowed = 'move';
-        cell.classList.add('dragging');
-      });
-      cell.addEventListener('dragend', ()=>{
-        cell.classList.remove('dragging');
-        root.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));
-        cell.dataset.justDragged = '1';
-        setTimeout(()=>{ delete cell.dataset.justDragged; }, 50);
-      });
-
-      // ── Touch (celular) ──
-      cell.addEventListener('contextmenu', e=>e.preventDefault());
-
-      cell.addEventListener('touchstart', e=>{
-        if(!_schedEditMode) return;
-        const t = e.touches[0];
-        _schedTouchSrc = { row, dow, kind: cell.dataset.kind };
-        cell.classList.add('dragging');
-        _schedGhost = cell.cloneNode(true);
-        _schedGhost.style.cssText =
-          'position:fixed;pointer-events:none;z-index:9999;opacity:.85;'+
-          'width:'+cell.offsetWidth+'px;height:'+cell.offsetHeight+'px;'+
-          'left:'+(t.clientX-cell.offsetWidth/2)+'px;'+
-          'top:'+(t.clientY-cell.offsetHeight/2)+'px;'+
-          'border:2px solid var(--accent);border-radius:4px;background:var(--card);'+
-          'display:flex;align-items:center;justify-content:center;font-size:.55rem';
-        document.body.appendChild(_schedGhost);
-      }, {passive:true});
-
-      cell.addEventListener('touchmove', e=>{
-        if(!_schedTouchSrc || !_schedGhost) return;
-        e.preventDefault();
-        const t = e.touches[0];
-        _schedGhost.style.left = (t.clientX - _schedGhost.offsetWidth/2) + 'px';
-        _schedGhost.style.top  = (t.clientY - _schedGhost.offsetHeight/2) + 'px';
-        _schedGhost.style.display = 'none';
-        const under = document.elementFromPoint(t.clientX, t.clientY);
-        _schedGhost.style.display = '';
-        const target = under?.closest('.sg-cell');
-        document.querySelectorAll('.sg-cell.drag-over').forEach(el=>el.classList.remove('drag-over'));
-        if(target && target !== cell && target.dataset.kind === _schedTouchSrc.kind){
-          target.classList.add('drag-over');
-          _schedDropTarget = {
-            row: Number(target.dataset.row),
-            dow: Number(target.dataset.dow),
-            kind: target.dataset.kind
-          };
-        } else {
-          _schedDropTarget = null;
-        }
-      }, {passive:false});
-
-      cell.addEventListener('touchend', e=>{
-        if(!_schedTouchSrc) return;
-        const src = _schedTouchSrc;
-        _schedTouchSrc = null;
-        cell.classList.remove('dragging');
-        if(_schedGhost){ _schedGhost.remove(); _schedGhost = null; }
-        document.querySelectorAll('.sg-cell.drag-over').forEach(el=>el.classList.remove('drag-over'));
-        if(_schedDropTarget){
-          const t = _schedDropTarget;
-          _schedDropTarget = null;
-          if(t.kind === src.kind && !(t.row === src.row && t.dow === src.dow)){
-            swapScheduleCells(src, t);
-          }
-        }
-      });
-    }
-
-    // Drop targets (drag nativo con mouse)
-    if(dow !== 6 && item !== 'Dormir'){
-      cell.addEventListener('dragover', e=>{
-        if(!_schedEditMode || !_schedDragSrc) return;
-        if(_schedDragSrc.kind !== cell.dataset.kind) return;
-        if(_schedDragSrc.row === row && _schedDragSrc.dow === dow) return;
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        cell.classList.add('drag-over');
-      });
-      cell.addEventListener('dragleave', ()=>{
-        cell.classList.remove('drag-over');
-      });
-      cell.addEventListener('drop', e=>{
-        e.preventDefault();
-        cell.classList.remove('drag-over');
-        if(!_schedEditMode || !_schedDragSrc) return;
-        const src = _schedDragSrc;
-        _schedDragSrc = null;
-        if(src.kind !== cell.dataset.kind) return;
-        if(src.row === row && src.dow === dow) return;
-        swapScheduleCells(src, { row, dow, kind: cell.dataset.kind });
-      });
-    }
-  });
-}
-
-function swapScheduleCells(a, b){
-  const tpl = ensureSchedTpl(a.kind);
-  const tmp = tpl[a.row][a.dow];
-  tpl[a.row][a.dow] = tpl[b.row][b.dow];
-  tpl[b.row][b.dow] = tmp;
-  save();
-  renderStudySchedule();
-}
-
+  el.innerHTML='<div class="schedule-head"><div class="schedule-title">Horario semanal · semana '+info.number+' ('+info.template+')</div><div class="schedule-meta">'+fmt(weekStart)+' – '+fmt(end)+' · periodo: 10 ago 2026 – 15 feb 2027</div><button class="schedule-nav" onclick="moveScheduleWeek(-1)">←</button><button class="schedule-nav" onclick="moveScheduleWeek(1)">→</button></div><div class="schedule-scroll">'+grid+'</div><div class="schedule-note">La plantilla superior se aplica en semanas impares; la inferior, en semanas pares. El calendario cubre hasta el 15 de febrero de 2027.</div>';}
 function moveScheduleWeek(delta){scheduleWeekOffset+=delta;renderStudySchedule();}
 function toggleScheduleCheck(key){
   if(!S.scheduleChecks)S.scheduleChecks={};
@@ -2701,7 +2593,8 @@ function findFirstPendingTopicOfCourse(course){
   const aw=WSCHED.find(w=>td>=w.s&&td<=w.e);
   if(!aw)return null;
   return aw.topics.find(id=>{
-    return getTopic(id).course===course && !(S.t||{})[id]?.done;
+    const c=Object.keys(TOPICS).find(k=>TOPICS[k]&&TOPICS[k][id]);
+    return c===course && !(S.t||{})[id]?.done;
   })||null;
 }
 function syncPlanFromDay(key){
@@ -2764,6 +2657,7 @@ function save(){
     localStorage.setItem(KEY,JSON.stringify(S));
     showSaveIndicator();
     renderSyncHint();
+    schedulePush();
   }catch(e){}
 }
 function migrateData(){
@@ -8038,24 +7932,148 @@ function setSpeedTarget(course,val){
   save();
   renderSpeedStats();
   if(typeof renderAllTopicSpeeds==='function')renderAllTopicSpeeds();
+
 }
+// ═══ SYNC CON GIST DE GITHUB ═══
+const SYNC_KEY='uni-sync-config';
+function getSyncConfig(){try{return JSON.parse(localStorage.getItem(SYNC_KEY)||'{}');}catch(e){return{};}}
+function setSyncConfig(c){localStorage.setItem(SYNC_KEY,JSON.stringify(c));}
+function hasSyncConfig(){const c=getSyncConfig();return !!(c.token&&c.gistId);}
+let _syncDebounce=null;
+
+function updateSyncStatusUI(state,msg){
+  const el=document.getElementById('syncStatus');
+  if(!el)return;
+  const icons={idle:'○',syncing:'⟳',ok:'●',error:'⚠'};
+  const colors={idle:'var(--muted)',syncing:'var(--accent4)',ok:'var(--accent3)',error:'var(--accent2)'};
+  el.innerHTML='<span style="color:'+colors[state]+'">'+icons[state]+'</span> '+(msg||'');
+}
+
+function schedulePush(){
+  if(!hasSyncConfig())return;
+  clearTimeout(_syncDebounce);
+  _syncDebounce=setTimeout(()=>pushToCloud(),2500);
+}
+
+async function pushToCloud(){
+  const cfg=getSyncConfig();
+  if(!cfg.token||!cfg.gistId)return;
+  updateSyncStatusUI('syncing','subiendo...');
+  try{
+    const res=await fetch('https://api.github.com/gists/'+cfg.gistId,{
+      method:'PATCH',
+      headers:{
+        'Authorization':'token '+cfg.token,
+        'Content-Type':'application/json',
+        'Accept':'application/vnd.github+json'
+      },
+      body:JSON.stringify({files:{'uni-state.json':{content:JSON.stringify(S)}}})
+    });
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    updateSyncStatusUI('ok','sync '+new Date().toLocaleTimeString('es-PE'));
+  }catch(e){
+    updateSyncStatusUI('error','falló: '+e.message);
+  }
+}
+
+async function pullFromCloud(opts){
+  opts=opts||{};
+  const cfg=getSyncConfig();
+  if(!cfg.token||!cfg.gistId){
+    if(opts.notify)alert('Configurá el sync primero.');
+    return false;
+  }
+  updateSyncStatusUI('syncing','bajando...');
+  try{
+    const res=await fetch('https://api.github.com/gists/'+cfg.gistId,{
+      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github+json'},
+      cache:'no-store'
+    });
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    const file=data.files['uni-state.json'];
+    if(!file||!file.content||file.content.trim()==='{}'){
+      if(opts.notify)alert('El gist está vacío. Subiendo estado local...');
+      await pushToCloud();
+      return true;
+    }
+    const remote=JSON.parse(file.content);
+    const localTs=S._savedAt||0;
+    const remoteTs=remote._savedAt||0;
+    if(remoteTs>localTs){
+      S=remote;
+      localStorage.setItem(KEY,JSON.stringify(S));
+      updateSyncStatusUI('ok','aplicando remoto...');
+      if(opts.notify)alert('Estado remoto aplicado. Recargando...');
+      location.reload();
+      return true;
+    }else{
+      await pushToCloud();
+      if(opts.notify)alert('Tu estado local es más reciente. Subido al gist.');
+      return true;
+    }
+  }catch(e){
+    updateSyncStatusUI('error','falló: '+e.message);
+    if(opts.notify)alert('Error: '+e.message);
+    return false;
+  }
+}
+
+function openSyncConfig(){
+  const cfg=getSyncConfig();
+  const token=prompt(
+    'Pegá tu token de GitHub (scope: gist)\n\n'+
+    'Si no tenés:\n'+
+    '1. github.com/settings/tokens → Generate new token (classic)\n'+
+    '2. Marcá SOLO la casilla "gist"\n'+
+    '3. Copiá el ghp_... acá',
+    cfg.token||''
+  );
+  if(token===null)return;
+  const gistId=prompt(
+    'Pegá el ID del gist\n\n'+
+    'Creá uno en gist.github.com con un archivo llamado exactamente "uni-state.json" que contenga {}\n'+
+    'El ID es la parte final de la URL: gist.github.com/usuario/ESTE_ES_EL_ID',
+    cfg.gistId||''
+  );
+  if(gistId===null)return;
+  setSyncConfig({token:token.trim(),gistId:gistId.trim()});
+  updateSyncStatusUI('ok','configurado');
+  alert('✓ Configurado. Probando conexión...');
+  pullFromCloud({notify:true});
+}
+
+function clearSyncConfig(){
+  if(!confirm('¿Borrar configuración de sync? El token vive aparte del backup, así que no se pierde nada más.'))return;
+  localStorage.removeItem(SYNC_KEY);
+  updateSyncStatusUI('idle','sin configurar');
+}
+
+// ═══ FIN SYNC ═══
+
 // ── INIT ──
-buildWeeklyStudyPlan();renderPlanTopics();load();loadThemePreference();loadCustomTheme();refreshCourseRGB();renderAll();initPomo();initChrono();initPWA();
-setPlanTab(S.planTab||'ciencias');
-// Load UNI folder handle from IndexedDB
+buildWeeklyStudyPlan();renderPlanTopics();load();loadThemePreference();loadCustomTheme();refreshCourseRGB();
 (async()=>{
+  // Sync: bajar estado remoto si el gist tiene algo más nuevo
+  if(hasSyncConfig()){
+    updateSyncStatusUI('syncing','sincronizando...');
+    await pullFromCloud({silent:true});
+    // Si pullFromCloud recargó (remoto más nuevo), no seguimos.
+  }else{
+    updateSyncStatusUI('idle','sin configurar');
+  }
+  // Load UNI folder handle from IndexedDB
   uniDirHandle=await loadDirHandle();
   if(uniDirHandle){
     document.getElementById('uniFolderStatus').textContent='✓ Seleccionada';
     document.getElementById('uniFolderStatus').style.color='var(--accent3)';
   }
-})();
-// Default to HOME view on first load
-(function(){
+  renderAll();initPomo();initChrono();initPWA();
+  setPlanTab(S.planTab||'ciencias');
+  // Default to HOME view on first load
   const lastView=localStorage.getItem('uni-last-view')||'home';
   const homeBtn=document.getElementById('sb-home-btn');
   showView(lastView,lastView==='home'?homeBtn:document.querySelector('.sb-btn[onclick*="'+lastView+'"]'));
-  // Track last viewed tab
   const origSV=showView;
   window.showView=function(name,btn){origSV(name,btn);localStorage.setItem('uni-last-view',name);};
 })();
