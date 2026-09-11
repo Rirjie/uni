@@ -64,8 +64,6 @@ html{scrollbar-width:thin;scrollbar-color:var(--scroll-thumb) var(--scroll-track
 .sidebar::-webkit-scrollbar-track{background:#0a0a12;border-left:1px solid #353548}
 .main::-webkit-scrollbar-track{background:#0c0c14;border-left:1px solid var(--border)}
 body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace,sans-serif;min-height:100vh;padding:0;line-height:1.6}
-.plan-foot{margin-top:1rem;padding:.55rem 0 .15rem;border-top:1px solid var(--border)}
-.plan-kb-hint{font-size:.48rem;color:var(--muted);line-height:1.45;text-align:center;letter-spacing:.02em}
 .schedule-card{margin:1rem 0 1.2rem;padding:1rem;background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden}
 .schedule-head{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:.85rem}
 .schedule-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;color:var(--text)}
@@ -297,6 +295,7 @@ h1 span{color:var(--accent)}
 .alert-warn .alert-dot{background:var(--accent4)}
 .alert-danger .alert-dot{background:var(--accent2)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 /* RHYTHM */
 .rhythm-bar{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent4);padding:.6rem .8rem;margin-bottom:1rem;font-size:.63rem;color:var(--muted);display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
@@ -441,7 +440,7 @@ select.pcourse{width:100%;background:#0a0a0f;border:1px solid var(--border);colo
 .fc-conf-wrap.shake{animation:confShake .4s}
 @keyframes confShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .fc-conf-label{font-size:.48rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem;text-align:center}
-.fc-conf-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:.3rem}
+.fc-conf-btns{display:grid;grid-template-columns:repeat(5,1fr);gap:.25rem}
 .fc-conf-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.4rem .2rem;font-family:inherit;font-size:.75rem;cursor:pointer;border-radius:5px;transition:all .12s;line-height:1.2}
 .fc-conf-btn span{display:block;font-size:.45rem;margin-top:.1rem;letter-spacing:.02em}
 .fc-conf-btn:hover{transform:translateY(-1px)}
@@ -512,8 +511,7 @@ select.pcourse{width:100%;background:#0a0a0f;border:1px solid var(--border);colo
 .fbtn-main:hover{border-color:var(--accent3);color:var(--accent3)}
 
 /* RESUMEN SEMANAL */
-.week-summary{background:#0f0f18;border:1px solid var(--border);padding:.65rem .8rem;margin-bottom:1rem}
-.ws-title{font-size:.55rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:.45rem}
+
 .ws-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.35rem}
 .ws-item{background:var(--card);border:1px solid var(--border);padding:.38rem .55rem}
 .ws-wk{font-size:.52rem;color:var(--muted);margin-bottom:.15rem}
@@ -524,13 +522,7 @@ select.pcourse{width:100%;background:#0a0a0f;border:1px solid var(--border);colo
 .li{display:flex;align-items:center;gap:.32rem;font-size:.57rem;color:var(--muted)}
 .ld{width:7px;height:7px;border-radius:1px}
 
-/* MONTH */
-.month{margin-bottom:1.6rem}
-.mhdr{display:flex;align-items:center;gap:.65rem;margin-bottom:.65rem;padding-bottom:.42rem;border-bottom:1px solid var(--border)}
-.mdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.mtitle{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700;color:#fff;letter-spacing:-0.01em}
-.msub{font-size:.56rem;color:var(--muted);margin-left:auto}
-.weeks{display:flex;flex-direction:column;gap:.38rem}
+
 
 /* WEEK */
 .week{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--border);padding:.72rem .82rem;cursor:pointer;transition:all .15s}
@@ -563,6 +555,7 @@ select.pcourse{width:100%;background:#0a0a0f;border:1px solid var(--border);colo
 .dep-badge{font-size:.5rem;cursor:pointer;margin-left:.25rem;vertical-align:middle;line-height:1;flex-shrink:0}
 .dep-badge.blocked{color:var(--accent2);filter:drop-shadow(0 0 3px rgba(244,63,94,.4))}
 .dep-badge.bottleneck{color:#ffd84a}
+.dep-badge.warned{color:#f0a500}
 .dep-badge:hover{transform:scale(1.25);transition:transform .12s}
 /* TOPIC */
 .ti{display:flex;align-items:flex-start;gap:.35rem;padding:.18rem 0;cursor:default}
@@ -657,7 +650,7 @@ select.pcourse{width:100%;background:#0a0a0f;border:1px solid var(--border);colo
 body.light-theme{--bg:#f4f4f8;--card:#fff;--border:#d8d8e4;--text:#1a1a28;--muted:#6b6b80}
 body.light-theme .sidebar{background:#eeeef4}
 body.light-theme .noise{opacity:.015}
-body.print-week .sidebar,body.print-week .fab-wrap,body.print-week .searchbar,body.print-week .view-controls,body.print-week .health-panel,body.print-week .panel-box,body.print-week .rhythm-bar,body.print-week .plan-foot{display:none!important}
+body.print-week .sidebar,body.print-week .fab-wrap,body.print-week .searchbar,body.print-week .view-controls,body.print-week .health-panel,body.print-week .panel-box,body.print-week .rhythm-bar{display:none!important}
 body.print-week .month.print-hide{display:none!important}
 body.print-week .week.print-hide{display:none!important}
 @media print{
@@ -790,15 +783,14 @@ body.print-week .week.print-hide{display:none!important}
   </div>
 
   <div class="sb-section">Navegación</div>
-  <button class="sb-btn" onclick="showView(&#39;home&#39;,this)" id="sb-home-btn"><span class="icon">🏠</span>Home / Dashboard</button>
-  <button class="sb-btn active" onclick="showView(&#39;plan&#39;,this)"><span class="icon">📋</span>Plan de estudio</button>
-  <button class="sb-btn" onclick="showView(&#39;stats&#39;,this)"><span class="icon">📊</span>Estadísticas</button>
-  <button class="sb-btn" onclick="showView(&#39;sessions&#39;,this)"><span class="icon">📝</span>Historial sesiones</button>
-  <button class="sb-btn" onclick="showView(&#39;bank&#39;,this)"><span class="icon">🗂</span>Banco de problemas</button>
-  <button class="sb-btn" onclick="showView(&#39;flashcards&#39;,this)"><span class="icon">🃏</span>Flashcards</button>
-  <button class="sb-btn" onclick="showView(&#39;calendar&#39;,this)"><span class="icon">📅</span>Calendario</button>
-  <button class="sb-btn" onclick="showView(&#39;notes&#39;,this)"><span class="icon">✏️</span>Notas globales</button>
-
+<button class="sb-btn" onclick="showView('home',this)" id="sb-home-btn"><span class="icon">🏠</span>Home / Dashboard</button>
+<button class="sb-btn active" onclick="showView('plan',this)"><span class="icon">📋</span>Plan de estudio</button>
+<button class="sb-btn" onclick="showView('stats',this)"><span class="icon">📊</span>Estadísticas</button>
+<button class="sb-btn" onclick="showView('sessions',this)"><span class="icon">📝</span>Historial sesiones</button>
+<button class="sb-btn" onclick="showView('bank',this)"><span class="icon">🗂</span>Banco de problemas</button>
+<button class="sb-btn" onclick="showView('flashcards',this)"><span class="icon">🃏</span>Flashcards</button>
+<button class="sb-btn" onclick="showView('calendar',this)"><span class="icon">📅</span>Calendario</button>
+<button class="sb-btn" onclick="showView('notes',this)"><span class="icon">✏️</span>Notas globales</button>
   <div class="sb-section">Herramientas</div>
   <button class="sb-btn" onclick="enterF()"><span class="icon">⊞</span>Modo enfoque</button>
   <button class="sb-btn" onclick="enterExamMode()"><span class="icon">🎯</span>Modo examen</button>
@@ -995,7 +987,9 @@ body.print-week .week.print-hide{display:none!important}
 <div class="li"><div class="ld" style="background: var(--cle);"></div>✍️ Lenguaje</div>
 <div class="li"><div class="ld" style="background: var(--cin);"></div>💂 Inglés</div>
   </div>
-  <div class="weekly-plan-intro">20 semanas de temario + descansos, colchón y pre-examen · toca una semana para ver el detalle.</div>
+  <div class="weekly-plan-intro">20 semanas de temario + descansos, colchón y pre-examen · toca una semana para ver el detalle.<br>
+    <span style="opacity:.7">◻️ teoría vista · ◯ problemas resueltos · ambos ✓ = cap dominado</span>
+  </div>
 
   <div class="plan-tabs">
     <button class="plan-tab active" data-tab="ciencias" onclick="setPlanTab('ciencias')">🔬 Ciencias</button>
@@ -1077,13 +1071,7 @@ body.print-week .week.print-hide{display:none!important}
           <button onclick="resetPomo()" class="pomo-adj-btn rst" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);padding:.28rem;font-family:'DM Mono',monospace;font-size:.55rem;cursor:pointer;transition:all .15s">reset</button>
         </div>
         <div id="pomoBreakSug" style="font-size:.52rem;color:var(--accent4);margin-top:.35rem;min-height:.8rem;text-align:center;letter-spacing:.03em"></div>
-        <div style="display:none">
-          <button id="bbreak" onclick="toggleBreak()">☕ iniciar descanso</button>
-          <div id="breakTimerWrap" style="display:none;margin-top:.38rem;text-align:center">
-            <div id="breakTimerDisp" style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;color:var(--accent4);letter-spacing:-0.02em">00:00</div>
-            <div id="breakTimerLabel" style="font-size:.48rem;color:var(--muted);letter-spacing:.03em;text-transform:uppercase">descanso en curso</div>
-          </div>
-        </div>
+      
       </div>
 
       <div id="chronoContent" style="display:none">
@@ -1160,6 +1148,11 @@ body.print-week .week.print-hide{display:none!important}
     <div class="tcard full">
       <div class="tcardtitle">Velocidad por tema <button class="tcard-action" onclick="renderSpeedStats()">actualizar</button></div>
       <div id="speedStatsBox"></div>
+      <details style="margin-top:.7rem;font-size:.5rem;color:var(--muted)">
+        <summary style="cursor:pointer;user-select:none;padding:.3rem 0;border-top:1px solid var(--border)">⚙️ Editar targets (seg/problema)</summary>
+        <div id="speedTargetsEdit" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.3rem;padding:.5rem 0"></div>
+        <div style="font-size:.44rem;color:var(--muted);margin-top:.3rem">Calibrá contra tiempos reales del examen UNI.</div>
+      </details>
     </div>
     <div class="tcard full">
       <div class="tcardtitle">Calibración metacognitiva <button class="tcard-action" onclick="renderCalibration()">actualizar</button></div>
@@ -1375,9 +1368,9 @@ body.print-week .week.print-hide{display:none!important}
         <div class="fc-hint">clic para voltear</div>
       </div>
       <div class="fc-nav">
-        <button onclick="fcNav(-1)">← anterior</button>
+       
         <span id="fcIdx" style="font-size: 0.6rem; color: var(--muted); padding: 0.3rem 0.5rem;">0/0</span>
-        <button onclick="fcNav(1)">siguiente →</button>
+      
       </div>
     </div>
   </div>
@@ -1418,8 +1411,7 @@ body.print-week .week.print-hide{display:none!important}
 
 const WEEKS_TOPICS={};
 function makeTI(id){
-  const course=Object.keys(TOPICS).find(c=>TOPICS[c][id]);
-  const name=course?TOPICS[course][id]:null;
+  const {course,name}=getTopic(id);
   if(!name)return'';
   const lum='';
   const errBlock=`<div id="caperr-${id}"></div><div id="cap-epreset-${id}" class="cap-epreset-wrap" style="display:none"></div><div id="tierradd-${id}" style="display:none;margin-top:.15rem;align-items:center;gap:.2rem"><input id="ei-${id}" style="font-size:.44rem;padding:.1rem .3rem;background:#0a0a0f;border:1px solid var(--border);color:var(--text);border-radius:3px;width:130px" placeholder="error personalizado..." onclick="event.stopPropagation()"><button onclick="event.stopPropagation();saveCapError('${id}',document.getElementById('ei-${id}').value);document.getElementById('ei-${id}').value='';" style="font-size:.42rem;padding:.1rem .25rem;border:1px solid var(--accent2);color:var(--accent2);background:transparent;cursor:pointer;border-radius:3px">+error</button></div>`;
@@ -1430,13 +1422,16 @@ function makeTI(id){
   let depIcon='';
   if(depInfo.blocked){
     const names=depInfo.weakPrereqs.map(p=>TOPICS[course]?.[p]||p).join(', ');
-    depIcon=`<span class="dep-badge blocked" onclick="event.stopPropagation();showDepInfo('${id}')" title="🔒 Bloqueado — prereq débil: ${names}">🔒</span>`;
+    depIcon=`<span class="dep-badge blocked" onclick="event.stopPropagation();showDepInfo('${id}')" title="🔒 Bloqueado — prereq necesario débil: ${names}">🔒</span>`;
+  } else if(depInfo.warned){
+    const names=depInfo.weakSoft.map(p=>TOPICS[course]?.[p]||p).join(', ');
+    depIcon=`<span class="dep-badge warned" onclick="event.stopPropagation();showDepInfo('${id}')" title="⚠ Prereq recomendado débil: ${names}">⚠</span>`;
   } else if(depInfo.isBottleneck){
     depIcon=`<span class="dep-badge bottleneck" onclick="event.stopPropagation();showDepInfo('${id}')" title="🎯 Cuello de botella — ${depInfo.dependents.length} dependientes">🎯</span>`;
   }
 
-  const safeName=name.replace(/'/g,"&#39;").replace(/"/g,"&quot;");
-  return`<div class="ti" data-id="${id}" data-course="${course}" data-name="${safeName}"><div class="tck" onclick="ck(event,'${id}')" title="Sesión 1"></div><div class="tck2" onclick="ck2(event,'${id}')" title="Sesión 2"></div><span class="tn">${name}${lum}</span>${depIcon}${exBlock}<button class="db-cycle" onclick="sd(event,'${id}')">◆</button><span class="tlast" id="tl-${id}"></span><button class="tfb" onclick="sf(event,'${safeName}','${course}')">⊞</button><span onclick="toggleCapErr('${id}');event.stopPropagation()" title="Añadir error a este cap" style="font-size:.42rem;cursor:pointer;color:var(--accent2);vertical-align:middle;margin-left:.15rem">⚠</span>${errBlock}<div class="tnotes-wrap" id="notes-${id}"><input class="tnote-input" placeholder="nota / duda..." onchange="saveNote('${id}',this.value)" onclick="event.stopPropagation()"></div></div>`;
+    const safeName=name.replace(/'/g,"&#39;").replace(/"/g,"&quot;");
+  return`<div class="ti" data-id="${id}" data-course="${course}" data-name="${safeName}"><div class="tck" onclick="ck(event,'${id}')" title="Teoría vista (leí el capítulo / vi videos)"></div><div class="tck2" onclick="ck2(event,'${id}')" title="Problemas resueltos (practiqué con ejercicios)"></div><span class="tn">${name}${lum}${depIcon}${exBlock}</span><button class="db-cycle" onclick="sd(event,'${id}')" title="Dificultad (fácil / medio / pesado)">◆</button><span class="tlast" id="tl-${id}"></span><button class="tfb" onclick="event.stopPropagation();toggleCapErr('${id}')" title="Registrar error">⚠</button><button class="tfb" onclick="event.stopPropagation();document.getElementById('notes-${id}').classList.toggle('on')" title="Notas">✎</button></div><div class="tnotes-wrap" id="notes-${id}"><input class="tnote-input" placeholder="nota del tema..." oninput="saveNote('${id}',this.value)" onclick="event.stopPropagation()"></div>${errBlock}`;
 }
 
 function renderPlanTopics(){
@@ -1446,7 +1441,7 @@ function renderPlanTopics(){
      const groups=Object.keys(TOPICS)
   .map(course=>({
     course,
-    ids:ids.filter(id=>TOPICS[course]?.[id])
+    ids:ids.filter(id=>getTopic(id).course===course)
   }))
   .filter(group=>group.ids.length);
             const SCIENCE=['Aritmética','Álgebra','Física','Geometría','Trigonometría','Química'];
@@ -1548,12 +1543,38 @@ const DEPENDENCIES = {
   'q23':['q22'],           // Ácidos/bases depende de Equilibrio
   'q25':['q24'],           // Electroquímica depende de Celdas
 
-  // ── RM (críticos) ──
+    // ── RM (críticos) ──
   'rm4':['rm1'],           // Lógica proposicional depende de Razonamiento Lógico
   'rm5':['rm4'],           // Lógica de clases depende de Proposicional
   'rm8':['rm7'],           // Deductivo depende de Inductivo
   'rm11':['rm7'],          // Planteo ecuaciones depende de Inductivo
   'rm23':['rm22'],         // Suficiencia II depende de Suficiencia I
+};
+
+// Prereqs blandos: solo advierten, NO bloquean. El tema se puede estudiar
+// sin dominar al 100% el prereq, pero probablemente te cueste más.
+const SOFT_DEPS = {
+  // ── Álgebra ──
+  'al7':['al4'],           // Factorización sin polinomios perfectos: se puede
+  'al11':['al4'],          // Ec. grado superior sin polinomios: se puede
+  
+  // ── Física ──
+  'f7':['f5'],             // Dinámica sin gráficas
+  'f8':['f5'],             // Energía sin gráficas
+  'f16':['f7'],            // Electrostática sin dinámica dominada
+  
+  // ── Geometría ──
+  'g7':['g1'],             // Puntos notables sin ángulos perfectos
+  'g11':['g8'],            // Áreas sin proporcionalidad perfecta
+  'g17':['g2'],            // Geo analítica sin triángulos al 100%
+  
+  // ── Trigonometría ──
+  't6':['t5'],             // Resolución sin identidades II al 100%
+  't10':['t6'],            // Ecuaciones trig sin resolución de triángulos
+  
+  // ── Química ──
+  'q18':['q11'],           // Estequiometría sin cálculos perfectos
+  'q22':['q18'],           // Equilibrio sin esteq dominada
 };
 
 // Función: devuelve prereqs de un tema
@@ -1574,26 +1595,20 @@ function getDependents(topicId){
 function getTopicMastery(topicId){
   const t=(S.t||{})[topicId]||{};
 
-  // Si updateDominio ya calculó un nivel real, usarlo como fuente principal
+  // Fuente de verdad: rendimiento REAL medido (cronómetro + flashcards)
   if(typeof t.nivelDominio==='number' && t.nivelDominio>0){
-    let score=t.nivelDominio;
-    // Coherencia: si está marcado como done y el dominio es muy bajo (raro), elevar un poco
-    if(t.done && score<40)score=Math.round((score+60)/2);
-    return Math.min(100,Math.round(score));
+    return Math.min(100,Math.round(t.nivelDominio));
   }
 
-  // Fallback: sin datos reales de rendimiento aún
-  let score=t.done?70:0;
-  const ex=getExCount(topicId);
-  const goal=getExGoal(topicId);
-  if(goal)score+=Math.min(20,Math.round(ex/goal*20));
+  // Fallback: sin rendimiento registrado aún.
+  // Marcar "done" solo significa "leí/hice algo" → techo del 50%.
+  let score=t.done?50:0;
   const speed=(S.speedSessions||[]).filter(s=>s.topicId===topicId);
   if(speed.length){
     const totalProbs=speed.reduce((a,s)=>a+(s.easy+s.hard+s.skipped+s.failed),0);
     const aciertos=speed.reduce((a,s)=>a+(s.easy+s.hard),0);
     if(totalProbs>0){
-      const acc=aciertos/totalProbs*100;
-      score=Math.round((score+acc)/2);
+      score=Math.round(aciertos/totalProbs*100);
     }
   }
   return Math.min(100,score);
@@ -1602,23 +1617,37 @@ function getTopicMastery(topicId){
 function getTopicDependencyInfo(topicId){
   const mastery=getTopicMastery(topicId);
   const prereqs=getPrereqs(topicId);
+  const soft=SOFT_DEPS[topicId]||[];
   const weakPrereqs=prereqs.filter(p=>getTopicMastery(p)<40);
+  const weakSoft=soft.filter(p=>getTopicMastery(p)<40);
   const dependents=getDependents(topicId);
   const weakDependents=dependents.filter(d=>getTopicMastery(d)<40);
   const blocked=weakPrereqs.length>0&&mastery<70;
+  const warned=!blocked&&weakSoft.length>0&&mastery<70;
   const isBottleneck=dependents.length>=2&&mastery<60;
-  return{blocked,weakPrereqs,dependents,weakDependents,isBottleneck,mastery};
+  return{blocked,warned,weakPrereqs,weakSoft,dependents,weakDependents,isBottleneck,mastery};
 }
 /* Modal/detalle de dependencias de un tema */
 function showDepInfo(topicId){
   const info=getTopicDependencyInfo(topicId);
-  const topicName=document.querySelector('[data-id="'+topicId+'"]')?.dataset.name||topicId;
+  const topicName=getTopic(topicId).name||topicId;
   const course=Object.keys(TOPICS).find(c=>TOPICS[c]?.[topicId]);
   let msg='📌 '+topicName+'\n\n';
 
   if(info.prereqs&&info.prereqs.length){
-    msg+='PREREQUISITOS:\n';
+    msg+='PREREQUISITOS NECESARIOS:\n';
     info.prereqs.forEach(p=>{
+      const name=TOPICS[course]?.[p]||p;
+      const m=getTopicMastery(p);
+      const icon=m<40?'🔴':m<70?'🟡':'🟢';
+      msg+=icon+' '+name+' (dominio: '+m+'%)\n';
+    });
+    msg+='\n';
+  }
+
+  if(info.weakSoft&&info.weakSoft.length){
+    msg+='PREREQUISITOS RECOMENDADOS (débiles):\n';
+    info.weakSoft.forEach(p=>{
       const name=TOPICS[course]?.[p]||p;
       const m=getTopicMastery(p);
       const icon=m<40?'🔴':m<70?'🟡':'🟢';
@@ -1643,7 +1672,9 @@ function showDepInfo(topicId){
   if(info.blocked)msg+='\n🔒 BLOQUEADO por prereq débil.';
   if(info.isBottleneck)msg+='\n🎯 CUELLO DE BOTELLA — estudiarlo rinde mucho.';
 
-  alert(msg);
+  const accent=info.blocked?'var(--accent2)':info.isBottleneck?'var(--accent4)':'var(--accent3)';
+  const icon=info.blocked?'🔒':info.isBottleneck?'🎯':'📌';
+  showModal(topicName,msg.replace(/\n/g,'<br>'),{accent,icon});
 }
   // ═══ EMOJIS GLOBALES DE CURSOS ═══
 const COURSE_EMOJIS={
@@ -2124,6 +2155,17 @@ const TOPICS = {
   }
 
 };
+
+// ── ÍNDICE DE TEMAS (agregar esto) ──
+const TOPIC_INDEX = {};
+for (const [course, topics] of Object.entries(TOPICS)) {
+  for (const [id, name] of Object.entries(topics)) {
+    TOPIC_INDEX[id] = { id, course, name };
+  }
+}
+// Registro de las sesiones sintéticas "__part" generadas por buildWeeklyStudyPlan.
+// No contamina TOPICS (que queda como fuente pura).
+const PLAN_PARTS = {};  // { 'al3__part1': { course:'Álgebra', name:'...' } }
 const DATA_VERSION=12;
 const OP_WEEKS=['w10'];
 const SURGERY_NOTE='Cirugía catarata PPV: bloque 18–31 jul (confirmado) · ambos ojos · 6-7 d entre ojos';
@@ -2134,6 +2176,16 @@ let weekPendingFilter=false;
 let lastFocusedTopicId=null;
 const WSCHED=[{id:"w1",s:"2026-05-24",e:"2026-05-31",topics:WEEKS_TOPICS.w1},{id:"w2",s:"2026-06-01",e:"2026-06-07",topics:WEEKS_TOPICS.w2},{id:"w3",s:"2026-06-08",e:"2026-06-14",topics:WEEKS_TOPICS.w3},{id:"w4",s:"2026-06-15",e:"2026-06-21",topics:WEEKS_TOPICS.w4},{id:"w5",s:"2026-06-22",e:"2026-06-25",topics:WEEKS_TOPICS.w5},{id:"w7",s:"2026-06-26",e:"2026-06-30",topics:WEEKS_TOPICS.w7},{id:"w8",s:"2026-07-01",e:"2026-07-05",topics:WEEKS_TOPICS.w8},{id:"w9",s:"2026-07-06",e:"2026-07-10",topics:WEEKS_TOPICS.w9},{id:"w11",s:"2026-07-11",e:"2026-07-17",topics:WEEKS_TOPICS.w11},{id:"w10",s:"2026-07-18",e:"2026-07-31",topics:WEEKS_TOPICS.w10},{id:"w12",s:"2026-08-01",e:"2026-08-04",topics:WEEKS_TOPICS.w12},{id:"w13",s:"2026-08-05",e:"2026-08-08",topics:WEEKS_TOPICS.w13},{id:"w15",s:"2026-08-09",e:"2026-08-09",topics:WEEKS_TOPICS.w15}];
 
+// Target de segundos por problema según curso (aproximado UNI)
+const SPEED_TARGETS_DEFAULT={
+  'Aritmética':90,'Álgebra':135,'Física':165,'Geometría':150,
+  'Trigonometría':135,'Química':105,'Raz. Matemático':105,
+  'Raz. Verbal':90,'Historia Universal':75,'Historia del Perú':75,
+  'Geografía':75,'Filosofía':75,'Literatura':75,'Lenguaje':75,'Inglés':75
+};
+function getSpeedTarget(course){
+  return (S.speedTargets&&S.speedTargets[course])||SPEED_TARGETS_DEFAULT[course]||120;
+}
 // ── PLAN SEMANAL: cada ciencia aparece todas las semanas ──
 const PLAN_START='2026-08-10';
 const PLAN_END='2027-02-15';
@@ -2164,10 +2216,10 @@ function planLocalDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padS
   return ids.flatMap((id,index)=>{
     const total=parts[index]; if(total===1)return[id];
     const original=TOPICS[course]?.[id];
-  return Array.from({length:total},(_,part)=>{
-    const sessionId=id+'__part'+(part+1);
-    TOPICS[course][sessionId]=original+' · Parte '+(part+1)+'/'+total;
-    return sessionId;
+    return Array.from({length:total},(_,part)=>{
+      const sessionId=id+'__part'+(part+1);
+      PLAN_PARTS[sessionId] = { course, name: original+' · Parte '+(part+1)+'/'+total };
+      return sessionId;
     });
   });
 }
@@ -2178,11 +2230,8 @@ function planLocalDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padS
 function buildWeeklyStudyPlan(){
   const assignments=Array.from({length:PLAN_TOTAL_WEEKS},()=>[]);
 
-  Object.keys(TOPICS).forEach(course => {
-  Object.keys(TOPICS[course]).forEach(id => {
-    if (id.includes('__part')) delete TOPICS[course][id];
-  });
-});
+  // Limpiar SOLO el registro de partes. TOPICS nunca se toca.
+  Object.keys(PLAN_PARTS).forEach(k => delete PLAN_PARTS[k]);
 
   // ── CIENCIAS ──
   for(const course of PLAN_COURSES){
@@ -2263,8 +2312,7 @@ function buildWeeklyStudyPlan(){
   const host=document.getElementById('weeklyStudyPlan');
   if(!host)return;
 
-  document.querySelectorAll('#view-plan > .month')
-    .forEach(month=>month.remove());
+
 
   const start=new Date(PLAN_START+'T12:00:00');
 
@@ -2525,7 +2573,8 @@ function save(){
 }
 function migrateData(){
   if(!S.fcConfig)S.fcConfig={newPerDay:20,reviewPerDay:200};
-if(!S.fcToday)S.fcToday={date:'',newDone:0,reviewDone:0};
+  if(!S.fcToday)S.fcToday={date:'',newDone:0,reviewDone:0};
+  if(!S.speedTargets)S.speedTargets={};
   if(!S||typeof S!=='object')S={};
   if(!S.exCount)S.exCount={};
   if(!S.simLog)S.simLog=[];
@@ -2747,14 +2796,7 @@ function ck(e,id){
   const wasDone=S.t[id].done;
   S.t[id].done=!wasDone;S.t[id].ls=Date.now();
   if(!wasDone)S.t[id].completedAt=Date.now();
-  // track speed
-  if(!wasDone&&S.t[id].startedAt){
-    const secs=Math.floor((Date.now()-S.t[id].startedAt)/1000);
-    if(!S.speed)S.speed={};
-    const course=document.querySelector('[data-id="'+id+'"]')?.dataset.course||'';
-    if(!S.speed[course])S.speed[course]={total:0,count:0};
-    S.speed[course].total+=secs;S.speed[course].count++;
-  }
+ 
   const nw=document.getElementById('notes-'+id);
   if(nw&&S.t[id].done)nw.classList.add('on');
     // weekly caps — contar solo los completados dentro de esta semana
@@ -3247,8 +3289,7 @@ function renderErrByCourseGrid(){
   // Count from capErrors (by topic id -> course)
   Object.entries(capErrs).forEach(([id,arr])=>{
     if(!arr||!arr.length)return;
-    const topicEl=document.querySelector('[data-id="'+id+'"]');
-    const c=topicEl?.dataset.course||null;
+    const c=getTopic(id).course||null;
     if(c&&byCourse[c]!==undefined)byCourse[c]+=arr.length;
   });
   // Count from global errors with [id] prefix (chapter errors)
@@ -3256,8 +3297,7 @@ function renderErrByCourseGrid(){
     const match=e.match(/^\[([a-z]+\d*)\]/);
     if(match){
       const id=match[1];
-      const topicEl=document.querySelector('[data-id="'+id+'"]');
-      const c=topicEl?.dataset.course||null;
+      const c=getTopic(id).course||null;
       if(c&&byCourse[c]!==undefined&&capErrs[id]===undefined)byCourse[c]++;
     }
   });
@@ -3302,8 +3342,7 @@ function renderE(){
     displayErrs=errs.filter(e=>{
       const match=e.match(/^\[([a-z]+\d*)\]/);
       if(match){
-        const topicEl=document.querySelector('[data-id="'+match[1]+'"]');
-        return topicEl?.dataset.course===_errCourseFilter;
+        return getTopic(match[1]).course===_errCourseFilter;
       }
       // Check for [Course] prefix (global errors with course)
       const courseMatch=e.match(/^\[([A-Za-záéíóúÁÉÍÓÚñÑ\s]+)\]\s*/);
@@ -3327,8 +3366,7 @@ function renderE(){
       let courseTag='';
       let displayText=e;
       if(match){
-        const topicEl=document.querySelector('[data-id="'+match[1]+'"]');
-        const c=topicEl?.dataset.course||'';
+        const c=getTopic(match[1]).course||'';
         const col=COURSE_COLORS[c]||'#888';
         if(c)courseTag='<span style="font-size:.44rem;padding:.02rem .22rem;background:'+col+'18;border:1px solid '+col+'40;color:'+col+';margin-right:.25rem;flex-shrink:0">'+c+'</span>';
         displayText=e.replace(/^\[[^\]]+\]\s*/,'');
@@ -3699,7 +3737,7 @@ function clearSearch(){document.getElementById('searchinput').value='';doSearch(
 
 // ── FOCUS ──
 let fT='',fC='';
-function sf(e,t,c){e.stopPropagation();fT=t;fC=c;document.getElementById('pcourse').value=c;}
+
 function enterF(){
   document.getElementById('ftopic').textContent=fT||'Selecciona un tema con ⊞';
   document.getElementById('fcourse').textContent=fC||'—';
@@ -3742,7 +3780,7 @@ function upEmTimer(){
 function exitExamMode(){clearInterval(emTimerInt);emRunning=false;document.getElementById('examOv').classList.remove('on');}
 
 // ── BANCO ──
-const BANK_COURSES=['Aritmética','Álgebra','Física','Geometría','Trigonometría','Química'];
+
 // File System Access API - Root directory handle
 let uniDirHandle=null;
 // IndexedDB for persisting directory handle
@@ -4167,7 +4205,7 @@ function getDueCards(){
   ];
 }
 
-function getFilteredFC(){return getDueCards();}
+
 
 function addFC(){
   const course=document.getElementById('fcCourse').value;
@@ -4229,9 +4267,11 @@ function renderFC(){
     +'<div class="fc-conf-wrap">'
     +'  <div class="fc-conf-label">¿Qué tan seguro estás?</div>'
     +'  <div class="fc-conf-btns">'
-    +'    <button class="fc-conf-btn low" onclick="event.stopPropagation();setFCConfidence(30)">🔴<br><span>adivinando</span></button>'
-    +'    <button class="fc-conf-btn mid" onclick="event.stopPropagation();setFCConfidence(60)">🟡<br><span>dudando</span></button>'
-    +'    <button class="fc-conf-btn high" onclick="event.stopPropagation();setFCConfidence(90)">🟢<br><span>seguro</span></button>'
+    +'    <button class="fc-conf-btn low" onclick="event.stopPropagation();setFCConfidence(15)">😰<br><span>nada</span></button>'
+    +'    <button class="fc-conf-btn low" onclick="event.stopPropagation();setFCConfidence(35)">🔴<br><span>dudo</span></button>'
+    +'    <button class="fc-conf-btn mid" onclick="event.stopPropagation();setFCConfidence(55)">🟡<br><span>quizá</span></button>'
+    +'    <button class="fc-conf-btn high" onclick="event.stopPropagation();setFCConfidence(80)">🟢<br><span>creo</span></button>'
+    +'    <button class="fc-conf-btn high" onclick="event.stopPropagation();setFCConfidence(95)">✅<br><span>seguro</span></button>'
     +'  </div>'
     +'</div>'
     +'<div class="fc-hint">elegí confianza para ver la respuesta</div>';
@@ -4294,10 +4334,9 @@ function flipFC(){
 function setFCConfidence(v){
   window._fcCurrentConfidence=v;
   document.querySelectorAll('.fc-conf-btn').forEach(b=>b.classList.remove('active'));
-  const cls=v===30?'low':v===60?'mid':'high';
+  const cls=v<=35?'low':v<75?'mid':'high';
   const btn=document.querySelector('.fc-conf-btn.'+cls);
   if(btn)btn.classList.add('active');
-  // Auto-voltear después de 300ms para fluir rápido
   setTimeout(()=>flipFC(),300);
 }
 
@@ -4376,7 +4415,7 @@ function rateFC(rating){
   renderFC();
 }
 
-function fcNav(dir){/* deshabilitado — la cola Anki maneja el flujo */}
+
 
 function renderFCStats(){
   const el=document.getElementById('fcStats');
@@ -4403,28 +4442,12 @@ function renderFCStats(){
     +'<span>total: <b>'+S.fc.length+'</b></span>';
 }
 
-function shuffleFC(){
-  if(!S.fc||S.fc.length<2)return;
-  for(let i=S.fc.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [S.fc[i],S.fc[j]]=[S.fc[j],S.fc[i]];
-  }
-  save();
-  _fcQueue=null;
-  renderFC();
-}
+
 
 
 // ── CALENDARIO (sincronizado con WSCHED del plan) ──
-const WEEK_CAL_LABELS={
-  w1:'Arit',w2:'Alg.1',w3:'Alg.2',w4:'Fís.1',w5:'Fís.2',
-  w7:'Geo.1',w8:'Geo.2',w9:'Trigo',w10:'Recup',w11:'Quím',w12:'Quím',w13:'Quím',w15:'Repaso'
-};
-const COURSE_CAL_COLORS={
-  'Aritmética':'var(--ca)','Álgebra':'var(--calg)','Física':'var(--cf)',
-  'Geometría':'var(--cg)','Trigonometría':'var(--ct)','Química':'var(--cq)',
-  'Operación':'var(--accent2)','Simulacros':'#ffdd6a'
-};
+
+
 function getWeekForDate(ds){
   return WSCHED.find(w=>ds>=w.s&&ds<=w.e)||null;
 }
@@ -4484,10 +4507,12 @@ function renderCalendar(){
 function renderStats(){
   renderH();renderE();renderSim();renderSimLog();renderWS();renderHeatmap();renderPrediction();renderConsistencyChart();
   renderSpeedStats();
+  renderSpeedTargetsEditor();
   const dateEl=document.getElementById('simLogDate');
   if(dateEl&&!dateEl.value)dateEl.value=today();
   // Init preset chips with current course select value
   renderGlobalErrPresets();
+  renderCalibration();
 }
 
 // ── BACKUP ──
@@ -4508,9 +4533,9 @@ function importB(input){
       migrateData();
       save();
       renderAll();
-      alert('✓ Backup importado (v'+(S._v||'?')+').');
+      showToast('✓ Backup importado (v'+(S._v||'?')+')','success');
     }
-    catch(err){alert('Error: archivo inválido.');}
+    catch(err){showToast('⚠ Archivo inválido','error');;}
   };
   reader.readAsText(file);input.value='';
 }
@@ -4553,10 +4578,8 @@ function initPomoWithActiveTopic(){
   const undone=aw.topics.filter(id=>!(S.t||{})[id]?.done);
   if(!undone.length)return;
   const nextId=undone[0];
-  const el=document.querySelector('[data-id="'+nextId+'"]');
-  if(!el)return;
-  const course=el?.dataset.course||'';
-  const name=el?.dataset.name||'';
+  const {course,name}=getTopic(nextId);
+  if(!course)return;
   const pcourseSel=document.getElementById('pcourse');
   const ptopicSel=document.getElementById('ptopic');
   if(pcourseSel&&course){
@@ -4574,8 +4597,7 @@ function initPomoWithActiveTopic(){
 function renderTopicTimes(){
   if(!S.topicTime)return;
   document.querySelectorAll('.ti[data-id]').forEach(el=>{
-    const name=el.dataset.name;
-    const course=el.dataset.course;
+    const {name,course}=getTopic(el.dataset.id);
     if(!name||!course)return;
     // Try exact key first, then partial match (pomodoro topic names may differ slightly)
     const k=course+'::'+name;
@@ -4656,11 +4678,7 @@ function clearAllData(){
 
 // ── BREAK TIMER ──
 let brkInt=null, brkSecs=0, brkRun=false, brkTarget=300;
-function toggleBreak(){
-  if(pRun){return;} // no break while studying
-  if(brkRun){stopBreak(true);}
-  else{startBreak();}
-}
+
 function startBreak(targetSecs){
   brkRun=true;brkSecs=0;brkTarget=targetSecs||300;
   const brkStart=Date.now();
@@ -4701,29 +4719,10 @@ function resetPomo(){
   if(bsEl)bsEl.textContent=getBreakSuggestion(1500);
 }
 
-// ── TOPIC START TRACKING ──
-function startTopic(id){
-  if(!S.t)S.t={};
-  S.t[id]=S.t[id]||{};
-  S.t[id].startedAt=Date.now();
-  save();
-}
 
-// ── DUPLICATE PREVENTION FOR ERRORS ──
-function isDuplicateError(err){
-  if(!S.errors)return false;
-  return S.errors.some(e=>e.toLowerCase()===err.toLowerCase());
-}
 
-// ── GET STATS SUMMARY ──
-function getStatsSummary(){
-  const all=document.querySelectorAll('.ti[data-id]').length;
-  const done=document.querySelectorAll('.ti[data-id].done').length;
-  const totalH=(S.h||{}).total||0;
-  const streak=S.streak||0;
-  const errCount=(S.errors||[]).length;
-  return{all,done,pct:Math.round(done/all*100),totalH:fmt(totalH),streak,errCount};
-}
+
+
 
 // ── AUTO-SAVE INDICATOR ──
 let saveTimeout=null;
@@ -4868,7 +4867,7 @@ function loadCustomTheme(){
 function resetTheme(){
   localStorage.removeItem('customTheme');
   applyCustomTheme(DEFAULT_COLORS);
-  alert('Tema restablecido a valores por defecto.');
+    showToast('✓ Tema restablecido','success');
 }
 function openThemeConfig(){
   const modal=document.createElement('div');
@@ -4932,7 +4931,7 @@ function saveThemeConfig(){
   applyCustomTheme(colors);
   saveCustomTheme(colors);
   closeThemeConfig();
-  alert('✓ Tema guardado correctamente.');
+  showToast('✓ Tema guardado','success');
 }
 
 // ── SYNC WITH CLOUD (Google Drive/Dropbox) ──
@@ -4976,26 +4975,8 @@ async function importFromSync(file){
   }
 }
 
-// ── NOTIFICATION SOUND (OPTIONAL) ──
-let notificationSound=null;
-function playNotificationSound(){
-  if(!notificationSound){notificationSound=new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');}
-  try{notificationSound.play();}catch(e){}
-}
 
-// ── COPY TO CLIPBOARD ──
-function copyToClipboard(text){
-  navigator.clipboard.writeText(text).then(()=>alert('Copiado al portapapeles')).catch(()=>alert('Error al copiar'));
-}
 
-// ── FORMAT DATE ──
-function formatDate(dateStr){
-  const parts=dateStr.split('-');
-  const d=new Date(Number(parts[0]),Number(parts[1])-1,Number(parts[2]));
-  const days=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-  const months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-  return days[d.getDay()]+' '+d.getDate()+' '+months[d.getMonth()];
-}
 
 
 // ═══════════════════════════════════════════════════════════════
@@ -5010,8 +4991,8 @@ function getSpacedDue(){
     if(!data.done||!data.reviewDates)continue;
     const pending=data.reviewDates.filter((d,i)=>d<=td&&!(data.reviewsDone||[]).includes(i));
     if(pending.length>0){
-      const el=document.querySelector('[data-id="'+id+'"]');
-      dueIds.push({id,name:el?.dataset.name||id,course:el?.dataset.course||'',pending});
+      const t=getTopic(id);
+      dueIds.push({id,name:t.name||id,course:t.course||'',pending});
     }
   }
   return dueIds;
@@ -5232,9 +5213,7 @@ function renderPreOpReview(){
       const errCount=((S.capErrors||{})[id]||[]).length;
       const diff=data.diff==='p'?3:data.diff==='m'?2:1;
       const score=errCount*3+diff+(data.done?0:5);
-      const el=document.querySelector('[data-id="'+id+'"]');
-      const name=el?.dataset.name||id;
-      const course=el?.dataset.course||'';
+      const {name,course}=getTopic(id);
       return{id,name,course,score,done:data.done,errCount};
     }).sort((a,b)=>b.score-a.score);
     const top=scored.slice(0,5);
@@ -5264,9 +5243,8 @@ function whatNext(){
     showWhatNext('✓ ¡Completaste todos los temas de esta semana!','var(--accent3)');return;
   }
   const nextId=undone[0];
+  const {name,course}=getTopic(nextId);
   const el=document.querySelector('[data-id="'+nextId+'"]');
-  const name=el?.dataset.name||nextId;
-  const course=el?.dataset.course||'';
   const lum=el?.querySelector('.lum')?.textContent||'';
   // How much time left today?
   const hoy=(S.h||{})[td]||0;
@@ -5553,10 +5531,12 @@ function delSimLog(i){if(!S.simLog)return;S.simLog.splice(i,1);save();renderSimL
 function generateMiniSimFromErrors(){
   const errs=(S.errors||[]).slice(0,8);
   const heavy=[];
-  document.querySelectorAll('.ti[data-id]').forEach(ti=>{
-    const id=ti.dataset.id;
-    if((S.t||{})[id]?.diff==='p'&&!heavy.includes(ti.dataset.name))heavy.push(ti.dataset.name);
-  });
+  for(const [id,data] of Object.entries(S.t||{})){
+    if(data.diff==='p'&&TOPIC_INDEX[id]){
+      const n=TOPIC_INDEX[id].name;
+      if(!heavy.includes(n))heavy.push(n);
+    }
+  }
   const pool=[...errs.map(e=>'Error: '+e),...heavy.map(n=>'Repasar cap pesado: '+n)];
   if(!pool.length){alert('No hay errores ni caps pesados para generar mini-sim.');return;}
   const n=Math.min(8,pool.length);
@@ -5633,8 +5613,7 @@ function initPWA(){
 function toggleCapErr(id){
   const presetWrap=document.getElementById('cap-epreset-'+id);
   const customWrap=document.getElementById('tierradd-'+id);
-  const ti=document.querySelector('[data-id="'+id+'"]');
-  const course=ti?.dataset.course||'';
+  const course=getTopic(id).course;
   if(presetWrap){
     const showing=presetWrap.style.display!=='none'&&presetWrap.innerHTML!=='';
     if(showing){
@@ -5704,9 +5683,9 @@ function renderHomeAccion(){
     return;
   }
   const nextId=pending[0];
-  const topicEl=document.querySelector('[data-id="'+nextId+'"]');
-  const topicName=topicEl?.dataset.name||nextId;
-  const course=topicEl?.dataset.course||'';
+  const {name:topicName, course}=getTopic(nextId);
+  // Fallback si no está en el índice
+  const finalTopicName = topicName || nextId;
   const done=aw.topics.filter(id=>(S.t||{})[id]?.done).length;
   const total=aw.topics.length;
   const dl=Math.max(1,daysBetween(td,aw.e)+1);
@@ -5769,8 +5748,7 @@ function renderHomeCapActual(){
   // 1) Si hay bloque en el horario ahora, úsalo
   if(current && current.course && aw){
     const topicId=aw.topics.find(id=>{
-      const c=Object.keys(TOPICS).find(k=>TOPICS[k]&&TOPICS[k][id]);
-      return c===current.course && !(S.t||{})[id]?.done;
+      return getTopic(id).course===current.course && !(S.t||{})[id]?.done;
     });
     if(topicId){
       const info=findTopicInfo(topicId);
@@ -5837,10 +5815,9 @@ function renderHomeErrores(){
     const byCourse={};
     errs.forEach(e=>{
       const match=e.match(/^\[([a-z]+\d*)\]/);
-      if(match){
+            if(match){
         const id=match[1];
-        const topicEl=document.querySelector('[data-id="'+id+'"]');
-        const course=topicEl?.dataset.course||'Otros';
+        const course=getTopic(id).course||'Otros';
         byCourse[course]=(byCourse[course]||0)+1;
       }else{
         byCourse['General']=(byCourse['General']||0)+1;
@@ -5886,7 +5863,7 @@ function renderHomeDiffPending(){
   document.querySelectorAll('.ti[data-id]').forEach(ti=>{
     const id=ti.dataset.id;
     const data=(S.t||{})[id]||{};
-    if(data.diff==='p'&&!data.done)hard.push({id,name:ti.dataset.name,course:ti.dataset.course});
+    if(data.diff==='p'&&!data.done){const t=getTopic(id);hard.push({id,name:t.name,course:t.course});}
   });
   el.textContent=hard.length;
   if(!hard.length){el.className='hc-val green';sub.textContent='¡Sin caps pesados pendientes!';}
@@ -5949,8 +5926,7 @@ function renderHomeErrCurso(){
   // 1) capErrors (id → curso)
   Object.entries(capErrs).forEach(([id,arr])=>{
     if(!arr||!arr.length)return;
-    const topicEl=document.querySelector('[data-id="'+id+'"]');
-    const c=topicEl?.dataset.course||null;
+    const c=getTopic(id).course||null;
     if(c&&byCourse[c]!==undefined)byCourse[c]+=arr.length;
   });
   // 2) errores con [id] (capítulo)
@@ -5958,8 +5934,7 @@ function renderHomeErrCurso(){
     const match=e.match(/^\[([a-z]+\d*)\]/);
     if(!match)return;
     const id=match[1];
-    const topicEl=document.querySelector('[data-id="'+id+'"]');
-    const c=topicEl?.dataset.course||null;
+      const c=getTopic(id).course||null;
     if(c&&byCourse[c]!==undefined&&capErrs[id]===undefined)byCourse[c]++;
   });
   // 3) errores con [Curso]
@@ -6014,8 +5989,7 @@ function renderHomeErrCapActual(){
   if(!pending.length){el.innerHTML='<span style="color:var(--accent3)">✓ Sin caps pendientes esta semana.</span>';return;}
   const currentId=pending[0];
   const capErrs=(S.capErrors||{})[currentId]||[];
-  const topicEl=document.querySelector('[data-id="'+currentId+'"]');
-  const name=topicEl?.dataset.name||currentId;
+  const name=getTopic(currentId).name||currentId;
   if(!capErrs.length){
     el.innerHTML='<span style="color:var(--accent3)">✓ Sin errores registrados en <strong>'+name+'</strong>.</span>';
     return;
@@ -6037,8 +6011,7 @@ function renderHomeErrRecientes(){
     let displayText=e;
     if(match){
       const id=match[1];
-      const topicEl=document.querySelector('[data-id="'+id+'"]');
-      const course=topicEl?.dataset.course||'';
+      const course=getTopic(id).course||'';
       const col=COURSE_COLORS[course]||'#888';
       if(course)courseTag='<span class="err-recent-course-tag" style="color:'+col+';border-color:'+col+'30;background:'+col+'15">'+course+'</span>';
       displayText=e.replace(/^\[[^\]]+\]\s*/,'');
@@ -6099,14 +6072,7 @@ function renderHomeNotes(){
   el.value=S.homeNotes||'';
 }
 
-// Inject HOME into errors rendering so error counter stays synced in sidebar
-const _origRenderE=renderE;
-renderE=function(){
-  _origRenderE();
-  if(document.getElementById('view-home')?.classList.contains('active')){
-    renderHomeErrores();renderHomeErrCurso();renderHomeErrRecientes();
-  }
-};
+
 
 // ── RENDER ALL ──
 function renderAll(){renderPlanTopics();
@@ -6125,30 +6091,10 @@ function renderAll(){renderPlanTopics();
   if(document.getElementById('view-stats')?.classList.contains('active'))renderStats();
   if(document.getElementById('view-sessions')?.classList.contains('active'))renderSessions();
   if(document.getElementById('view-calendar')?.classList.contains('active'))renderCalendar();
+  renderContinueStudyButton();
 }
 
-// ── INIT ──
-buildWeeklyStudyPlan();renderPlanTopics();load();loadThemePreference();loadCustomTheme();refreshCourseRGB();renderAll();initPomo();initChrono();initPWA();
-setPlanTab(S.planTab||'ciencias');
-// Load UNI folder handle from IndexedDB
-(async()=>{
-  uniDirHandle=await loadDirHandle();
-  if(uniDirHandle){
-    document.getElementById('uniFolderStatus').textContent='✓ Seleccionada';
-    document.getElementById('uniFolderStatus').style.color='var(--accent3)';
-  }
-})();
-// Default to HOME view on first load
-(function(){
-  const lastView=localStorage.getItem('uni-last-view')||'home';
-  const homeBtn=document.getElementById('sb-home-btn');
-  showView(lastView,lastView==='home'?homeBtn:document.querySelector('.sb-btn[onclick*="'+lastView+'"]'));
-  // Track last viewed tab
-  const origSV=showView;
-  window.showView=function(name,btn){origSV(name,btn);localStorage.setItem('uni-last-view',name);};
-})();
-setInterval(()=>{if(document.getElementById('view-home')?.classList.contains('active'))renderHomeCapActual();},60000);
-setInterval(()=>{updateRhythmProjection();renderHighLoadAlerts();renderPreOpReview();renderEnhancements();},120000);
+
 
 // ── FASE 1: MOTOR IA + PRESETS + INTEGRACIÓN GEMINI ──
 
@@ -6615,12 +6561,14 @@ function ensureTopicMetadata(topicId){
 }
 
 // Sistema de Priorización de Estudio
-// Busca {curso, tema} dado un topicId, según la estructura TOPICS[curso][id]
 function findTopicInfo(id){
-  if(!id) return {curso:'', tema:''};
-  const course = Object.keys(TOPICS).find(c => TOPICS[c] && TOPICS[c][id]);
-  if(!course) return {curso:'', tema:''};
-  return {curso: course, tema: TOPICS[course][id]};
+  const t = TOPIC_INDEX[id];
+  return t ? { curso: t.course, tema: t.name } : { curso:'', tema:'' };
+}
+function getTopic(id){
+  if(TOPIC_INDEX[id]) return TOPIC_INDEX[id];
+  if(PLAN_PARTS[id]) return { id, course: PLAN_PARTS[id].course, name: PLAN_PARTS[id].name };
+  return { id, course:'', name:id };
 }
 const StudyPrioritizer={
   getRecommendation(){
@@ -7319,12 +7267,7 @@ function initAIComponents(){
   }
 }
 
-// Actualizar renderAll para incluir componentes IA
-const _origRenderAll=renderAll;
-renderAll=function(){
-  _origRenderAll();
-  renderContinueStudyButton();
-};
+
 
 // Inicializar AI components al cargar
 initAIComponents();
@@ -7402,12 +7345,15 @@ function chronoToggle(){
     );
     StudyPrioritizer.updateDominio(topicId, effectiveAcc);
 
-    alert('✓ Sesión guardada\n\n'+
-      total+' problemas en '+Math.floor(chronoSecs/60)+'m '+(chronoSecs%60)+'s\n'+
-      'Tiempo/problema: '+tpp+'s\n'+
-      'Acierto: '+acc+'%\n'+
-      'Saltados: '+skip+'%\n'+
-      'Dominio actualizado: '+effectiveAcc+'%');
+     const body='<div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem .7rem">'
+      +'<span style="color:var(--muted)">Problemas</span><b>'+total+'</b>'
+      +'<span style="color:var(--muted)">Duración</span><b>'+Math.floor(chronoSecs/60)+'m '+(chronoSecs%60)+'s</b>'
+      +'<span style="color:var(--muted)">Tiempo/problema</span><b>'+tpp+'s</b>'
+      +'<span style="color:var(--muted)">Acierto</span><b style="color:'+(acc>=70?'var(--accent3)':'var(--accent4)')+'">'+acc+'%</b>'
+      +'<span style="color:var(--muted)">Saltados</span><b style="color:'+(skip>=20?'#f0a500':'var(--muted)')+'">'+skip+'%</b>'
+      +'<span style="color:var(--muted)">Dominio</span><b>'+effectiveAcc+'%</b>'
+      +'</div>';
+    showModal('Sesión guardada',body,{accent:'var(--accent3)',icon:'✅'});
     chronoReset();
     if(typeof renderSpeedStats==='function')renderSpeedStats();
     refreshPlanIcons();
@@ -7416,6 +7362,11 @@ function chronoToggle(){
     const course=document.getElementById('chronoCourse').value;
     const topicId=document.getElementById('chronoTopic').value;
     if(!course||!topicId){alert('Selecciona curso y tema primero');return;}
+    // Aviso si el pomodoro está activo: no duplica horas, pero es bueno saberlo
+    if(pRun){
+      const meta=document.getElementById('chronoMeta');
+      if(meta)meta.innerHTML='<span style="color:var(--accent3)">⏱ pomodoro contando (sin duplicar horas)</span>';
+    }
     chronoRun=true;
     chronoStart=Date.now();
     chronoSecs=0;
@@ -7437,6 +7388,8 @@ function chronoCount(kind){
   chronoCounts[kind]=(chronoCounts[kind]||0)+1;
   updateChronoCounts();
 }
+
+
 
 function updateChronoCounts(){
   ['easy','hard','skipped','failed'].forEach(k=>{
@@ -7570,13 +7523,7 @@ function courseLabel(name){
 
 /* ═══ VELOCIDAD POR TEMA — Stats ═══ */
 
-// Target de segundos por problema según curso (aproximado UNI)
-const SPEED_TARGETS={
-  'Aritmética':90,'Álgebra':135,'Física':165,'Geometría':150,
-  'Trigonometría':135,'Química':105,'Raz. Matemático':105,
-  'Raz. Verbal':90,'Historia Universal':75,'Historia del Perú':75,
-  'Geografía':75,'Filosofía':75,'Literatura':75,'Lenguaje':75,'Inglés':75
-};
+
 
 function renderSpeedStats(){
   const el=document.getElementById('speedStatsBox');
@@ -7608,7 +7555,7 @@ function renderSpeedStats(){
     const acc=t.total?Math.round(aciertos/t.total*100):0;
     const skip=t.total?Math.round(t.skipped/t.total*100):0;
     const tpp=t.total?Math.round(t.secs/t.total):0;
-    const target=SPEED_TARGETS[t.course]||120;
+    const target=getSpeedTarget(t.course);
     const ratio=target?tpp/target:1;
 
     // Clasificar
@@ -7676,7 +7623,7 @@ function findTopicIdByCourseAndName(course, name){
 function refreshPlanIcons(){
   document.querySelectorAll('.ti[data-id]').forEach(el=>{
     const id=el.dataset.id;
-    const course=el.dataset.course;
+    const course=getTopic(id).course;
     const info=getTopicDependencyInfo(id);
     let badge=el.querySelector('.dep-badge');
 
@@ -7721,8 +7668,8 @@ function renderCalibration(){
   if(!el)return;
   const data=S.calibration||[];
 
-  if(data.length<5){
-    el.innerHTML='<div class="speed-empty">Necesitás al menos 5 respuestas con confianza registrada.<br>Repasá flashcards y elegí 🟢/🟡/🔴 antes de voltear.</div>';
+  if(data.length<20){
+    el.innerHTML='<div class="speed-empty">Necesitás al menos <b>20</b> respuestas para que el Brier sea estable.<br>Llevas <b>'+data.length+'</b>. El número que ves es ruido.</div>';
     return;
   }
 
@@ -7736,6 +7683,7 @@ function renderCalibration(){
     brierSum+=Math.pow(c-a,2);
   });
   const brier=(brierSum/data.length).toFixed(3);
+  const lowSample=data.length<50;
 
   // ── Confianza promedio vs acierto promedio (global) ──
   const avgConf=data.reduce((a,r)=>a+(r.confidence||60),0)/data.length;
@@ -7770,7 +7718,7 @@ function renderCalibration(){
   // ── Resumen ──
   let html='<div style="display:flex;flex-wrap:wrap;gap:.6rem;font-size:.5rem;color:var(--muted);margin-bottom:.6rem;padding:.4rem .6rem;background:var(--bg);border-radius:4px">'
     +'<span>📊 <b style="color:var(--text)">'+data.length+'</b> respuestas</span>'
-    +'<span>🎯 Brier: <b style="color:'+(brier<=0.15?'var(--accent3)':brier<=0.25?'var(--accent4)':'var(--accent2)')+'">'+brier+'</b> <span style="opacity:.6">(menor=mejor)</span></span>'
+    +'<span>🎯 Brier: <b style="color:'+(brier<=0.15?'var(--accent3)':brier<=0.25?'var(--accent4)':'var(--accent2)')+'">'+brier+'</b> <span style="opacity:.6">(menor=mejor)</span>'+(lowSample?' <span style="color:#f0a500">· muestra baja</span>':'')+'</span>'
     +'<span>📈 Confianza prom: <b style="color:var(--text)">'+Math.round(avgConf)+'%</b></span>'
     +'<span>✓ Acierto prom: <b style="color:var(--text)">'+Math.round(avgAcc)+'%</b></span>'
     +'<span style="color:'+(Math.abs(biasGlobal)>15?'#f0a500':'var(--accent3)')+'">Bias: <b>'+(biasGlobal>0?'+':'')+biasGlobal+'</b></span>'
@@ -7815,12 +7763,7 @@ function renderCalibration(){
   el.innerHTML=html;
 }
 
-// Llamar en renderStats
-const _origRenderStats=renderStats;
-renderStats=function(){
-  _origRenderStats();
-  if(typeof renderCalibration==='function')renderCalibration();
-};
+
 /* ═══ BADGE DE VELOCIDAD EN EL PLAN ═══ */
 function renderTopicSpeed(id){
   const el=document.querySelector('[data-id="'+id+'"]');if(!el)return;
@@ -7831,8 +7774,8 @@ function renderTopicSpeed(id){
     return;
   }
   const avg=Math.round(t.speedSecs/t.speedProbs);
-  const course=el.dataset.course;
-  const target=(typeof SPEED_TARGETS!=='undefined'&&SPEED_TARGETS[course])||120;
+  const course=getTopic(id).course;
+  const target=typeof getSpeedTarget!=='undefined'?getSpeedTarget(course):120;
   const ratio=avg/target;
   const color=ratio<0.8?'var(--accent3)':ratio<1.3?'var(--muted)':'var(--accent4)';
   const icon=ratio<0.8?'⚡':ratio<1.3?'⏱':'🐢';
@@ -7850,6 +7793,82 @@ function renderTopicSpeed(id){
 function renderAllTopicSpeeds(){
   document.querySelectorAll('.ti[data-id]').forEach(el=>renderTopicSpeed(el.dataset.id));
 }
+/* ═══ MODAL GENÉRICO ═══ */
+function showModal(title,bodyHTML,opts){
+  opts=opts||{};
+  // Remover uno anterior si existe
+  document.getElementById('_genModal')?.remove();
+  const m=document.createElement('div');
+  m.id='_genModal';
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:3000;display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .2s ease';
+  m.onclick=(e)=>{if(e.target===m)closeModal();};
+  const accent=opts.accent||'var(--accent)';
+  const icon=opts.icon||'';
+  m.innerHTML=`
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.4rem 1.5rem;max-width:460px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+      <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.9rem;border-bottom:1px solid var(--border);padding-bottom:.7rem">
+        ${icon?`<span style="font-size:1.1rem">${icon}</span>`:''}
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;color:${accent};flex:1">${title}</div>
+        <button onclick="closeModal()" style="background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;border-radius:4px;font-size:.65rem;padding:.1rem .35rem;line-height:1">✕</button>
+      </div>
+      <div style="font-size:.65rem;color:var(--text);line-height:1.6">${bodyHTML}</div>
+      ${opts.noButton?'':`<button onclick="closeModal()" style="margin-top:1rem;width:100%;padding:.5rem;background:${accent};color:#000;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.6rem;font-weight:700">${opts.buttonText||'Entendido'}</button>`}
+    </div>`;
+  document.body.appendChild(m);
+}
+function closeModal(){document.getElementById('_genModal')?.remove();}
+
+/* Alias para no romper el código viejo */
+function showAlert(msg,opts){
+  // Convierte saltos de línea en <br>
+  const html=String(msg).replace(/\n/g,'<br>');
+  showModal((opts&&opts.title)||'Aviso',html,opts);
+}
+/* ═══ EDITOR DE TARGETS DE VELOCIDAD ═══ */
+function renderSpeedTargetsEditor(){
+  const el=document.getElementById('speedTargetsEdit');
+  if(!el)return;
+  el.innerHTML=Object.keys(SPEED_TARGETS_DEFAULT).map(c=>{
+    const v=getSpeedTarget(c);
+    return '<label style="display:flex;align-items:center;gap:.3rem;font-size:.5rem;color:var(--muted)">'
+      +'<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+c+'">'+c+'</span>'
+      +'<input type="number" value="'+v+'" min="30" max="600" onchange="setSpeedTarget(\''+c+'\',this.value)" style="width:48px;background:#0a0a0f;border:1px solid var(--border);color:var(--text);padding:.15rem .25rem;font-family:inherit;font-size:.5rem;text-align:center;border-radius:3px">'
+      +'</label>';
+  }).join('');
+}
+function setSpeedTarget(course,val){
+  if(!S.speedTargets)S.speedTargets={};
+  const n=Math.max(30,Math.min(600,parseInt(val)||120));
+  S.speedTargets[course]=n;
+  save();
+  renderSpeedStats();
+  if(typeof renderAllTopicSpeeds==='function')renderAllTopicSpeeds();
+}
+// ── INIT ──
+buildWeeklyStudyPlan();renderPlanTopics();load();loadThemePreference();loadCustomTheme();refreshCourseRGB();renderAll();initPomo();initChrono();initPWA();
+setPlanTab(S.planTab||'ciencias');
+// Load UNI folder handle from IndexedDB
+(async()=>{
+  uniDirHandle=await loadDirHandle();
+  if(uniDirHandle){
+    document.getElementById('uniFolderStatus').textContent='✓ Seleccionada';
+    document.getElementById('uniFolderStatus').style.color='var(--accent3)';
+  }
+})();
+// Default to HOME view on first load
+(function(){
+  const lastView=localStorage.getItem('uni-last-view')||'home';
+  const homeBtn=document.getElementById('sb-home-btn');
+  showView(lastView,lastView==='home'?homeBtn:document.querySelector('.sb-btn[onclick*="'+lastView+'"]'));
+  // Track last viewed tab
+  const origSV=showView;
+  window.showView=function(name,btn){origSV(name,btn);localStorage.setItem('uni-last-view',name);};
+})();
+setInterval(()=>{
+  const v=document.querySelector('.view.active')?.id;
+  if(v==='view-home')renderHomeCapActual();
+  else if(v==='view-plan'){updateRhythmProjection();renderHighLoadAlerts();renderPreOpReview();renderEnhancements();}
+},60000);
 </script>
 </body>
 </html>
