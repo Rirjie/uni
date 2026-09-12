@@ -840,6 +840,8 @@ body.print-week .week.print-hide{display:none!important}
   </div>
 </div>
 
+<button class="fc-focus-exit" onclick="toggleFCMode()">✕ salir del modo flashcards</button>
+
 <div class="app" id="appRoot">
 <!-- SIDEBAR -->
 <aside class="sidebar">
@@ -1397,50 +1399,94 @@ body.print-week .week.print-hide{display:none!important}
   <h1>Tarjetas de <span>memoria</span></h1>
   <div class="subtitle" style="margin-bottom:1.5rem">Crea y repasa tarjetas por cap. Haz clic en la tarjeta para ver la respuesta.</div>
   <div class="tools">
+
+    <!-- ═══════════ REPASAR (ahora primero) ═══════════ -->
     <div class="tcard full">
-      <div class="tcardtitle">Crear tarjeta</div>
-      <div style="display:flex;gap:.4rem;margin-bottom:.4rem">
-  <select class="pcourse" id="fcCourse" style="flex:1;margin:0" onchange="updateFCTopics()">
-    <option value="">— curso —</option>
-  </select>
+      <div class="tcardtitle" style="font-size:.78rem">
+        <span style="color:var(--accent3);font-weight:700">▶ Repasar tarjetas</span>
+        <span style="color:var(--muted);font-weight:400">· <span id="fcCount">0</span> pendientes</span>
+        <button class="tcard-action" onclick="toggleFCMode()" style="color:var(--accent3);cursor:pointer;margin-left:auto">⛶ modo flashcards</button>
+        <button class="tcard-action" onclick="_fcQueue=null;renderFC()">🔄 recargar</button>
+      </div>
 
-  <select class="pcourse" id="fcTopic" style="flex:1;margin:0">
-    <option value="">— tema —</option>
-  </select>
-</div>
-      <input class="einput" id="fcQuestion" placeholder="Pregunta / frente de la tarjeta..." style="width:100%;margin-bottom:.4rem">
-      <input class="einput" id="fcAnswer" placeholder="Respuesta / reverso..." style="width:100%;margin-bottom:.4rem">
-      <button class="eadd" onclick="addFC()" style="width:100%">+ crear tarjeta</button>
-    </div>
-    <div class="tcard full">
-      <div class="tcardtitle">
-  Repasar tarjetas (<span id="fcCount">0</span>)
-  <button class="tcard-action" onclick="_fcQueue=null;renderFC()">🔄 recargar cola</button>
-</div>
+      <div style="display:flex;gap:.4rem;margin-bottom:.6rem">
+        <select class="pcourse" id="fcFilterCourse" style="flex:1;margin:0" onchange="updateFCFilterTopics()">
+          <option value="">— curso —</option>
+        </select>
+        <select class="pcourse" id="fcFilterTopic" style="flex:1;margin:0" onchange="_fcQueue=null;renderFC()">
+          <option value="">Todos</option>
+        </select>
+      </div>
 
-<div style="display:flex;gap:.4rem;margin-bottom:.6rem">
-  <select class="pcourse" id="fcFilterCourse" style="flex:1;margin:0" onchange="updateFCFilterTopics()">
-    <option value="">— curso —</option>
-  </select>
-
-  <select class="pcourse" id="fcFilterTopic" style="flex:1;margin:0">
-    <option value="">Todos</option>
-  </select>
-</div>
       <div id="fcStats" style="display:flex;gap:.6rem;flex-wrap:wrap;font-size:.68rem;color:var(--muted);margin-bottom:.6rem;padding:.4rem .6rem;background:var(--card);border:1px solid var(--border);border-radius:6px"></div>
+
       <div class="fc-card" id="fcCard" onclick="flipFC()">
         <div class="fc-front" id="fcFront">No hay tarjetas aún.</div>
         <div class="fc-back" id="fcBack"></div>
         <div class="fc-hint">clic para voltear</div>
       </div>
+
       <div class="fc-nav">
-       
         <span id="fcIdx" style="font-size: 0.6rem; color: var(--muted); padding: 0.3rem 0.5rem;">0/0</span>
-      
       </div>
     </div>
-  </div>
+
+    <!-- ═══════════ CREAR TARJETA (ahora segundo) ═══════════ -->
+    <div class="tcard full">
+      <div class="tcardtitle">Crear tarjeta</div>
+
+      <div style="display:flex;gap:.4rem;margin-bottom:.4rem">
+        <select class="pcourse" id="fcCourse" style="flex:1;margin:0" onchange="updateFCTopics()">
+          <option value="">— curso —</option>
+        </select>
+        <select class="pcourse" id="fcTopic" style="flex:1;margin:0">
+          <option value="">— tema —</option>
+        </select>
+      </div>
+
+      <input class="einput" id="fcQuestion" placeholder="Pregunta / frente de la tarjeta..." style="width:100%;margin-bottom:.4rem">
+      <input class="einput" id="fcAnswer" placeholder="Respuesta / reverso..." style="width:100%;margin-bottom:.4rem">
+      <button class="eadd" onclick="addFC()" style="width:100%">+ crear tarjeta</button>
+
+      <details style="margin-top:.7rem;border-top:1px solid var(--border);padding-top:.6rem">
+        <summary style="cursor:pointer;user-select:none;font-size:.72rem;color:var(--muted);padding:.3rem 0">📥 Importar CSV/TSV (Anki, Excel, Sheets)</summary>
+        <div style="margin-top:.5rem">
+          <div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">
+            <select class="pcourse" id="fcImportCourse" style="flex:1;margin:0;min-width:120px">
+              <option value="">— curso fallback —</option>
+            </select>
+            <button class="eadd" onclick="document.getElementById('fcImportFile').click()" style="white-space:nowrap">Seleccionar archivo</button>
+            <input type="file" id="fcImportFile" accept=".csv,.tsv,.txt" style="display:none" onchange="importFCFile(this.files[0])">
+          </div>
+          <div id="fcImportStatus" style="font-size:.70rem;color:var(--muted);margin-top:.4rem;line-height:1.4"></div>
+        </div>
+      </details>
+
+      <details style="margin-top:.4rem;border-top:1px solid var(--border);padding-top:.6rem">
+        <summary style="cursor:pointer;user-select:none;font-size:.72rem;color:var(--muted);padding:.3rem 0">📝 Pegar flashcards en texto libre (Q/R/Tipo)</summary>
+        <div style="margin-top:.5rem">
+<div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.4rem">
+  <select class="pcourse" id="pasteFCCourse" onchange="updatePasteFCTopics()" style="flex:1;margin:0;min-width:120px">
+    <option value="">— curso —</option>
+  </select>
+  <select class="pcourse" id="pasteFCTopic" style="flex:1;margin:0;min-width:120px">
+    <option value="">— tema —</option>
+  </select>
+  <input id="pasteFCTipo" placeholder="tipo (Definición)" value="Definición" style="flex:1;min-width:100px;background:#0a0a0f;border:1px solid var(--border);color:var(--text);padding:.3rem .5rem;font-family:'DM Mono',monospace;font-size:.72rem;border-radius:4px">
 </div>
+          <textarea id="pasteFCInput" placeholder="Q: ¿Qué es la filosofía?&#10;R: Amor al saber.&#10;Tipo: Definición&#10;---&#10;Q: ¿Quién fue Sócrates?&#10;R: Filósofo griego del siglo V a.C." style="width:100%;min-height:110px;background:#0a0a0f;border:1px solid var(--border);color:var(--text);padding:.5rem .65rem;font-family:'DM Mono',monospace;font-size:.72rem;outline:none;resize:vertical;border-radius:4px"></textarea>
+          <div style="display:flex;gap:.4rem;margin-top:.4rem">
+            <button class="eadd" onclick="convertPasteFC()" style="flex:1">⚡ Convertir y agregar</button>
+            <button class="eadd" onclick="document.getElementById('pasteFCInput').value=''" style="flex:0 0 auto">limpiar</button>
+          </div>
+          <div id="pasteFCStatus" style="font-size:.70rem;color:var(--muted);margin-top:.4rem;line-height:1.4"></div>
+        </div>
+      </details>
+    </div>
+
+  </div><!-- /tools -->
+</div><!-- /view-flashcards -->
+
 
 <!-- VIEW: CALENDARIO -->
 <div class="view" id="view-calendar">
@@ -2669,6 +2715,7 @@ function migrateData(){
   if(c.state===undefined)c.state='new';
   if(c.reps===undefined)c.reps=0;
   if(c.lapses===undefined)c.lapses=0;
+  if(c.etiquetas===undefined)c.etiquetas=[];
 });
 }
 function migrateSessionsFromHours(){
@@ -4322,6 +4369,20 @@ function updateFCTopics(){
     option.textContent=name;
     select.appendChild(option);
   });
+} 
+
+function updatePasteFCTopics(){
+  const course = document.getElementById('pasteFCCourse').value;
+  const sel = document.getElementById('pasteFCTopic');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">— tema —</option>';
+  if(!course || !TOPICS[course]) return;
+  Object.entries(TOPICS[course]).forEach(([id, name])=>{
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    sel.appendChild(opt);
+  });
 }
 
 function updateFCFilterTopics(){
@@ -4339,6 +4400,244 @@ function updateFCFilterTopics(){
     });
   }
   renderFC();
+}
+
+// ═══ IMPORTAR CSV/TSV DE ANKI ═══
+function parseCSV(text){
+  const firstLine = text.split('\n')[0];
+  const tabs = (firstLine.match(/\t/g) || []).length;
+  const commas = (firstLine.match(/,/g) || []).length;
+  const delim = tabs > commas ? '\t' : ',';
+  const rows = [];
+  let current = [], field = '', inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (c === '"') {
+      if (inQuotes && text[i+1] === '"') { field += '"'; i++; }
+      else inQuotes = !inQuotes;
+    } else if (c === delim && !inQuotes) {
+      current.push(field); field = '';
+    } else if ((c === '\n' || c === '\r') && !inQuotes) {
+      if (c === '\r' && text[i+1] === '\n') i++;
+      current.push(field);
+      if (current.some(x => x.length)) rows.push(current);
+      current = []; field = '';
+    } else {
+      field += c;
+    }
+  }
+  if (field || current.length) {
+    current.push(field);
+    if (current.some(x => x.length)) rows.push(current);
+  }
+  return rows;
+}
+
+function resolveCourseFromDeck(deckRaw){
+  if (!deckRaw) return '';
+  const deck = deckRaw.split('::')[0].trim();
+  if (TOPICS[deck]) return deck;
+  const normalize = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g,'');
+  const target = normalize(deck);
+  for (const name of Object.keys(TOPICS)) {
+    if (normalize(name) === target) return name;
+  }
+  const aliases = {
+    'rm':'Raz. Matemático','rv':'Raz. Verbal',
+    'matematica':'Aritmética','matematicas':'Aritmética',
+    'historia':'Historia Universal','historiaperu':'Historia del Perú',
+    'filosofia':'Filosofía','fisica':'Física','algebra':'Álgebra',
+    'quimica':'Química','geometria':'Geometría','trigonometria':'Trigonometría',
+    'literatura':'Literatura','lenguaje':'Lenguaje','ingles':'Inglés',
+    'geografia':'Geografía'
+  };
+  if (aliases[target]) return aliases[target];
+  return '';
+}
+
+function resolveTopicFromTag(tagLevel1, course){
+  if (!tagLevel1 || !course || !TOPICS[course]) return tagLevel1 || 'Importadas';
+  const m = tagLevel1.match(/^Tema\s*(\d+)$/i);
+  if (!m) return tagLevel1;
+  const n = parseInt(m[1], 10);
+  const courseTopics = Object.keys(TOPICS[course]);
+  if (n < 1 || n > courseTopics.length) return tagLevel1;
+  const topicId = courseTopics[n - 1];
+  return TOPICS[course][topicId];
+}
+
+function importFCFile(file){
+  if (!file) return;
+  const status = document.getElementById('fcImportStatus');
+  const fallbackCourse = document.getElementById('fcImportCourse').value;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const rows = parseCSV(e.target.result);
+      if (rows.length < 2) {
+        if (status) status.innerHTML = '<span style="color:var(--accent2)">⚠ El archivo no tiene filas suficientes.</span>';
+        return;
+      }
+      const header = rows[0].map(h => h.toLowerCase().trim());
+      const idxFront = header.findIndex(h => ['anverso','front','pregunta','question','q'].includes(h));
+      const idxBack  = header.findIndex(h => ['reverso','back','respuesta','answer','a'].includes(h));
+      const idxTags  = header.findIndex(h => ['etiquetas','tags','tag','tema','topic'].includes(h));
+      const idxDeck  = header.findIndex(h => ['deck','mazo','curso','course'].includes(h));
+      const hasHeader = idxFront >= 0 && idxBack >= 0;
+      const fFront = hasHeader ? idxFront : 0;
+      const fBack  = hasHeader ? idxBack  : 1;
+      const fTags  = hasHeader && idxTags >= 0 ? idxTags : 2;
+      const fDeck  = hasHeader && idxDeck >= 0 ? idxDeck : -1;
+      const dataRows = hasHeader ? rows.slice(1) : rows;
+      if (!S.fc) S.fc = [];
+      let added = 0, skipped = 0, invalid = 0;
+      const topicsUsados = new Set();
+      const coursesUsados = new Set();
+      dataRows.forEach(row => {
+        const q = (row[fFront] || '').trim();
+        const a = (row[fBack] || '').trim();
+        if (!q || !a) { invalid++; return; }
+        let course = '';
+        if (fDeck >= 0) course = resolveCourseFromDeck(row[fDeck] || '');
+        if (!course) course = fallbackCourse;
+        if (!course) { invalid++; return; }
+        const exists = S.fc.some(c => c.q === q && c.a === a && c.course === course);
+        if (exists) { skipped++; return; }
+        const rawTags = fTags >= 0 ? (row[fTags] || '') : '';
+        const niveles = rawTags.split('::').map(s => s.trim()).filter(Boolean);
+        const etiquetas = [];
+        if (niveles.length >= 1) etiquetas.push(niveles.join('::'));
+        niveles.forEach(n => { if (!etiquetas.includes(n)) etiquetas.push(n); });
+        const topic = resolveTopicFromTag(niveles[0], course);
+        topicsUsados.add(topic);
+        coursesUsados.add(course);
+        S.fc.push({
+          course, topic, etiquetas, q, a,
+          ease: 2.5, interval: 0, due: today(),
+          state: 'new', reps: 0, lapses: 0
+        });
+        added++;
+      });
+      if (added > 0) {
+        _fcQueue = null;
+        save();
+        renderFC();
+        if (typeof populateFCTagFilter === 'function') populateFCTagFilter();
+      }
+      let msg = '✓ ' + added + ' tarjeta' + (added === 1 ? '' : 's') + ' importada' + (added === 1 ? '' : 's');
+      if (coursesUsados.size > 1) msg += ' · ' + coursesUsados.size + ' cursos';
+      else if (coursesUsados.size === 1) msg += ' · ' + [...coursesUsados][0];
+      if (topicsUsados.size) msg += ' · ' + topicsUsados.size + ' topic' + (topicsUsados.size === 1 ? '' : 's');
+      if (skipped) msg += ' · ' + skipped + ' dup' + (skipped === 1 ? '' : 's');
+      if (invalid) msg += ' · ' + invalid + ' inválida' + (invalid === 1 ? '' : 's');
+      if (status) status.innerHTML = '<span style="color:' + (added ? 'var(--accent3)' : 'var(--accent4)') + '">' + msg + '</span>';
+    } catch (err) {
+      if (status) status.innerHTML = '<span style="color:var(--accent2)">⚠ Error al leer el archivo: ' + err.message + '</span>';
+    }
+  };
+  reader.readAsText(file, 'UTF-8');
+  setTimeout(() => { const el = document.getElementById('fcImportFile'); if (el) el.value = ''; }, 100);
+}
+// ═══ PEGAR FLASHCARDS EN TEXTO LIBRE ═══
+function togglePasteFC(){
+  const wrap = document.getElementById('pasteFCWrap');
+  const btn = document.getElementById('pasteFCToggle');
+  if(!wrap) return;
+  const visible = wrap.style.display !== 'none';
+  wrap.style.display = visible ? 'none' : 'block';
+  if(btn) btn.textContent = visible ? 'mostrar ▾' : 'ocultar ▴';
+}
+
+function parsePasteFC(text){
+  if(!text || !text.trim()) return [];
+  const partes = text.split(/\n\s*---+\s*\n|\n\s*\n/).filter(b => b.trim());
+  const bloques = [];
+  partes.forEach(bloque => {
+    const q = (bloque.match(/^(?:Q|P|Pregunta|Anverso)\s*[:：]\s*(.+)$/im) || [])[1] || '';
+    const r = (bloque.match(/^(?:R|Respuesta|Reverso|A)\s*[:：]\s*(.+)$/im) || [])[1] || '';
+    const t = (bloque.match(/^(?:Tipo|Type|Categoría)\s*[:：]\s*(.+)$/im) || [])[1] || '';
+    if(q.trim() && r.trim()) bloques.push({q: q.trim(), r: r.trim(), t: t.trim()});
+  });
+  return bloques;
+}
+
+function convertPasteFC(){
+  const course = document.getElementById('pasteFCCourse').value;
+  const topicName = document.getElementById('pasteFCTopic').value;
+  const tipoDefault = document.getElementById('pasteFCTipo').value.trim() || 'Definición';
+  const texto = document.getElementById('pasteFCInput').value;
+  const status = document.getElementById('pasteFCStatus');
+
+  if(!course){
+    if(status) status.innerHTML = '<span style="color:var(--accent2)">⚠ Elegí un curso primero.</span>';
+    return;
+  }
+  if(!TOPICS[course]){
+    if(status) status.innerHTML = '<span style="color:var(--accent2)">⚠ Curso no reconocido.</span>';
+    return;
+  }
+  if(!topicName){
+    if(status) status.innerHTML = '<span style="color:var(--accent2)">⚠ Elegí un tema.</span>';
+    return;
+  }
+
+  const bloques = parsePasteFC(texto);
+  const totalBloques = texto.split(/\n\s*---+\s*\n|\n\s*\n/).filter(b => b.trim()).length;
+
+  if(!bloques.length){
+    if(status) status.innerHTML = '<span style="color:var(--accent2)">⚠ No se detectaron flashcards. Detecté ' + totalBloques + ' bloque(s) pero ninguno tiene "Q:" y "R:" válidos al inicio de línea.</span>';
+    return;
+  }
+
+  if(!S.fc) S.fc = [];
+  let added = 0, skipped = 0;
+
+  bloques.forEach(b => {
+    const tipo = b.t || tipoDefault;
+    const etiquetaFull = topicName + '::' + tipo;
+    const etiquetas = [etiquetaFull, topicName, tipo];
+
+    const exists = S.fc.some(c => c.q === b.q && c.a === b.r && c.course === course);
+    if(exists){ skipped++; return; }
+
+    S.fc.push({
+      course, topic: topicName, etiquetas,
+      q: b.q, a: b.r,
+      ease: 2.5, interval: 0, due: today(),
+      state: 'new', reps: 0, lapses: 0
+    });
+    added++;
+  });
+
+  if(added > 0){
+    _fcQueue = null;
+    save();
+    renderFC();
+    if(typeof populateFCTagFilter === 'function') populateFCTagFilter();
+  }
+
+  let msg = '✓ ' + added + ' agregada' + (added === 1 ? '' : 's') + ' · tema: ' + topicName;
+  if(skipped) msg += ' · ' + skipped + ' dup' + (skipped === 1 ? '' : 's');
+  if(totalBloques > bloques.length) msg += ' · ' + (totalBloques - bloques.length) + ' bloque(s) descartado(s)';
+
+  if(status) status.innerHTML = '<span style="color:' + (added ? 'var(--accent3)' : 'var(--accent4)') + '">' + msg + '</span>';
+
+  if(added > 0){
+    document.getElementById('pasteFCInput').value = '';
+  }
+}
+
+function initFCImportCourseSelect(){
+  ['fcImportCourse', 'pasteFCCourse'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    Object.keys(TOPICS).forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      sel.appendChild(opt);
+    });
+  });
 }
 
 // ── MOTOR ANKI ──
@@ -4384,6 +4683,7 @@ function addFC(){
   if(!S.fc)S.fc=[];
   S.fc.push({
     course,topic,q,a,
+    etiquetas: [],
     ease:2.5,
     interval:0,
     due:today(),
@@ -4936,6 +5236,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.body.appendChild(indicator);
   updateOnlineStatus();
   initFCCourses();
+  initFCImportCourseSelect();   
 });
 
 // ── CUSTOM THEMES ──
@@ -7714,6 +8015,15 @@ function renderMathEverywhere(){
     if(inp.value)renderMath(inp.parentElement);
   });
 }
+function toggleFCMode(){
+  document.body.classList.toggle('fc-focus');
+  if(document.body.classList.contains('fc-focus')){
+    document.documentElement.style.overflow='hidden';
+  } else {
+    document.documentElement.style.overflow='';
+  }
+}
+
 function delFC(){
   if(!_fcQueue||!_fcQueue.length){showToast('No hay tarjeta activa.');return;}
   const card=_fcQueue[0];
@@ -8525,5 +8835,56 @@ setInterval(()=>{
   else if(v==='view-plan'){updateRhythmProjection();renderHighLoadAlerts();renderPreOpReview();renderEnhancements();}
 },60000);
 </script>
+
+<style>
+/* MODO FLASHCARDS */
+.fc-focus-exit{display:none;position:fixed;top:1rem;right:1rem;z-index:1600;background:var(--card);border:1px solid var(--border);color:var(--text);padding:.5rem .9rem;border-radius:6px;cursor:pointer;font-family:'DM Mono',monospace;font-size:.72rem;transition:border-color .15s}
+.fc-focus-exit:hover{border-color:var(--accent2);color:var(--accent2)}
+body.fc-focus .fc-focus-exit{display:block}
+body.fc-focus .sidebar,
+body.fc-focus .mobile-menu-btn,
+body.fc-focus .fab-wrap,
+body.fc-focus #view-flashcards h1,
+body.fc-focus #view-flashcards .tag,
+body.fc-focus #view-flashcards .subtitle,
+body.fc-focus #view-flashcards #fcStats,
+body.fc-focus #view-flashcards .tools > .tcard:last-child{display:none!important}
+body.fc-focus #view-flashcards .tools > .tcard:first-child{width:100%;background:transparent;border:none;padding:0;box-shadow:none}
+body.fc-focus #view-flashcards{position:fixed;inset:0;z-index:1500;background:var(--bg);padding:4rem 1rem 1rem;overflow-y:auto;display:flex!important;flex-direction:column;align-items:center;justify-content:center}
+body.fc-focus #view-flashcards .tools{display:flex!important;flex-direction:column;align-items:center;width:100%;max-width:680px;margin:0;gap:0}
+body.fc-focus #view-flashcards .tcardtitle{
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center;
+  gap:.5rem;
+  background:transparent;
+  border:none;
+  padding:0;
+  margin-bottom:1.8rem;
+  font-family:'Syne',sans-serif;
+  font-size:1.15rem;
+  font-weight:700;
+  color:var(--text);
+  letter-spacing:-0.01em;
+  text-transform:none;
+}
+body.fc-focus #view-flashcards .tcardtitle .tcard-action{display:none!important}
+body.fc-focus #view-flashcards #fcCount{font-size:1.15rem;color:var(--text);font-weight:700}
+body.fc-focus #view-flashcards .fc-card{
+  min-height:300px;
+  padding:2.2rem;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+  cursor:default;
+}
+body.fc-focus #view-flashcards .fc-front,
+body.fc-focus #view-flashcards .fc-back{font-size:1.05rem;line-height:1.7}
+body.fc-focus #view-flashcards .fc-conf-btn{min-height:72px;font-size:1.5rem;padding:.8rem .3rem}
+body.fc-focus #view-flashcards .fc-conf-btn span{font-size:.72rem;margin-top:.15rem}
+body.fc-focus #view-flashcards .fc-conf-label{font-size:.8rem;margin-bottom:.6rem}
+body.fc-focus #view-flashcards .fc-hint{display:none}
+</style>
 </body>
 </html>
