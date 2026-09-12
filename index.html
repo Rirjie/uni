@@ -1036,26 +1036,7 @@ body.print-week .week.print-hide{display:none!important}
     <button class="vc-btn" id="vcWeekPending" onclick="filterWeekPending()">solo pendientes semana</button>
   </div>
 
-  <div class="legend">
-    
-<div class="li"><div class="ld" style="background: var(--ca);"></div>🔢 Aritmética</div>
-<div class="li"><div class="ld" style="background: var(--calg);"></div>🧮 Álgebra</div>
-<div class="li"><div class="ld" style="background: var(--cf);"></div>⚛️ Física</div>
-<div class="li"><div class="ld" style="background: var(--cg);"></div>📐 Geometría</div>
-<div class="li"><div class="ld" style="background: var(--ct);"></div>📏 Trigonometría</div>
-<div class="li"><div class="ld" style="background: var(--cq);"></div>🧪 Química</div>
-<div class="li"><div class="ld" style="background: rgb(255, 221, 106);"></div>📝 Simulacros</div>
-<div class="li"><div class="ld" style="background: var(--accent2);"></div>🔴 Operación</div>
-<div class="li"><div class="ld" style="background: var(--crm);"></div>🧠 Raz. Mat.</div>
-<div class="li"><div class="ld" style="background: var(--crv);"></div>📖 Raz. Verbal</div>
-<div class="li"><div class="ld" style="background: var(--chu);"></div>🌍 Hist. Universal</div>
-<div class="li"><div class="ld" style="background: var(--chp);"></div>🏔️ Hist. Perú</div>
-<div class="li"><div class="ld" style="background: var(--cge);"></div>🗺️ Geografía</div>
-<div class="li"><div class="ld" style="background: var(--cfi);"></div>💭 Filosofía</div>
-<div class="li"><div class="ld" style="background: var(--cli);"></div>📚 Literatura</div>
-<div class="li"><div class="ld" style="background: var(--cle);"></div>✍️ Lenguaje</div>
-<div class="li"><div class="ld" style="background: var(--cin);"></div>💂 Inglés</div>
-  </div>
+
   <div class="weekly-plan-intro">20 semanas de temario + descansos, colchón y pre-examen · toca una semana para ver el detalle.<br>
     <span style="opacity:.7">◻️ teoría vista · ◯ problemas resueltos · ambos ✓ = cap dominado</span>
   </div>
@@ -1108,7 +1089,7 @@ body.print-week .week.print-hide{display:none!important}
         <div class="pomo-time" id="pdisp">25:00</div>
         <div class="pomo-status" id="pstatus"></div>
         <select class="pcourse" id="pcourse" onchange="updateTopicList()">
-          <option value="">— curso activo —</option>
+          <option value="" disabled selected hidden>curso activo</option>
           <option>Aritmética</option><option>Álgebra</option><option>Física</option>
           <option>Geometría</option><option>Trigonometría</option><option>Química</option>
           <option>Historia Universal</option><option>Historia del Perú</option><option>Geografía</option>
@@ -1116,7 +1097,7 @@ body.print-week .week.print-hide{display:none!important}
           <option>Raz. Verbal</option><option>Raz. Matemático</option><option>Inglés</option>
         </select>
         <select class="pcourse" id="ptopic" style="margin-top:.28rem">
-          <option value="">— tema —</option>
+          <option value="" disabled selected hidden>tema</option>
         </select>
         <div class="session-type" style="margin-top:.4rem">
           <button class="stype-btn active" id="stype-teoria" onclick="setStype('teoria')">teoría</button>
@@ -1145,10 +1126,10 @@ body.print-week .week.print-hide{display:none!important}
 
       <div id="chronoContent" style="display:none">
         <select class="pcourse" id="chronoCourse" onchange="updateChronoTopics()">
-          <option value="">— curso —</option>
+          <option value="" disabled selected hidden>curso</option>
         </select>
         <select class="pcourse" id="chronoTopic" style="margin-top:.28rem">
-          <option value="">— tema —</option>
+          <option value="" disabled selected hidden>tema</option>
         </select>
 
         <div style="text-align:center;margin:.7rem 0 .5rem">
@@ -1266,7 +1247,7 @@ body.print-week .week.print-hide{display:none!important}
       <div class="elist" id="elist"></div>
       <div class="einput-row">
         <select id="errCourseSelect" style="background:#0a0a0f;border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:.70rem;padding:.15rem .3rem;cursor:pointer;margin-right:.3rem">
-          <option value="">— curso —</option>
+          <option value="" disabled selected hidden>curso</option>
           <option>Aritmética</option><option>Álgebra</option><option>Física</option><option>Ingles</option><option>Historia Universal</option><option>Historia del Perú</option>
           <option>Geometría</option><option>Trigonometría</option><option>Química</option><option>Filosofia</option><option>Raz Matematico</option><option>Literatura</option>
         </select>
@@ -1335,12 +1316,12 @@ body.print-week .week.print-hide{display:none!important}
     </div>
     <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.4rem">
       <select class="pcourse" id="bankCourse" style="flex:1;margin:0" onchange="updateBankTopics()">
-        <option value="">— curso —</option>
+        <option value="" disabled selected hidden>curso</option>
         <option>Aritmética</option><option>Álgebra</option><option>Física</option>
         <option>Geometría</option><option>Trigonometría</option><option>Química</option>
       </select>
       <select class="pcourse" id="bankTema" style="flex:1;margin:0">
-        <option value="">— tema —</option>
+        <option value="" disabled selected hidden>tema</option>
       </select>
     </div>
     <textarea id="bankProblem" placeholder="Descripción del problema o ejercicio..." style="width:100%;min-height:70px;background:#0a0a0f;border:1px solid var(--border);color:var(--text);padding:.4rem .6rem;font-family:'DM Mono',monospace;font-size:.6rem;outline:none;resize:vertical;margin-bottom:.4rem"></textarea>
@@ -1360,12 +1341,12 @@ body.print-week .week.print-hide{display:none!important}
     <!-- Filtros -->
     <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem">
       <select class="pcourse" id="bankFilterCourse" style="flex:1;margin:0" onchange="renderBank()">
-        <option value="">— todos los cursos —</option>
+        <option value="">Todos los cursos</option>
         <option>Aritmética</option><option>Álgebra</option><option>Física</option>
         <option>Geometría</option><option>Trigonometría</option><option>Química</option>
       </select>
       <select class="pcourse" id="bankFilterTema" style="flex:1;margin:0" onchange="renderBank()">
-        <option value="">— todos los temas —</option>
+        <option value="">Todos los temas</option>
       </select>
     </div>
     <div class="bank-list" id="bankList" style="max-height:400px"></div>
@@ -1409,12 +1390,15 @@ body.print-week .week.print-hide{display:none!important}
         <button class="tcard-action" onclick="_fcQueue=null;renderFC()">🔄 recargar</button>
       </div>
 
-      <div style="display:flex;gap:.4rem;margin-bottom:.6rem">
-        <select class="pcourse" id="fcFilterCourse" style="flex:1;margin:0" onchange="updateFCFilterTopics()">
-          <option value="">— curso —</option>
+            <div style="display:flex;gap:.4rem;margin-bottom:.6rem;flex-wrap:wrap">
+        <select class="pcourse" id="fcFilterCourse" style="flex:1;min-width:120px;margin:0" onchange="updateFCFilterTopics()">
+          <option value="" disabled selected hidden>curso</option>
         </select>
-        <select class="pcourse" id="fcFilterTopic" style="flex:1;margin:0" onchange="_fcQueue=null;renderFC()">
-          <option value="">Todos</option>
+        <select class="pcourse" id="fcFilterTopic" style="flex:1;min-width:120px;margin:0" onchange="_fcQueue=null;renderFC()">
+          <option value="">Todos los temas</option>
+        </select>
+        <select class="pcourse" id="fcFilterTipo" style="flex:1;min-width:120px;margin:0" onchange="_fcQueue=null;renderFC()">
+          <option value="">Todos los tipos</option>
         </select>
       </div>
 
@@ -1437,10 +1421,10 @@ body.print-week .week.print-hide{display:none!important}
 
       <div style="display:flex;gap:.4rem;margin-bottom:.4rem">
         <select class="pcourse" id="fcCourse" style="flex:1;margin:0" onchange="updateFCTopics()">
-          <option value="">— curso —</option>
+          <option value="" disabled selected hidden>curso</option>
         </select>
         <select class="pcourse" id="fcTopic" style="flex:1;margin:0">
-          <option value="">— tema —</option>
+          <option value="" disabled selected hidden>tema</option>
         </select>
       </div>
 
@@ -1453,7 +1437,7 @@ body.print-week .week.print-hide{display:none!important}
         <div style="margin-top:.5rem">
           <div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">
             <select class="pcourse" id="fcImportCourse" style="flex:1;margin:0;min-width:120px">
-              <option value="">— curso fallback —</option>
+              <option value="" disabled selected hidden>curso fallback</option>
             </select>
             <button class="eadd" onclick="document.getElementById('fcImportFile').click()" style="white-space:nowrap">Seleccionar archivo</button>
             <input type="file" id="fcImportFile" accept=".csv,.tsv,.txt" style="display:none" onchange="importFCFile(this.files[0])">
@@ -1467,10 +1451,10 @@ body.print-week .week.print-hide{display:none!important}
         <div style="margin-top:.5rem">
 <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.4rem">
   <select class="pcourse" id="pasteFCCourse" onchange="updatePasteFCTopics()" style="flex:1;margin:0;min-width:120px">
-    <option value="">— curso —</option>
+    <option value="" disabled selected hidden>curso</option>
   </select>
   <select class="pcourse" id="pasteFCTopic" style="flex:1;margin:0;min-width:120px">
-    <option value="">— tema —</option>
+    <option value="" disabled selected hidden>tema</option>
   </select>
   <input id="pasteFCTipo" placeholder="tipo (Definición)" value="Definición" style="flex:1;min-width:100px;background:#0a0a0f;border:1px solid var(--border);color:var(--text);padding:.3rem .5rem;font-family:'DM Mono',monospace;font-size:.72rem;border-radius:4px">
 </div>
@@ -4260,14 +4244,14 @@ function updateBankTopics(){
     });
   }
   const cur=sel.value;
-  sel.innerHTML='<option value="">— tema —</option>'+temas.map(t=>`<option value="${t.name}"${t.name===cur?' selected':''}>${t.name}</option>`).join('');
+  sel.innerHTML='<option value="" disabled selected hidden>tema</option>'+temas.map(t=>`<option value="${t.name}"${t.name===cur?' selected':''}>${t.name}</option>`).join('');
 }
 function updateBankFilterTemas(){
   const course=document.getElementById('bankFilterCourse')?.value||'';
   const sel=document.getElementById('bankFilterTema');if(!sel)return;
   const temas=bankTemasForCourse(course);
   const cur=sel.value;
-  sel.innerHTML='<option value="">— todos los temas —</option>'+temas.map(t=>'<option'+(t===cur?' selected':'')+'>'+t+'</option>').join('');
+  sel.innerHTML='<option value="">— Todos los temas —</option>'+temas.map(t=>'<option'+(t===cur?' selected':'')+'>'+t+'</option>').join('');
 }
 function updateExamGenTemas(){
   const course=document.getElementById('examGenCourse')?.value||'';
@@ -4426,7 +4410,7 @@ function initFCCourses(){
 function updateFCTopics(){
   const course=document.getElementById('fcCourse').value;
   const select=document.getElementById('fcTopic');
-  select.innerHTML='<option value="">— tema —</option>';
+  select.innerHTML='<option value="" disabled selected hidden>tema</option>';
   if(!course||!TOPICS[course])return;
   Object.entries(TOPICS[course]).forEach(([id,name])=>{
     const option=document.createElement('option');
@@ -4440,7 +4424,7 @@ function updatePasteFCTopics(){
   const course = document.getElementById('pasteFCCourse').value;
   const sel = document.getElementById('pasteFCTopic');
   if(!sel) return;
-  sel.innerHTML = '<option value="">— tema —</option>';
+  sel.innerHTML = '<option value="" disabled selected hidden>tema</option>';
   if(!course || !TOPICS[course]) return;
   Object.entries(TOPICS[course]).forEach(([id, name])=>{
     const opt = document.createElement('option');
@@ -4453,7 +4437,26 @@ function updatePasteFCTopics(){
 function updateFCFilterTopics(){
   const course=document.getElementById('fcFilterCourse').value;
   const select=document.getElementById('fcFilterTopic');
-  select.innerHTML='<option value="">Todos</option>';
+  select.innerHTML='<option value="">Todos los temas</option>';
+
+  // Poblar selector de tipos — extrae el tipo del último segmento de etiquetas con ::
+  const tipoSel=document.getElementById('fcFilterTipo');
+  if(tipoSel){
+    const tipos=new Set();
+    (S.fc||[]).forEach(c=>{
+      if(course && c.course!==course)return;
+      (c.etiquetas||[]).forEach(e=>{
+        if(e.includes('::')){
+          const parts=e.split('::');
+          const t=parts[parts.length-1].trim();
+          if(t)tipos.add(t);
+        }
+      });
+    });
+    tipoSel.innerHTML='<option value="">Todos los tipos</option>'+
+      [...tipos].sort().map(t=>'<option value="'+t.replace(/"/g,'&quot;')+'">'+t+'</option>').join('');
+  }
+
   _fcQueue=null;
   if(!course){renderFC();return;}
   if(TOPICS[course]){
@@ -4725,10 +4728,12 @@ function getDueCards(){
   }
   const course=document.getElementById('fcFilterCourse')?.value||'';
   const topic=document.getElementById('fcFilterTopic')?.value||'';
+  const tipo=document.getElementById('fcFilterTipo')?.value||'';
 
   const pool=S.fc.filter(c=>{
     if(course && c.course!==course)return false;
     if(topic && c.topic!==topic)return false;
+    if(tipo && !(c.etiquetas||[]).includes(tipo))return false;
     return (c.due||today())<=t;
   });
 
@@ -5107,7 +5112,7 @@ function updateTopicList(){
 
   const topics=Object.values(TOPICS[course]||{});
 
-  sel.innerHTML='<option value="">— tema —</option>'+topics.map(t=>'<option value="'+t+'">'+t+'</option>').join('');
+  sel.innerHTML='<option value="" disabled selected hidden>tema</option>'+topics.map(t=>'<option value="'+t+'">'+t+'</option>').join('');
   _fcQueue=null;
 }
 // Initialize pomodoro with active topic
@@ -5206,7 +5211,7 @@ document.addEventListener('click',e=>{
 
 // ── CLEAR ALL DATA ──
 function clearAllData(){
-  if(confirm('¿Estás seguro de que quieres borrar TODOS los datos? Esta acción no se puede deshacer.')){
+  if(confirm('¿Estás seguro de que quieres borrar Todos los datos? Esta acción no se puede deshacer.')){
     localStorage.removeItem(KEY);
     S={};
     save();
@@ -5803,7 +5808,7 @@ function whatNext(){
   // Find first undone topic in active week
   const undone=aw.topics.filter(id=>!(S.t||{})[id]?.done);
   if(!undone.length){
-    showWhatNext('✓ ¡Completaste todos los temas de esta semana!','var(--accent3)');return;
+    showWhatNext('✓ ¡Completaste Todos los temas de esta semana!','var(--accent3)');return;
   }
   const nextId=undone[0];
   const {name,course}=getTopic(nextId);
@@ -6542,7 +6547,7 @@ function renderHomeErrCurso(){
     'Geografía':'var(--cge)','Filosofía':'var(--cfi)',
     'Literatura':'var(--cli)','Lenguaje':'var(--cle)','Inglés':'var(--cin)'
   };
-  // Fuente de verdad: TOPICS (todos los cursos reales del plan)
+  // Fuente de verdad: TOPICS (Todos los cursos reales del plan)
   const courseNames=Object.keys(TOPICS);
   const byCourse={};
   courseNames.forEach(n=>byCourse[n]=0);
@@ -7899,7 +7904,7 @@ function setPomoTab(tab){
 function updateChronoTopics(){
   const course=document.getElementById('chronoCourse').value;
   const sel=document.getElementById('chronoTopic');
-  sel.innerHTML='<option value="">— tema —</option>';
+  sel.innerHTML='<option value="" disabled selected hidden>tema</option>';
   if(!course||!TOPICS[course])return;
   Object.entries(TOPICS[course]).forEach(([id,name])=>{
     const opt=document.createElement('option');
@@ -8049,7 +8054,7 @@ function initChrono(){
   const sel=document.getElementById('chronoCourse');
   if(!sel)return;
   // Limpiar y repoblar
-  sel.innerHTML='<option value="">— curso —</option>';
+  sel.innerHTML='<option value="" disabled selected hidden>curso</option>';
   Object.keys(TOPICS).forEach(name=>{
     const opt=document.createElement('option');
     opt.value=name;
@@ -8076,7 +8081,7 @@ function renderMath(el){
   }catch(e){}
 }
 
-// Renderiza KaTeX en todos los contenedores de contenido libre
+// Renderiza KaTeX en Todos los contenedores de contenido libre
 function renderMathEverywhere(){
   const targets=[
     'fcFrontContent','fcBackContent',        // flashcards
@@ -8126,7 +8131,7 @@ function courseLabel(name){
   return (em?em+' ':'')+(name||'');
 }
 
-// Decora los <option> de todos los selects (funciona en vivo)
+// Decora los <option> de Todos los selects (funciona en vivo)
 (function(){
   function decorate(){
     document.querySelectorAll('option').forEach(opt=>{
@@ -8235,7 +8240,7 @@ function renderSpeedStats(){
     +'<span>📊 <b style="color:var(--text)">'+totalSess+'</b> sesiones</span>'
     +'<span>🧩 <b style="color:var(--text)">'+totalProbs+'</b> problemas</span>'
     +'<span>🎯 Acierto prom: <b style="color:'+(avgAcc>=70?'var(--accent3)':'var(--accent4)')+'">'+avgAcc+'%</b></span>'
-    +(problemas?'<span style="color:#f0a500">⚠ <b>'+problemas+'</b> tema'+(problemas===1?'':'s')+' con problemas</span>':'<span style="color:var(--accent3)">✓ todos en verde</span>')
+    +(problemas?'<span style="color:#f0a500">⚠ <b>'+problemas+'</b> tema'+(problemas===1?'':'s')+' con problemas</span>':'<span style="color:var(--accent3)">✓ Todos en verde</span>')
     +'</div>'
     +html;
 
