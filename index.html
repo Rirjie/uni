@@ -2748,7 +2748,10 @@ function save(){
   }catch(e){console.error('save error:',e);}
 }
 // Flush al cerrar/minimizar para no perder el último rating
-window.addEventListener('pagehide',()=>{if(_fcSaveTimer){clearTimeout(_fcSaveTimer);_flushFCSave();}});
+window.addEventListener('pagehide',()=>{
+  if(_fcSaveTimer){clearTimeout(_fcSaveTimer);_flushFCSave();}
+  if(_syncDebounce){clearTimeout(_syncDebounce);pushToCloud();}
+});
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden'&&_fcSaveTimer){clearTimeout(_fcSaveTimer);_flushFCSave();}
 });
@@ -8483,7 +8486,7 @@ let _syncDebounce=null;
 function schedulePush(){
   if(!hasSyncConfig())return;
   clearTimeout(_syncDebounce);
-  _syncDebounce=setTimeout(()=>pushToCloud(),2500);
+_syncDebounce=setTimeout(()=>pushToCloud(),30000);
 }
 
 async function pushToCloud(){
@@ -8883,28 +8886,27 @@ function swapScheduleCells(a, b){
 buildWeeklyStudyPlan();renderPlanTopics();loadThemePreference();loadCustomTheme();refreshCourseRGB();
 (async()=>{
   await load();
-  // Sync: bajar estado remoto si el gist tiene algo más nuevo
-  if(hasSyncConfig()){
-    updateSyncStatusUI('syncing','sincronizando...');
-    await pullFromCloud({silent:true});
-    // Si pullFromCloud recargó (remoto más nuevo), no seguimos.
-  }else{
-    updateSyncStatusUI('idle','sin configurar');
-  }
-  // Load UNI folder handle from IndexedDB
+  // Cargar folder handle (IDB local, rápido) antes de render para que las imágenes del banco funcionen
   uniDirHandle=await loadDirHandle();
   if(uniDirHandle){
     document.getElementById('uniFolderStatus').textContent='✓ Seleccionada';
     document.getElementById('uniFolderStatus').style.color='var(--accent3)';
   }
+  // Render inmediato con datos locales
   renderAll();initPomo();initChrono();initPWA();
   setPlanTab(S.planTab||'ciencias');
-  // Default to HOME view on first load
   const lastView=localStorage.getItem('uni-last-view')||'home';
   const homeBtn=document.getElementById('sb-home-btn');
   showView(lastView,lastView==='home'?homeBtn:document.querySelector('.sb-btn[onclick*="'+lastView+'"]'));
   const origSV=showView;
   window.showView=function(name,btn){origSV(name,btn);localStorage.setItem('uni-last-view',name);};
+  // Sync en background — NO bloquea el render
+  if(hasSyncConfig()){
+    updateSyncStatusUI('syncing','sincronizando...');
+    pullFromCloud({silent:true}).catch(()=>{});
+  }else{
+    updateSyncStatusUI('idle','sin configurar');
+  }
 })();
 setInterval(()=>{
   const v=document.querySelector('.view.active')?.id;
