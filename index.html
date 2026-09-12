@@ -1387,6 +1387,7 @@ body.print-week .week.print-hide{display:none!important}
         <span style="color:var(--accent3);font-weight:700">▶ Repasar tarjetas</span>
         <span style="color:var(--muted);font-weight:400">· <span id="fcCount">0</span> pendientes</span>
         <button class="tcard-action" onclick="toggleFCMode()" style="color:var(--accent3);cursor:pointer;margin-left:auto">⛶ modo flashcards</button>
+        <button class="tcard-action" onclick="startFcTriage()" style="color:var(--accent4);cursor:pointer;margin-left:.5rem">⚡ triage 60</button>
         <button class="tcard-action" onclick="_fcQueue=null;renderFC()">🔄 recargar</button>
       </div>
 
@@ -1500,6 +1501,20 @@ body.print-week .week.print-hide{display:none!important}
 </main>
 </div><!-- /app -->
 <div id="saveIndicator" style="position: fixed; bottom: 1rem; right: 1rem; background: var(--accent3); color: rgb(0, 0, 0); padding: 0.3rem 0.6rem; font-size: 0.55rem; font-family: &quot;DM Mono&quot;, monospace; border-radius: 3px; opacity: 0; transition: opacity 0.3s; z-index: 1000;">✓ guardado</div>
+<!-- Overlay de triage -->
+<div id="fcTriOverlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:1600;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center">
+  <button onclick="exitFcTriage()" style="position:absolute;top:1rem;right:1rem;background:var(--card);border:1px solid var(--border);color:var(--text);padding:.5rem .9rem;border-radius:6px;cursor:pointer;font-family:'DM Mono',monospace;font-size:.72rem">✕ salir</button>
+  <div style="font-size:.72rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:.4rem" id="fcTriProgress">0 / 0</div>
+  <div style="font-size:.7rem;color:var(--accent4);margin-bottom:1.2rem" id="fcTriLimit">hoy: 0 / 60</div>
+  <div style="font-size:.78rem;color:var(--accent4);margin-bottom:1.5rem" id="fcTriCourse">—</div>
+  <div style="font-family:'Syne',sans-serif;font-size:clamp(1rem,3vw,1.6rem);font-weight:700;color:#fff;max-width:680px;line-height:1.4;margin-bottom:2.5rem" id="fcTriQuestion">—</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;width:100%;max-width:640px">
+    <button onclick="fcTri('bad')" style="padding:1.2rem .5rem;background:#2a0f0f;border:1px solid var(--accent2);color:var(--accent2);border-radius:8px;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:600;line-height:1.4">✗ No sé<br><span style="font-size:.68rem;opacity:.7;font-weight:400">vuelve en 2d</span></button>
+    <button onclick="fcTri('ok')" style="padding:1.2rem .5rem;background:#2a2510;border:1px solid var(--accent4);color:var(--accent4);border-radius:8px;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:600;line-height:1.4">~ Más o menos<br><span style="font-size:.68rem;opacity:.7;font-weight:400">vuelve en 4d</span></button>
+    <button onclick="fcTri('good')" style="padding:1.2rem .5rem;background:#0d2e1a;border:1px solid var(--accent3);color:var(--accent3);border-radius:8px;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:600;line-height:1.4">✓ Lo sé<br><span style="font-size:.68rem;opacity:.7;font-weight:400">vuelve en 7d</span></button>
+  </div>
+  <div style="font-size:.68rem;color:var(--muted);margin-top:1.5rem">Atajos: <b>1</b> = no sé · <b>2</b> = más o menos · <b>3</b> = lo sé · <b>Esc</b> = salir</div>
+</div>
 <div class="fab-wrap" id="fabWrap">
   <div class="fab-menu">
     <button type="button" class="fab-mini" onclick="fabAction(&#39;ex&#39;)">+1 ejercicio</button>
@@ -8977,6 +8992,164 @@ buildWeeklyStudyPlan();renderPlanTopics();loadThemePreference();loadCustomTheme(
     updateSyncStatusUI('idle','sin configurar');
   }
 })();
+/* ═══ MODO TRIAGE DE NUEVAS v2 (60/día) ═══ */
+let _fcTriQueue = [];
+let _fcTriIdx = 0;
+
+const TRI_CONFIG = {
+  dailyLimit: 60,   // ← 60/día
+  badDays: 2,       // ✗ no sé → +2 días
+  okDays: 4,        // ~ más o menos → +4 días
+  goodDays: 7       // ✓ lo sé → +7 días
+};
+
+function getTriDoneToday(){
+  const t = today();
+  if(!S.fcTriToday || S.fcTriToday.date !== t){
+    S.fcTriToday = { date: t, done: 0 };
+  }
+  return S.fcTriToday.done;
+}
+
+function startFcTriage(){
+  const done = getTriDoneToday();
+  if(done >= TRI_CONFIG.dailyLimit){
+    showToast('Ya triaste ' + done + ' hoy. Volvé mañana.');
+    return;
+  }
+
+  const pool = (S.fc||[]).filter(c => c.state === 'new');
+  if(!pool.length){
+    showToast('No hay tarjetas nuevas para triage');
+    return;
+  }
+
+  // Mezclar para evitar sesgo de orden
+  for(let i = pool.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+
+  const remaining = TRI_CONFIG.dailyLimit - done;
+  _fcTriQueue = pool.slice(0, remaining);
+  _fcTriIdx = 0;
+
+  const ov = document.getElementById('fcTriOverlay');
+  if(ov) ov.style.display = 'flex';
+  renderFcTri();
+}
+
+function renderFcTri(){
+  const card = _fcTriQueue[_fcTriIdx];
+  if(!card){
+    showToast('✓ Triage completo: ' + _fcTriQueue.length + ' tarjetas');
+    exitFcTriage();
+    return;
+  }
+  const doneToday = getTriDoneToday();
+  const prog = document.getElementById('fcTriProgress');
+  const courseEl = document.getElementById('fcTriCourse');
+  const qEl = document.getElementById('fcTriQuestion');
+  const limitEl = document.getElementById('fcTriLimit');
+
+  if(prog) prog.textContent = (_fcTriIdx + 1) + ' / ' + _fcTriQueue.length;
+  if(limitEl) limitEl.textContent = 'hoy: ' + (doneToday + _fcTriIdx) + ' / ' + TRI_CONFIG.dailyLimit;
+  if(courseEl) courseEl.textContent = card.course + ' · ' + card.topic;
+  if(qEl){
+    qEl.textContent = card.q;
+    renderMath(qEl);
+  }
+}
+
+function fcTri(level){
+  const card = _fcTriQueue[_fcTriIdx];
+  if(!card) return;
+
+  const realCard = S.fc.find(c => c === card) ||
+                   S.fc.find(c => c.q === card.q && c.a === card.a && c.course === card.course);
+  if(!realCard){ _fcTriIdx++; renderFcTri(); return; }
+
+  let mastery, intervalDays, ease;
+  if(level === 'bad'){
+    mastery = 20;
+    intervalDays = TRI_CONFIG.badDays;
+    ease = 2.4;
+  } else if(level === 'ok'){
+    mastery = 55;
+    intervalDays = TRI_CONFIG.okDays;
+    ease = 2.5;
+  } else {
+    mastery = 85;
+    intervalDays = TRI_CONFIG.goodDays;
+    ease = 2.6;
+  }
+
+  // Programar — todas a futuro, nunca el mismo día
+  realCard.state = 'review';
+  realCard.interval = intervalDays;
+  realCard.due = localKey(new Date(Date.now() + intervalDays * 86400000));
+  realCard.reps = 0;
+  realCard.ease = ease;
+  realCard.triagedAt = Date.now();
+  realCard.triageLevel = level;
+
+  // Actualizar dominio del tema
+  const topicId = findTopicIdByCourseAndName(realCard.course, realCard.topic);
+  if(topicId){
+    const meta = ensureTopicMetadata(topicId);
+    const current = meta.nivelDominio || 0;
+    meta.nivelDominio = Math.round(current * 0.5 + mastery * 0.5);
+    meta.fechaUltimoEstudio = today();
+  }
+
+  // Registrar en calibración metacognitiva
+  if(!S.calibration) S.calibration = [];
+  S.calibration.push({
+    source: 'triage',
+    topicId: topicId || null,
+    course: realCard.course,
+    topic: realCard.topic,
+    confidence: level === 'bad' ? 25 : level === 'ok' ? 60 : 90,
+    correct: level === 'good',
+    rating: level,
+    date: today(),
+    ts: Date.now()
+  });
+  if(S.calibration.length > 2000) S.calibration = S.calibration.slice(-2000);
+
+  // Contador diario
+  const t = today();
+  if(!S.fcTriToday || S.fcTriToday.date !== t){
+    S.fcTriToday = { date: t, done: 0 };
+  }
+  S.fcTriToday.done++;
+
+  save();
+  _fcTriIdx++;
+  renderFcTri();
+}
+
+function exitFcTriage(){
+  const ov = document.getElementById('fcTriOverlay');
+  if(ov) ov.style.display = 'none';
+  _fcTriQueue = [];
+  _fcTriIdx = 0;
+  save();
+  renderFC();
+  if(typeof refreshPlanIcons === 'function') refreshPlanIcons();
+  if(typeof renderCalibration === 'function') renderCalibration();
+  if(typeof renderHome === 'function') renderHome();
+}
+
+// Atajos de teclado
+document.addEventListener('keydown', e => {
+  const ov = document.getElementById('fcTriOverlay');
+  if(!ov || ov.style.display === 'none') return;
+  if(e.key === '1'){ fcTri('bad'); e.preventDefault(); }
+  if(e.key === '2'){ fcTri('ok'); e.preventDefault(); }
+  if(e.key === '3'){ fcTri('good'); e.preventDefault(); }
+  if(e.key === 'Escape'){ exitFcTriage(); e.preventDefault(); }
+});
 setInterval(()=>{
   const v=document.querySelector('.view.active')?.id;
   if(v==='view-home')renderHomeCapActual();
