@@ -2671,7 +2671,7 @@ function markSessionBlocks(course, sessionIdx, value){
   rows.forEach(r=>{ S.scheduleChecks[dateDs+'::'+r]=value; });
   save();renderStudySchedule();
 }
-function load(){
+async function load(){
   try{
     let raw=localStorage.getItem(KEY);
     if(!raw){
@@ -2682,18 +2682,76 @@ function load(){
     }
     S=JSON.parse(raw||'{}');
   }catch(e){S={}}
+  // Migración one-shot: si hay fc en localStorage, moverlo a IDB
+  if(Array.isArray(S.fc)&&S.fc.length){
+    console.log('Migrando '+S.fc.length+' flashcards a IDB...');
+    try{
+      const db=await openDB();
+      const tx=db.transaction(FC_STORE,'readwrite');
+      const store=tx.objectStore(FC_STORE);
+      await new Promise((res,rej)=>{
+        const r=store.put(S.fc,'fc');
+        r.onsuccess=res;r.onerror=()=>rej(r.error);
+      });
+      await new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});
+      db.close();
+      delete S.fc;
+      localStorage.setItem(KEY,JSON.stringify(S));
+      console.log('Migración OK, localStorage liberado');
+    }catch(e){console.error('Error migrando fc:',e);}
+  }
+  // Cargar fc desde IDB
+  try{
+    const db=await openDB();
+    const tx=db.transaction(FC_STORE,'readonly');
+    const store=tx.objectStore(FC_STORE);
+    const fc=await new Promise((res,rej)=>{
+      const r=store.get('fc');
+      r.onsuccess=()=>res(r.result);
+      r.onerror=()=>rej(r.error);
+    });
+    db.close();
+    S.fc=Array.isArray(fc)?fc:[];
+  }catch(e){
+    console.error('Error cargando fc de IDB:',e);
+    S.fc=S.fc||[];
+  }
   migrateData();
+}
+let _fcSaveTimer=null;
+async function _flushFCSave(){
+  try{
+    const db=await openDB();
+    const tx=db.transaction(FC_STORE,'readwrite');
+    const store=tx.objectStore(FC_STORE);
+    await new Promise((res,rej)=>{
+      const r=store.put(S.fc||[],'fc');
+      r.onsuccess=res;r.onerror=()=>rej(r.error);
+    });
+    await new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});
+    db.close();
+  }catch(e){console.error('FC save error:',e);}
 }
 function save(){
   try{
     S._v=DATA_VERSION;
     S._savedAt=Date.now();
-    localStorage.setItem(KEY,JSON.stringify(S));
+    // meta (todo menos fc) → localStorage
+    const {fc, ...meta}=S;
+    localStorage.setItem(KEY,JSON.stringify(meta));
     showSaveIndicator();
     renderSyncHint();
+    // fc → IndexedDB, debounced
+    clearTimeout(_fcSaveTimer);
+    _fcSaveTimer=setTimeout(_flushFCSave,1500);
     schedulePush();
-  }catch(e){}
+  }catch(e){console.error('save error:',e);}
 }
+// Flush al cerrar/minimizar para no perder el último rating
+window.addEventListener('pagehide',()=>{if(_fcSaveTimer){clearTimeout(_fcSaveTimer);_flushFCSave();}});
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden'&&_fcSaveTimer){clearTimeout(_fcSaveTimer);_flushFCSave();}
+});
 function migrateData(){
   if(!S.fcConfig)S.fcConfig={newPerDay:20,reviewPerDay:200};
   if(!S.fcToday)S.fcToday={date:'',newDone:0,reviewDone:0};
@@ -4000,9 +4058,10 @@ function exitExamMode(){clearInterval(emTimerInt);emRunning=false;document.getEl
 let uniDirHandle=null;
 // IndexedDB for persisting directory handle
 const DB_NAME='UniPlanDB';
-const DB_VERSION=2;
+const DB_VERSION=4;
 const STORE_NAME='directoryHandles';
 const IMG_STORE='images';
+const FC_STORE='flashcards';
 async function openDB(){
   return new Promise((resolve,reject)=>{
     const request=indexedDB.open(DB_NAME,DB_VERSION);
@@ -4015,6 +4074,9 @@ async function openDB(){
       }
       if(!db.objectStoreNames.contains(IMG_STORE)){
         db.createObjectStore(IMG_STORE);
+      }
+      if(!db.objectStoreNames.contains(FC_STORE)){
+        db.createObjectStore(FC_STORE);
       }
     };
   });
@@ -4493,6 +4555,12 @@ function importFCFile(file){
       let added = 0, skipped = 0, invalid = 0;
       const topicsUsados = new Set();
       const coursesUsados = new Set();
+      // O(1) dedup — precomputa keys existentes antes del loop
+      const existingKeys = new Set();
+      for (const c of S.fc) {
+        existingKeys.add((c.course||'')+'\u0001'+(c.q||'')+'\u0001'+(c.a||''));
+      }
+      const seenInThisImport = new Set();
       dataRows.forEach(row => {
         const q = (row[fFront] || '').trim();
         const a = (row[fBack] || '').trim();
@@ -4501,8 +4569,9 @@ function importFCFile(file){
         if (fDeck >= 0) course = resolveCourseFromDeck(row[fDeck] || '');
         if (!course) course = fallbackCourse;
         if (!course) { invalid++; return; }
-        const exists = S.fc.some(c => c.q === q && c.a === a && c.course === course);
-        if (exists) { skipped++; return; }
+        const key = course+'\u0001'+q+'\u0001'+a;
+        if (existingKeys.has(key) || seenInThisImport.has(key)) { skipped++; return; }
+        seenInThisImport.add(key);
         const rawTags = fTags >= 0 ? (row[fTags] || '') : '';
         const niveles = rawTags.split('::').map(s => s.trim()).filter(Boolean);
         const etiquetas = [];
@@ -5434,6 +5503,13 @@ async function importFromSync(file){
       if(syncData.theme){
         localStorage.setItem('theme',syncData.theme);
         loadThemePreference();
+      }
+      // Forzar flush de fc a IDB antes de recargar
+      if(Array.isArray(S.fc) && S.fc.length){
+        console.log('Flush de '+S.fc.length+' cards a IDB antes de recargar...');
+        clearTimeout(_fcSaveTimer);
+        await _flushFCSave();
+        console.log('Flush OK');
       }
       renderAll();
       showToast('✓ Datos sincronizados correctamente. La página se recargará.', 'success');
@@ -8804,8 +8880,9 @@ function swapScheduleCells(a, b){
   renderStudySchedule();
 }
 // ── INIT ──
-buildWeeklyStudyPlan();renderPlanTopics();load();loadThemePreference();loadCustomTheme();refreshCourseRGB();
+buildWeeklyStudyPlan();renderPlanTopics();loadThemePreference();loadCustomTheme();refreshCourseRGB();
 (async()=>{
+  await load();
   // Sync: bajar estado remoto si el gist tiene algo más nuevo
   if(hasSyncConfig()){
     updateSyncStatusUI('syncing','sincronizando...');
