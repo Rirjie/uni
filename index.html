@@ -1404,7 +1404,7 @@ body.print-week .week.print-hide{display:none!important}
       </div>
 
       <div id="fcStats" style="display:flex;gap:.6rem;flex-wrap:wrap;font-size:.68rem;color:var(--muted);margin-bottom:.6rem;padding:.4rem .6rem;background:var(--card);border:1px solid var(--border);border-radius:6px"></div>
-
+      <div id="fcProjection" style="display:flex;gap:4px;align-items:flex-end;height:48px;padding:.5rem .6rem;background:var(--card);border:1px solid var(--border);border-radius:6px;margin-bottom:.6rem"></div>
       <div class="fc-card" id="fcCard" onclick="flipFC()">
         <div class="fc-front" id="fcFront">No hay tarjetas aún.</div>
         <div class="fc-back" id="fcBack"></div>
@@ -4755,8 +4755,41 @@ function getDueCards(){
   const news=pool.filter(c=>c.state==='new');
   const reviews=pool.filter(c=>c.state!=='new');
 
-  const newLimit=Math.max(0,S.fcConfig.newPerDay-S.fcToday.newDone);
-  const reviewLimit=Math.max(0,S.fcConfig.reviewPerDay-S.fcToday.reviewDone);
+
+
+  // ── Auto-ajuste runtime (no persiste) ──
+  const t2=today();
+  const atrasadas=(S.fc||[]).filter(c=>c.state!=='new'&&(c.due||t2)<t2).length;
+  const baseReview=S.fcConfig.reviewPerDay||2500;
+
+  let dynamicReview=baseReview;
+  let dynamicNew=S.fcConfig.newPerDay||120;
+
+  if(atrasadas>500){
+    dynamicReview=Math.max(baseReview,1500);
+    dynamicNew=Math.min(dynamicNew,60);
+  } else if(atrasadas>200){
+    dynamicReview=Math.max(baseReview,900);
+    dynamicNew=Math.min(dynamicNew,100);
+  }
+
+  // Racha de backlog alto + alerta al tercer día seguido
+  if(!S._backlogDays)S._backlogDays={date:'',count:0};
+  if(atrasadas>200){
+    if(S._backlogDays.date!==t2){
+      S._backlogDays.date=t2;
+      S._backlogDays.count++;
+    }
+    if(S._backlogDays.count>=3 && S._lastBacklogWarn!==t2){
+      S._lastBacklogWarn=t2;
+      setTimeout(()=>showToast('⚠ Llevás '+S._backlogDays.count+' días con +200 atrasadas. Bajá las nuevas a 30/día hasta bajar de 100.','error'),500);
+    }
+  } else {
+    S._backlogDays.count=0;
+  }
+
+  const newLimit=Math.max(0,dynamicNew-S.fcToday.newDone);
+  const reviewLimit=Math.max(0,dynamicReview-S.fcToday.reviewDone);
 
   return [
     ...reviews.slice(0,reviewLimit),
@@ -4815,6 +4848,7 @@ function renderFC(){
     cardEl.onclick=null;
     if(nav)nav.style.display='none';
     renderFCStats();
+    renderFCProjection();
     return;
   }
 
@@ -4981,25 +5015,50 @@ function renderFCStats(){
   const el=document.getElementById('fcStats');
   if(!el)return;
   if(!S.fc||!S.fc.length){el.innerHTML='<span style="color:var(--muted)">Sin tarjetas.</span>';return;}
+
   const t=today();
+  const tmrw=localKey(new Date(Date.now()+86400000));
+
   if(!S.fcConfig)S.fcConfig={newPerDay:20,reviewPerDay:200};
   if(!S.fcToday||S.fcToday.date!==t)S.fcToday={date:t,newDone:0,reviewDone:0};
-  const due=S.fc.filter(c=>(c.due||t)<=t).length;
-  const newCards=S.fc.filter(c=>c.state==='new').length;
-  const learning=S.fc.filter(c=>c.state==='learning').length;
-  const review=S.fc.filter(c=>c.state==='review').length;
-  const avgEase=S.fc.length?(S.fc.reduce((a,c)=>a+(c.ease||2.5),0)/S.fc.length).toFixed(2):'—';
-  const avgInterval=S.fc.length?Math.round(S.fc.reduce((a,c)=>a+(c.interval||0),0)/S.fc.length):0;
-  const newRemaining=Math.max(0,S.fcConfig.newPerDay-S.fcToday.newDone);
-  const reviewRemaining=Math.max(0,S.fcConfig.reviewPerDay-S.fcToday.reviewDone);
+
+  // Conteos reales SIN filtro
+  const all=S.fc;
+  const newCount=all.filter(c=>c.state==='new').length;
+  const atrasadas=all.filter(c=>c.state!=='new'&&(c.due||t)<t).length;
+  const hoy=all.filter(c=>c.state!=='new'&&(c.due||t)===t).length;
+  const manana=all.filter(c=>c.state!=='new'&&(c.due||t)===tmrw).length;
+  const learning=all.filter(c=>c.state==='learning').length;
+  const total=all.length;
+
+  // Ratio de salud
+  const pendientesHoy=atrasadas+hoy;
+  const ratio=pendientesHoy>0?atrasadas/pendientesHoy:0;
+  let dot='🟢',dotColor='var(--accent3)',dotLabel='sano';
+  if(ratio>=0.5){dot='🔴';dotColor='var(--accent2)';dotLabel='crítico';}
+  else if(ratio>=0.2){dot='🟠';dotColor='#f0a500';dotLabel='atrasado';}
+  else if(ratio>=0.1){dot='🟡';dotColor='var(--accent4)';dotLabel='cuidado';}
+
+  // Aviso de filtro activo
+  const fcCurso=document.getElementById('fcFilterCourse')?.value||'';
+  const fcTema=document.getElementById('fcFilterTopic')?.value||'';
+  const fcTipo=document.getElementById('fcFilterTipo')?.value||'';
+  let filtroAviso='';
+  if(fcCurso||fcTema||fcTipo){
+    const parts=[fcCurso,fcTema,fcTipo].filter(Boolean);
+    filtroAviso='<div style="width:100%;font-size:.66rem;color:#f0a500;margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--border)">⚠ Filtro activo: <b>'+parts.join(' · ')+'</b> — los conteos de abajo son totales, la sesión solo te muestra las que matchean</div>';
+  }
+
   el.innerHTML=
-    '<span style="color:var(--accent4)"><b>'+due+'</b> pendientes hoy</span>'
-    +'<span>🆕 <b>'+S.fcToday.newDone+'/'+S.fcConfig.newPerDay+'</b> nuevas</span>'
-    +'<span>✅ <b>'+S.fcToday.reviewDone+'/'+S.fcConfig.reviewPerDay+'</b> repaso</span>'
-    +'<span>📚 <b>'+learning+'</b> aprend.</span>'
-    +'<span>ease: <b>'+avgEase+'</b></span>'
-    +'<span>interval: <b>'+avgInterval+'d</b></span>'
-    +'<span>total: <b>'+S.fc.length+'</b></span>';
+    '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;width:100%">'
+    +'<span style="font-size:.9rem" title="'+dotLabel+'">'+dot+'</span>'
+    +'<span style="color:'+(atrasadas>0?'var(--accent2)':'var(--muted)')+'"><b>'+atrasadas+'</b> atrasadas</span>'
+    +'<span style="color:var(--accent4)"><b>'+hoy+'</b> hoy</span>'
+    +'<span style="color:var(--muted)"><b>'+newCount+'</b> nuevas</span>'
+    +'<span style="color:var(--muted);opacity:.7">· mañana: <b>'+manana+'</b></span>'
+    +'<span style="color:var(--muted);opacity:.7">· total: <b>'+total+'</b></span>'
+    +'</div>'
+    +filtroAviso;
 }
 
 
@@ -9150,6 +9209,44 @@ document.addEventListener('keydown', e => {
   if(e.key === '3'){ fcTri('good'); e.preventDefault(); }
   if(e.key === 'Escape'){ exitFcTriage(); e.preventDefault(); }
 });
+function renderFCProjection(){
+  const el=document.getElementById('fcProjection');
+  if(!el)return;
+  if(!S.fc||!S.fc.length){el.innerHTML='';return;}
+
+  const days=[];
+  for(let i=0;i<7;i++){
+    const d=new Date();d.setDate(d.getDate()+i);
+    const k=localKey(d);
+    days.push({k,label:['L','M','X','J','V','S','D'][(d.getDay()+6)%7],count:0});
+  }
+
+  const t=today();
+  const futureWindow=days.map(d=>d.k);
+
+  S.fc.forEach(c=>{
+    if(c.state==='new')return;
+    const due=c.due||t;
+    if(due<t){
+      days[0].count++;
+    } else if(futureWindow.includes(due)){
+      const idx=futureWindow.indexOf(due);
+      days[idx].count++;
+    }
+  });
+
+  const max=Math.max(...days.map(d=>d.count),1);
+  el.innerHTML=days.map((d,i)=>{
+    const h=Math.max(4,Math.round(d.count/max*36));
+    const col=i===0?'var(--accent2)':d.count>=max*0.8?'#f0a500':'var(--accent4)';
+    const todayCol=i===0?'var(--accent2)':'var(--muted)';
+    return'<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">'
+      +'<div style="font-size:.6rem;color:var(--muted)">'+d.count+'</div>'
+      +'<div style="width:100%;height:'+h+'px;background:'+col+';border-radius:2px 2px 0 0;min-height:4px"></div>'
+      +'<div style="font-size:.64rem;color:'+todayCol+';font-weight:'+(i===0?'700':'400')+'">'+d.label+'</div>'
+      +'</div>';
+  }).join('');
+}
 setInterval(()=>{
   const v=document.querySelector('.view.active')?.id;
   if(v==='view-home')renderHomeCapActual();
