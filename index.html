@@ -408,6 +408,17 @@ h1 span{color:var(--accent)}
 .pomo-tab:hover{border-color:var(--accent);color:var(--accent)}
 .pomo-tab.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700}
 .chrono-time{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:700;color:#fff;letter-spacing:-.03em;line-height:1}
+.mixed-problem-panel{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:.7rem .85rem;margin-top:.6rem;font-size:.72rem;line-height:1.5}
+.mixed-problem-panel .mp-enunciado{color:var(--text);margin-bottom:.6rem;white-space:pre-wrap}
+.mixed-problem-panel .mp-alt{display:flex;gap:.4rem;padding:.28rem .4rem;border:1px solid var(--border);border-radius:3px;margin-bottom:.22rem;cursor:pointer;user-select:none;font-size:.70rem;line-height:1.4}
+.mixed-problem-panel .mp-alt:hover{border-color:var(--accent)}
+.mixed-problem-panel .mp-alt.selected{background:#1a1535;border-color:var(--accent)}
+.mixed-problem-panel .mp-alt .mp-letra{font-weight:700;color:var(--muted);flex-shrink:0}
+.mixed-problem-panel .mp-alt.selected .mp-letra{color:var(--accent)}
+.mixed-summary-row{display:flex;justify-content:space-between;padding:.22rem 0;border-bottom:1px solid var(--border);font-size:.72rem}
+.mixed-summary-row:last-child{border-bottom:none}
+.mixed-summary-row .msr-tema{color:var(--muted)}
+.mixed-summary-row .msr-acc{font-family:'DM Mono',monospace}
 .chrono-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:.3rem;margin-bottom:.3rem}
 .chrono-bt{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.45rem .5rem;font-family:inherit;font-size:.70rem;cursor:pointer;border-radius:4px;display:flex;justify-content:space-between;align-items:center;transition:all .12s}
 .chrono-bt:hover{filter:brightness(1.3)}
@@ -1127,33 +1138,59 @@ body.print-week .week.print-hide{display:none!important}
       </div>
 
       <div id="chronoContent" style="display:none">
-        <select class="pcourse" id="chronoCourse" onchange="updateChronoTopics()">
-          <option value="" disabled selected hidden>curso</option>
-        </select>
-        <select class="pcourse" id="chronoTopic" style="margin-top:.28rem">
-          <option value="" disabled selected hidden>tema</option>
-        </select>
-
-        <div style="text-align:center;margin:.7rem 0 .5rem">
-          <div style="font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.15rem">tiempo</div>
-          <div class="chrono-time" id="chronoDisp">00:00</div>
-          <div style="font-size:.68rem;color:var(--muted);margin-top:.2rem" id="chronoMeta">— sin problemas aún</div>
+        <div style="display:flex;gap:.3rem;margin-bottom:.5rem">
+          <button id="chronoModeNormal" onclick="setChronoMode('normal')" style="flex:1;background:var(--accent);border:1px solid var(--accent);color:#000;font-weight:700;padding:.35rem;border-radius:4px;cursor:pointer;font-family:inherit;font-size:.70rem">⏲ normal</button>
+          <button id="chronoModeMixed" onclick="setChronoMode('mixed')" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);padding:.35rem;border-radius:4px;cursor:pointer;font-family:inherit;font-size:.70rem">🔀 mixto</button>
         </div>
 
-        <div id="chronoCounters" style="display:none">
-          <div class="chrono-btn-row">
-            <button class="chrono-bt easy" onclick="chronoCount('easy')">✓ Fácil <span id="cEasy">0</span></button>
-            <button class="chrono-bt hard" onclick="chronoCount('hard')">⚠ Difícil <span id="cHard">0</span></button>
+        <div id="chronoNormalUI">
+          <select class="pcourse" id="chronoCourse" onchange="updateChronoTopics()">
+            <option value="" disabled selected hidden>curso</option>
+          </select>
+          <select class="pcourse" id="chronoTopic" style="margin-top:.28rem">
+            <option value="" disabled selected hidden>tema</option>
+          </select>
+
+          <div style="text-align:center;margin:.7rem 0 .5rem">
+            <div style="font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.15rem">tiempo</div>
+            <div class="chrono-time" id="chronoDisp">00:00</div>
+            <div style="font-size:.68rem;color:var(--muted);margin-top:.2rem" id="chronoMeta">— sin problemas aún</div>
           </div>
-          <div class="chrono-btn-row">
-            <button class="chrono-bt skip" onclick="chronoCount('skipped')">⏭ Salté <span id="cSkipped">0</span></button>
-            <button class="chrono-bt fail" onclick="chronoCount('failed')">✕ Fallé <span id="cFailed">0</span></button>
+
+          <div id="chronoCounters" style="display:none">
+            <div class="chrono-btn-row">
+              <button class="chrono-bt easy" onclick="chronoCount('easy')">✓ Fácil <span id="cEasy">0</span></button>
+              <button class="chrono-bt hard" onclick="chronoCount('hard')">⚠ Difícil <span id="cHard">0</span></button>
+            </div>
+            <div class="chrono-btn-row">
+              <button class="chrono-bt skip" onclick="chronoCount('skipped')">⏭ Salté <span id="cSkipped">0</span></button>
+              <button class="chrono-bt fail" onclick="chronoCount('failed')">✕ Fallé <span id="cFailed">0</span></button>
+            </div>
+          </div>
+
+          <div class="pbts" style="margin-top:.5rem">
+            <button id="chronoStart" onclick="chronoToggle()">▶ iniciar</button>
+            <button onclick="chronoReset()">↺ reset</button>
           </div>
         </div>
 
-        <div class="pbts" style="margin-top:.5rem">
-          <button id="chronoStart" onclick="chronoToggle()">▶ iniciar</button>
-          <button onclick="chronoReset()">↺ reset</button>
+        <div id="chronoMixedUI" style="display:none">
+          <select class="pcourse" id="mixedCourse" onchange="updateMixedTopics()">
+            <option value="" disabled selected hidden>curso</option>
+          </select>
+          <select class="pcourse" id="mixedAnchor" style="margin-top:.28rem">
+            <option value="" disabled selected hidden>tema ancla (opcional)</option>
+          </select>
+          <select class="pcourse" id="mixedCount" style="margin-top:.28rem">
+            <option value="5">5 problemas</option>
+            <option value="10" selected>10 problemas</option>
+            <option value="15">15 problemas</option>
+            <option value="20">20 problemas</option>
+          </select>
+          <div id="mixedZoneInfo" style="font-size:.66rem;color:var(--muted);margin-top:.35rem;line-height:1.4;min-height:1.2rem"></div>
+          <div class="pbts" style="margin-top:.5rem">
+            <button id="mixedGenerateBtn" onclick="generateMixedSession()">⚡ generar sesión mixta</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1239,6 +1276,7 @@ body.print-week .week.print-hide{display:none!important}
       <div style="margin-bottom:.6rem">
         <div style="font-size:.68rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem">Por curso — clic para filtrar</div>
         <div class="err-course-grid" id="errByCourseGrid" style="margin-bottom:.4rem"></div>
+        <div id="errTypeStats" style="margin:.5rem 0 .5rem;padding:.5rem .6rem;background:var(--bg);border-radius:4px"></div>
         <div id="errCourseFilter" style="display:none;background:#1a0f0f;border:1px solid #3a1515;padding:.4rem .6rem;margin-top:.3rem;font-size:.70rem">
           <span style="color:var(--muted)">Filtrando: </span><strong id="errCourseFilterLabel" style="color:var(--accent2)"></strong>
           <button onclick="clearErrCourseFilter()" style="margin-left:.5rem;font-size:.68rem;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;padding:.1rem .3rem">✕ limpiar</button>
@@ -3694,6 +3732,80 @@ function renderErrByCourseGrid(){
       +'<div class="ecc-num">'+byCourse['General']+'</div>'
       +'</div>':'');
 }
+// ═══ TIPO DE ERROR ═══
+const ERR_TYPE_CYCLE = ['', 'conceptual', 'procedimental', 'calculo', 'lectura', 'atencion'];
+const ERR_TYPE_META = {
+  conceptual:     { icon:'🧠', label:'conceptual',    color:'#a855f7', tip:'Volvé a la teoría del capítulo antes de más práctica.' },
+  procedimental:  { icon:'📐', label:'procedimental', color:'#38bdf8', tip:'Trabajá el procedimiento paso a paso, sin saltarte pasos.' },
+  calculo:        { icon:'🔢', label:'cálculo',       color:'#f59e0b', tip:'Reforzá con repeticiones mecánicas y menos teoría nueva.' },
+  lectura:        { icon:'📖', label:'lectura',       color:'#14b8a6', tip:'Practicá subrayado y lectura lenta del enunciado.' },
+  atencion:       { icon:'⚠',  label:'atención',      color:'#ef4444', tip:'Chequeá signos y datos antes de responder.' }
+};
+
+function cycleErrType(errorText){
+  if(!errorText)return;
+  if(!S.errType)S.errType={};
+  const cur = S.errType[errorText] || '';
+  const next = ERR_TYPE_CYCLE[(ERR_TYPE_CYCLE.indexOf(cur)+1) % ERR_TYPE_CYCLE.length];
+  if(next) S.errType[errorText] = next;
+  else delete S.errType[errorText];
+  save();
+  renderE();
+}
+
+function renderErrTypeStats(){
+  const el = document.getElementById('errTypeStats');
+  if(!el) return;
+  const errs = S.errors || [];
+  if(!errs.length){ el.innerHTML = ''; return; }
+
+  const counts = {};
+  let sinTipo = 0;
+  errs.forEach(e => {
+    const t = (S.errType || {})[e];
+    if(t && ERR_TYPE_META[t]) counts[t] = (counts[t] || 0) + 1;
+    else sinTipo++;
+  });
+  const total = errs.length;
+
+  let html = '<div style="font-size:.66rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem">Tipo de error</div>';
+  Object.entries(ERR_TYPE_META).forEach(([k, meta]) => {
+    const n = counts[k] || 0;
+    const pct = total ? Math.round(n/total*100) : 0;
+    html += '<div style="display:flex;align-items:center;gap:.4rem;font-size:.70rem;padding:.15rem 0">'
+      + '<span style="width:1rem;text-align:center">' + meta.icon + '</span>'
+      + '<span style="color:var(--muted);width:6rem">' + meta.label + '</span>'
+      + '<div style="flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden">'
+      + '<div style="width:' + pct + '%;height:100%;background:' + meta.color + '"></div>'
+      + '</div>'
+      + '<span style="min-width:2rem;text-align:right;color:' + (n ? 'var(--text)' : 'var(--muted)') + '">' + n + '</span>'
+      + '</div>';
+  });
+  if(sinTipo){
+    const pct = Math.round(sinTipo/total*100);
+    html += '<div style="display:flex;align-items:center;gap:.4rem;font-size:.70rem;padding:.15rem 0;opacity:.55">'
+      + '<span style="width:1rem;text-align:center">○</span>'
+      + '<span style="color:var(--muted);width:6rem">sin clasificar</span>'
+      + '<div style="flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden">'
+      + '<div style="width:' + pct + '%;height:100%;background:var(--muted)"></div>'
+      + '</div>'
+      + '<span style="min-width:2rem;text-align:right">' + sinTipo + '</span>'
+      + '</div>';
+  }
+
+  const top = Object.entries(ERR_TYPE_META)
+    .map(([k, meta]) => ({ k, ...meta, n: counts[k] || 0 }))
+    .sort((a, b) => b.n - a.n)[0];
+  if(top && top.n >= 3){
+    html += '<div style="font-size:.66rem;color:var(--muted);margin-top:.5rem;padding-top:.4rem;border-top:1px solid var(--border);line-height:1.5">'
+      + 'Tu tipo dominante es <strong style="color:' + top.color + '">' + top.label + '</strong>. ' + top.tip
+      + '</div>';
+  }
+  el.innerHTML = html;
+}
+// ═══ FIN TIPO DE ERROR ═══
+
+
 function renderE(){
   const errs=S.errors||[];const ercnt=S.errcnt||{};
   document.getElementById('statErrCount').textContent=errs.length;
@@ -3746,12 +3858,18 @@ function renderE(){
         // General error (no prefix)
         courseTag='<span style="font-size:.64rem;padding:.02rem .22rem;background:var(--border);border:1px solid var(--muted);color:var(--muted);margin-right:.25rem;flex-shrink:0">General</span>';
       }
-      return'<div class="eitem"><div class="edot"></div>'+courseTag+'<span>'+displayText+'</span><span class="ecnt">'+(ercnt[realIdx]||1)+'x</span><span class="edel" onclick="delE('+realIdx+')">✕</span></div>';
+      const tipo = (S.errType||{})[e] || '';
+      const tmeta = ERR_TYPE_META[tipo] || { icon:'○', color:'var(--muted)' };
+      const safeErr = e.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+      return'<div class="eitem"><div class="edot"></div>'+courseTag
+        +'<span onclick="cycleErrType(\''+safeErr+'\')" title="tipo: '+(tipo||'sin clasificar')+' — clic para cambiar" style="cursor:pointer;font-size:.68rem;padding:.02rem .3rem;border:1px solid '+tmeta.color+'50;background:'+tmeta.color+'18;border-radius:3px;color:'+tmeta.color+';margin-right:.3rem;flex-shrink:0;user-select:none">'+tmeta.icon+'</span>'
+        +'<span>'+displayText+'</span><span class="ecnt">'+(ercnt[realIdx]||1)+'x</span><span class="edel" onclick="delE('+realIdx+')">✕</span></div>';
     }).join('')
     :'<div style="font-size:.6rem;color:var(--muted);padding:.3rem">Sin errores aún.</div>';
    document.getElementById('ferrlist').innerHTML=errs.length?errs.map(e=>'<div>· '+e+'</div>').join(''):'—';
   renderMath(document.getElementById('elist'));
   updateSidebar();
+  renderErrTypeStats();
   // Update home if visible
   if(document.getElementById('view-home')?.classList.contains('active')){
     renderHomeErrores();renderHomeErrCurso();renderHomeErrRecientes();
@@ -4500,15 +4618,53 @@ async function generateExam(){
   const course=document.getElementById('examGenCourse').value;
   const tema=document.getElementById('examGenTema').value;
   const n=Math.max(1,Math.min(40,parseInt(document.getElementById('examGenN').value)||10));
-  let pool=S.bank.filter(b=>(!course||b.course===course)&&(!tema||b.tema===tema));
-  if(!pool.length){document.getElementById('examGenResult').innerHTML='<div style="font-size:.6rem;color:var(--muted);padding:.4rem">Sin problemas para ese filtro.</div>';return;}
+  // Pool exacto (tema elegido)
+  const exactPool=S.bank.filter(b=>(!course||b.course===course)&&(!tema||b.tema===tema));
+  if(!exactPool.length){document.getElementById('examGenResult').innerHTML='<div style="font-size:.6rem;color:var(--muted);padding:.4rem">Sin problemas para ese filtro.</div>';return;}
+
+  // ── Contexto variado: 70% tema exacto + 30% relacionados (prereqs/deps/soft) ──
+  let pool=exactPool;
+  let mixInfo=null;
+  if(course&&tema){
+    const topicId=findTopicIdByCourseAndName(course,tema);
+    if(topicId){
+      const relatedIds=new Set([
+        ...getPrereqs(topicId),
+        ...getDependents(topicId),
+        ...((typeof SOFT_DEPS!=='undefined'&&SOFT_DEPS[topicId])||[])
+      ]);
+      if(relatedIds.size){
+        const relatedNames=new Set();
+        relatedIds.forEach(rid=>{
+          const info=getTopic(rid);
+          if(info&&info.name)relatedNames.add(info.name);
+        });
+        const relatedPool=S.bank.filter(b=>
+          b.course===course&&relatedNames.has(b.tema)&&b.tema!==tema
+        );
+        if(relatedPool.length){
+          const nMain=Math.max(1,Math.round(n*0.7));
+          const nRel=n-nMain;
+          const pickMain=[...exactPool].sort(()=>Math.random()-.5).slice(0,nMain);
+          const pickRel=[...relatedPool].sort(()=>Math.random()-.5).slice(0,nRel);
+          pool=[...pickMain,...pickRel].sort(()=>Math.random()-.5);
+          if(pickRel.length){
+            const relLabels=[...new Set(pickRel.map(p=>p.tema))].join(', ');
+            mixInfo='🔀 '+pickMain.length+' de <strong>'+tema+'</strong> + '+pickRel.length+' de contexto ('+relLabels+')';
+          }
+        }
+      }
+    }
+  }
+
   // shuffle
   const shuffled=[...pool].sort(()=>Math.random()-.5);
   const selected=shuffled.slice(0,Math.min(n,shuffled.length));
   // Store current exam in session state
   window.currentExam={questions:selected,answers:{}};
-  let html='<div style="font-size:.70rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem">Simulacro — '+selected.length+' pregunta'+(selected.length>1?'s':'')+' · Marca tu respuesta para cada una</div>';
-  for(let i=0;i<selected.length;i++){
+  let html='<div style="font-size:.70rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem">Simulacro — '+selected.length+' pregunta'+(selected.length>1?'s':'')+' · Marca tu respuesta para cada una</div>'
+    +(mixInfo?'<div style="font-size:.68rem;color:var(--accent4);margin-bottom:.5rem;padding:.3rem .5rem;background:var(--card);border-left:2px solid var(--accent4);border-radius:3px">'+mixInfo+'</div>':'');
+      for(let i=0;i<selected.length;i++){
     const item=selected[i];
     let imageHtml='';
     if(item.image){
@@ -5032,6 +5188,20 @@ function renderFC(){
   if(nav)nav.style.display='none';
   const card=_fcQueue[0];
   cardEl.classList.remove('flipped');
+  // Self-explanation: reflexiones previas del tema
+  const cardTopicId = findTopicIdByCourseAndName(card.course, card.topic);
+  const cardMeta = cardTopicId ? (S.t||{})[cardTopicId] : null;
+  const pastReflections = (cardMeta && Array.isArray(cardMeta.reflections)) ? cardMeta.reflections.slice(-3) : [];
+  let reflectionBlock = '';
+  if(pastReflections.length){
+    reflectionBlock = '<details style="margin-top:.7rem;width:100%;text-align:left">'
+      + '<summary style="cursor:pointer;font-size:.66rem;color:var(--accent2);padding:.25rem 0">📝 Tus reflexiones previas ('+pastReflections.length+')</summary>'
+      + '<div style="margin-top:.4rem;padding:.5rem .65rem;background:#1f0a0f;border-left:2px solid var(--accent2);border-radius:4px">'
+      + pastReflections.map(r => '<div style="font-size:.68rem;color:var(--muted);line-height:1.45;margin-bottom:.25rem">· '+r.text+' <span style="opacity:.5">('+r.date+')</span></div>').join('')
+      + '</div>'
+      + '</details>';
+  }
+
   front.innerHTML='<button onclick="event.stopPropagation();delFC()" style="position:absolute;top:6px;right:6px;background:transparent;border:1px solid var(--border);color:var(--muted);font-size:.68rem;padding:.1rem .35rem;border-radius:4px;cursor:pointer;z-index:2" title="Borrar tarjeta">🗑 borrar</button>'
     +'<div style="font-size:.8rem;color:var(--muted);margin-bottom:.4rem">'+card.course+' · '+card.topic+'</div>'
     +'<div id="fcFrontContent" style="font-size:.8rem">'+card.q+'</div>'
@@ -5045,6 +5215,7 @@ function renderFC(){
     +'    <button class="fc-conf-btn high" onclick="event.stopPropagation();setFCConfidence(95)">✅<br><span>seguro</span></button>'
     +'  </div>'
     +'</div>'
+    + reflectionBlock
     +'<div class="fc-hint">elegí confianza para ver la respuesta</div>';
   renderMath(document.getElementById('fcFrontContent'));
   back.innerHTML='';
@@ -5111,8 +5282,69 @@ function setFCConfidence(v){
   setTimeout(()=>flipFC(),300);
 }
 
+// ═══ SELF-EXPLANATION ═══
+let _reflectionTarget = null;
+
+function _showReflectionPrompt(calEntry){
+  _closeReflectionPrompt();
+  _reflectionTarget = calEntry;
+  const el = document.createElement('div');
+  el.id = '_reflectionPrompt';
+  el.style.cssText = 'position:fixed;bottom:calc(5rem + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--accent2);border-radius:10px;padding:.9rem 1rem;max-width:520px;width:calc(100% - 2rem);z-index:1400;box-shadow:0 12px 40px rgba(0,0,0,.55);animation:fadeIn .2s ease';
+  el.innerHTML = '<div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.55rem">'
+    +'<span style="font-size:.9rem">🤔</span>'
+    +'<span style="font-family:\'Syne\',sans-serif;font-weight:700;font-size:.74rem;color:var(--accent2);flex:1">Fallaste con alta confianza</span>'
+    +'<button onclick="_skipReflection()" style="background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;border-radius:4px;font-size:.68rem;padding:.05rem .35rem;line-height:1">✕</button>'
+    +'</div>'
+    +'<div style="font-size:.68rem;color:var(--muted);margin-bottom:.5rem;line-height:1.4">¿Por qué creías que era otra cosa? (opcional, una línea)</div>'
+    +'<input type="text" id="_reflectionInput" placeholder="ej: confundí el signo..." maxlength="140" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:.45rem .6rem;font-family:\'DM Mono\',monospace;font-size:.72rem;border-radius:4px;outline:none">'
+    +'<div style="display:flex;gap:.35rem;margin-top:.55rem;justify-content:flex-end">'
+    +'<button onclick="_skipReflection()" style="padding:.32rem .75rem;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:4px;cursor:pointer;font-family:inherit;font-size:.66rem">Saltar</button>'
+    +'<button onclick="_saveReflection()" style="padding:.32rem .75rem;background:var(--accent2);border:none;color:#000;border-radius:4px;cursor:pointer;font-family:inherit;font-size:.66rem;font-weight:700">Guardar</button>'
+    +'</div>';
+  document.body.appendChild(el);
+  const inp = document.getElementById('_reflectionInput');
+  if(inp){
+    inp.focus();
+    inp.addEventListener('keydown', e => {
+      if(e.key === 'Enter'){ e.preventDefault(); _saveReflection(); }
+      if(e.key === 'Escape'){ e.preventDefault(); _skipReflection(); }
+    });
+  }
+  clearTimeout(window._reflectionTimeout);
+  window._reflectionTimeout = setTimeout(_skipReflection, 45000);
+}
+
+function _saveReflection(){
+  const inp = document.getElementById('_reflectionInput');
+  const txt = (inp?.value || '').trim();
+  const cal = _reflectionTarget;
+  if(txt && cal){
+    cal.reflection = txt;
+    if(cal.topicId){
+      const meta = ensureTopicMetadata(cal.topicId);
+      if(!meta.reflections) meta.reflections = [];
+      meta.reflections.push({ text: txt, date: today(), ts: Date.now() });
+      if(meta.reflections.length > 10) meta.reflections = meta.reflections.slice(-10);
+    }
+    save();
+    showToast('✓ Reflexión guardada','success');
+  }
+  _closeReflectionPrompt();
+}
+
+function _skipReflection(){
+  _closeReflectionPrompt();
+}
+
+function _closeReflectionPrompt(){
+  clearTimeout(window._reflectionTimeout);
+  _reflectionTarget = null;
+  document.getElementById('_reflectionPrompt')?.remove();
+}
+// ═══ FIN SELF-EXPLANATION ═══
+
 function rateFC(rating){
-  
   if(!_fcQueue||!_fcQueue.length)return;
   const card=_fcQueue[0];
   if(!S.fc)S.fc=[];
@@ -5166,7 +5398,7 @@ function rateFC(rating){
   const confidence=window._fcCurrentConfidence||60;
   const correct=(rating==='good'||rating==='easy');
   if(!S.calibration)S.calibration=[];
-  S.calibration.push({
+  const calEntry={
     source:'fc',
     topicId:topicId||null,
     course:realCard.course,
@@ -5176,14 +5408,23 @@ function rateFC(rating){
     rating,
     date:today(),
     ts:Date.now()
-  });
+  };
+  S.calibration.push(calEntry);
   // Limitar a 2000 registros
   if(S.calibration.length>2000)S.calibration=S.calibration.slice(-2000);
   window._fcCurrentConfidence=null;
 
+  // ═══ SELF-EXPLANATION: solo si fallaste con alta confianza ═══
+  const isFail = (rating==='again' || rating==='hard');
+  const triggerReflection = confidence >= 75 && isFail;
+
   _fcQueue.shift();
   save();
   renderFC();
+
+  if(triggerReflection){
+    _showReflectionPrompt(calEntry);
+  }
 }
 
 
@@ -8203,6 +8444,298 @@ initAIComponents();
 /* ═══ CRONÓMETRO POR TEMA ═══ */
 let chronoInt=null, chronoSecs=0, chronoRun=false, chronoStart=null;
 let chronoCounts={easy:0,hard:0,skipped:0,failed:0};
+// ═══ MODO MIXTO CON IA ═══
+let _chronoMode = 'normal'; // 'normal' | 'mixed'
+let _mixedProblems = [];    // array de problemas generados
+let _mixedIdx = 0;          // índice del problema actual
+let _mixedResults = [];     // marcas por problema
+let _mixedStartTs = null;
+
+function setChronoMode(mode){
+  _chronoMode = mode;
+  const normal = document.getElementById('chronoNormalUI');
+  const mixed = document.getElementById('chronoMixedUI');
+  const btnN = document.getElementById('chronoModeNormal');
+  const btnM = document.getElementById('chronoModeMixed');
+  if(!normal || !mixed) return;
+  if(mode === 'normal'){
+    normal.style.display = '';
+    mixed.style.display = 'none';
+    btnN.style.background = 'var(--accent)';
+    btnN.style.borderColor = 'var(--accent)';
+    btnN.style.color = '#000';
+    btnN.style.fontWeight = '700';
+    btnM.style.background = 'transparent';
+    btnM.style.borderColor = 'var(--border)';
+    btnM.style.color = 'var(--muted)';
+  } else {
+    normal.style.display = 'none';
+    mixed.style.display = '';
+    btnM.style.background = 'var(--accent)';
+    btnM.style.borderColor = 'var(--accent)';
+    btnM.style.color = '#000';
+    btnM.style.fontWeight = '700';
+    btnN.style.background = 'transparent';
+    btnN.style.borderColor = 'var(--border)';
+    btnN.style.color = 'var(--muted)';
+    // Poblar el selector de curso si está vacío
+    const sel = document.getElementById('mixedCourse');
+    if(sel && sel.options.length <= 1){
+      Object.keys(TOPICS).forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name; opt.textContent = name;
+        sel.appendChild(opt);
+      });
+    }
+  }
+}
+
+function updateMixedTopics(){
+  const course = document.getElementById('mixedCourse')?.value || '';
+  const anchor = document.getElementById('mixedAnchor');
+  const info = document.getElementById('mixedZoneInfo');
+  if(!anchor) return;
+  anchor.innerHTML = '<option value="" disabled selected hidden>tema ancla (opcional)</option>';
+  if(!course || !TOPICS[course]){ if(info) info.textContent=''; return; }
+  Object.entries(TOPICS[course]).forEach(([id, name]) => {
+    const opt = document.createElement('option');
+    opt.value = id; opt.textContent = name;
+    anchor.appendChild(opt);
+  });
+  anchor.onchange = updateMixedZoneInfo;
+  if(info) info.textContent = 'Elegí un tema ancla o dejalo vacío para usar todo el curso.';
+}
+
+function updateMixedZoneInfo(){
+  const info = document.getElementById('mixedZoneInfo');
+  if(!info) return;
+  const course = document.getElementById('mixedCourse')?.value || '';
+  const topicId = document.getElementById('mixedAnchor')?.value || '';
+  if(!course){ info.textContent = ''; return; }
+  if(!topicId){
+    info.textContent = 'Modo: ' + course + ' completo (2-3 temas al azar del curso).';
+    return;
+  }
+  const prereqs = (typeof getPrereqs === 'function') ? getPrereqs(topicId) : [];
+  const deps = (typeof getDependents === 'function') ? getDependents(topicId) : [];
+  const soft = (typeof SOFT_DEPS !== 'undefined' && SOFT_DEPS[topicId]) || [];
+  const relatedIds = [...new Set([topicId, ...prereqs, ...deps, ...soft])];
+  const names = relatedIds.map(id => TOPICS[course]?.[id] || id).filter(Boolean);
+  info.innerHTML = 'Zona: <strong>' + names.length + ' temas</strong> — ' + names.slice(0,4).join(', ') + (names.length > 4 ? '…' : '');
+}
+
+async function generateMixedSession(){
+  const course = document.getElementById('mixedCourse')?.value || '';
+  const anchor = document.getElementById('mixedAnchor')?.value || '';
+  const count = parseInt(document.getElementById('mixedCount')?.value || '10', 10);
+  const btn = document.getElementById('mixedGenerateBtn');
+  const info = document.getElementById('mixedZoneInfo');
+
+  if(!course){ showToast('Elegí un curso primero', 'error'); return; }
+  if(!hasGeminiApiKey()){
+    showToast('Configurá la API key de Gemini primero', 'error');
+    openAIConfig(); return;
+  }
+
+  // Armar la zona de temas
+  let topicIds = [];
+  if(anchor){
+    const prereqs = getPrereqs(anchor);
+    const deps = getDependents(anchor);
+    const soft = (typeof SOFT_DEPS !== 'undefined' && SOFT_DEPS[anchor]) || [];
+    topicIds = [...new Set([anchor, ...prereqs, ...deps, ...soft])];
+  } else {
+    // Curso completo: elegir 3 temas al azar
+    const all = Object.keys(TOPICS[course] || {});
+    const shuffled = [...all].sort(() => Math.random() - .5);
+    topicIds = shuffled.slice(0, 3);
+  }
+  if(topicIds.length < 2){ showToast('Necesitás al menos 2 temas en la zona', 'error'); return; }
+
+  // Nombres para el prompt
+  const topicNames = topicIds.map(id => TOPICS[course]?.[id] || id);
+  const topicList = topicIds.map((id, i) => (i+1) + '. "' + (TOPICS[course]?.[id] || id) + '" (id: ' + id + ')').join('\n');
+
+  btn.disabled = true;
+  btn.textContent = 'Generando…';
+  if(info) info.innerHTML = '<span style="color:var(--accent4)">⟳ Generando ' + count + ' problemas de ' + topicNames.length + ' temas…</span>';
+
+  const userPrompt = 'Genera exactamente ' + count + ' problemas tipo examen UNI, mezclados, de estos temas:\n\n' + topicList + '\n\nREGLAS CRÍTICAS:\n' +
+    '- MEZCLADOS: no agrupes por tema, alterná.\n' +
+    '- NO menciones el tema en el enunciado.\n' +
+    '- Cada problema: enunciado, 5 alternativas (A-E), una correcta, explicación breve.\n' +
+    '- Clasificá cada problema en uno de los temas listados mediante el campo "temaId" (usa el id exacto).\n\n' +
+    'Formato JSON estricto:\n' +
+    '{\n  "problemas": [\n    {"temaId": "al7", "enunciado": "…", "alternativas": ["…","…","…","…","…"], "respuesta": "C", "explicacion": "…"}\n  ]\n}';
+
+  try{
+    const result = await GeminiEngine.callGemini(
+      PromptPresets.systemPrompt + '\n\n' + userPrompt,
+      getGeminiApiKey(),
+      true
+    );
+    if(!result || !Array.isArray(result.problemas) || !result.problemas.length){
+      throw new Error('La IA devolvió un formato inesperado o vacío');
+    }
+    _mixedProblems = result.problemas.filter(p => p && p.enunciado && Array.isArray(p.alternativas) && p.alternativas.length >= 2);
+    if(!_mixedProblems.length) throw new Error('Ningún problema válido en la respuesta');
+
+    _mixedIdx = 0;
+    _mixedResults = [];
+    _mixedStartTs = Date.now();
+
+    // Reemplazar la UI por el panel de problema
+    const mixedPanel = document.getElementById('chronoMixedUI');
+    if(mixedPanel){
+      mixedPanel.innerHTML = '<div id="mixedCurrentPanel"></div>';
+    }
+    renderMixedProblem();
+  }catch(e){
+    if(info) info.innerHTML = '<span style="color:var(--accent2)">⚠ ' + e.message + '</span>';
+    showToast('Error generando: ' + e.message, 'error');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = '⚡ generar sesión mixta';
+  }
+}
+
+function renderMixedProblem(){
+  const panel = document.getElementById('mixedCurrentPanel');
+  if(!panel) return;
+  if(_mixedIdx >= _mixedProblems.length){
+    showMixedSummary();
+    return;
+  }
+  const p = _mixedProblems[_mixedIdx];
+  const letras = ['A','B','C','D','E'];
+  panel.innerHTML =
+    '<div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);margin-bottom:.4rem">' +
+      '<span>Problema ' + (_mixedIdx+1) + ' / ' + _mixedProblems.length + '</span>' +
+      '<span>⏱ ' + Math.floor((Date.now() - _mixedStartTs)/1000) + 's</span>' +
+    '</div>' +
+    '<div class="mixed-problem-panel">' +
+      '<div class="mp-enunciado" id="mpEnunciado"></div>' +
+      '<div id="mpAlts"></div>' +
+    '</div>' +
+    '<div style="display:flex;gap:.3rem;margin-top:.6rem">' +
+      '<button class="chrono-bt easy" style="flex:1" onclick="mixedAnswer(\'easy\')">✓ Acerté</button>' +
+      '<button class="chrono-bt hard" style="flex:1" onclick="mixedAnswer(\'hard\')">⚠ Dudé</button>' +
+      '<button class="chrono-bt fail" style="flex:1" onclick="mixedAnswer(\'failed\')">✕ Fallé</button>' +
+      '<button class="chrono-bt skip" style="flex:1" onclick="mixedAnswer(\'skipped\')">⏭ Salté</button>' +
+    '</div>';
+
+  const enunEl = document.getElementById('mpEnunciado');
+  if(enunEl){ enunEl.textContent = p.enunciado; renderMath(enunEl); }
+
+  const altsEl = document.getElementById('mpAlts');
+  if(altsEl){
+    altsEl.innerHTML = p.alternativas.map((alt, i) =>
+      '<div class="mp-alt" data-idx="' + i + '" onclick="mixedPickAlt(this)">' +
+        '<span class="mp-letra">' + letras[i] + '</span>' +
+        '<span>' + alt + '</span>' +
+      '</div>'
+    ).join('');
+  }
+  window._mixedPickedAlt = null;
+}
+
+function mixedPickAlt(el){
+  document.querySelectorAll('#mpAlts .mp-alt').forEach(x => x.classList.remove('selected'));
+  el.classList.add('selected');
+  window._mixedPickedAlt = parseInt(el.dataset.idx, 10);
+}
+
+function mixedAnswer(mark){
+  const p = _mixedProblems[_mixedIdx];
+  _mixedResults.push({
+    temaId: p.temaId || null,
+    mark: mark,
+    picked: window._mixedPickedAlt,
+    correct: p.respuesta
+  });
+  window._mixedPickedAlt = null;
+  _mixedIdx++;
+  renderMixedProblem();
+}
+
+function showMixedSummary(){
+  const course = document.getElementById('mixedCourse')?.value || '';
+  const panel = document.getElementById('mixedCurrentPanel');
+  if(!panel) return;
+  const total = _mixedResults.length;
+  const dur = Math.floor((Date.now() - _mixedStartTs)/1000);
+  const aciertos = _mixedResults.filter(r => r.mark === 'easy').length;
+  const dudas = _mixedResults.filter(r => r.mark === 'hard').length;
+  const fallos = _mixedResults.filter(r => r.mark === 'failed').length;
+  const saltos = _mixedResults.filter(r => r.mark === 'skipped').length;
+
+  // Desglose por tema
+  const byTema = {};
+  _mixedResults.forEach(r => {
+    const k = r.temaId || 'desconocido';
+    if(!byTema[k]) byTema[k] = { total: 0, aciertos: 0, dudas: 0, fallos: 0, saltos: 0 };
+    byTema[k].total++;
+    if(r.mark === 'easy') byTema[k].aciertos++;
+    else if(r.mark === 'hard') byTema[k].dudas++;
+    else if(r.mark === 'failed') byTema[k].fallos++;
+    else byTema[k].saltos++;
+  });
+
+  const rowsHtml = Object.entries(byTema).map(([id, t]) => {
+    const name = TOPICS[course]?.[id] || id;
+    const acc = t.total > 0 ? Math.round((t.aciertos + t.dudas * 0.5) / t.total * 100) : 0;
+    return '<div class="mixed-summary-row">' +
+      '<span class="msr-tema">' + name + '</span>' +
+      '<span class="msr-acc">' + t.aciertos + '✓ ' + t.dudas + '~ ' + t.fallos + '✕ ' + t.saltos + '⏭ · ' + acc + '%</span>' +
+    '</div>';
+  }).join('');
+
+  panel.innerHTML =
+    '<div style="text-align:center;padding:.6rem 0">' +
+      '<div style="font-size:.78rem;color:var(--accent3);font-weight:700;margin-bottom:.3rem">✓ Sesión mixta completada</div>' +
+      '<div style="font-size:.68rem;color:var(--muted)">' + total + ' problemas · ' + Math.floor(dur/60) + 'm ' + (dur%60) + 's</div>' +
+    '</div>' +
+    '<div class="mixed-summary-row" style="font-weight:700;color:var(--muted);font-size:.66rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border)">' +
+      '<span>Global</span><span>' + aciertos + '✓ ' + dudas + '~ ' + fallos + '✕ ' + saltos + '⏭</span>' +
+    '</div>' +
+    '<div style="margin-top:.6rem;font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Por tema</div>' +
+    rowsHtml +
+    '<div class="pbts" style="margin-top:.8rem">' +
+      '<button onclick="resetMixedSession()">↺ nueva sesión</button>' +
+    '</div>';
+
+  // Guardar en sesiones de estudio (histórico)
+  if(!S.sessions) S.sessions = [];
+  S.sessions.unshift({
+    date: today(),
+    course: course,
+    topic: '[Mixto] ' + Object.keys(byTema).map(id => TOPICS[course]?.[id] || id).join(' · '),
+    type: 'mixto',
+    energy: 'media',
+    secs: dur,
+    ts: Date.now()
+  });
+  if(S.sessions.length > 200) S.sessions = S.sessions.slice(0, 200);
+  save();
+}
+
+function resetMixedSession(){
+  _mixedProblems = [];
+  _mixedIdx = 0;
+  _mixedResults = [];
+  _mixedStartTs = null;
+  const panel = document.getElementById('chronoMixedUI');
+  if(panel){
+    panel.innerHTML = '<select class="pcourse" id="mixedCourse" onchange="updateMixedTopics()"><option value="" disabled selected hidden>curso</option></select>' +
+      '<select class="pcourse" id="mixedAnchor" style="margin-top:.28rem"><option value="" disabled selected hidden>tema ancla (opcional)</option></select>' +
+      '<select class="pcourse" id="mixedCount" style="margin-top:.28rem"><option value="5">5 problemas</option><option value="10" selected>10 problemas</option><option value="15">15 problemas</option><option value="20">20 problemas</option></select>' +
+      '<div id="mixedZoneInfo" style="font-size:.66rem;color:var(--muted);margin-top:.35rem;line-height:1.4;min-height:1.2rem"></div>' +
+      '<div class="pbts" style="margin-top:.5rem"><button id="mixedGenerateBtn" onclick="generateMixedSession()">⚡ generar sesión mixta</button></div>';
+  }
+  setChronoMode('mixed');
+}
+
+// ═══ FIN MODO MIXTO ═══
 
 function setPomoTab(tab){
   document.querySelectorAll('.pomo-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
@@ -8363,15 +8896,25 @@ function chronoReset(){
 
 function initChrono(){
   const sel=document.getElementById('chronoCourse');
-  if(!sel)return;
-  // Limpiar y repoblar
-  sel.innerHTML='<option value="" disabled selected hidden>curso</option>';
-  Object.keys(TOPICS).forEach(name=>{
-    const opt=document.createElement('option');
-    opt.value=name;
-    opt.textContent=name;
-    sel.appendChild(opt);
-  });
+  if(sel){
+    sel.innerHTML='<option value="" disabled selected hidden>curso</option>';
+    Object.keys(TOPICS).forEach(name=>{
+      const opt=document.createElement('option');
+      opt.value=name;
+      opt.textContent=name;
+      sel.appendChild(opt);
+    });
+  }
+  const mixed=document.getElementById('mixedCourse');
+  if(mixed){
+    mixed.innerHTML='<option value="" disabled selected hidden>curso</option>';
+    Object.keys(TOPICS).forEach(name=>{
+      const opt=document.createElement('option');
+      opt.value=name;
+      opt.textContent=name;
+      mixed.appendChild(opt);
+    });
+  }
 }
 
 // ═══ HELPER KATEX GLOBAL ═══
@@ -8709,9 +9252,30 @@ function renderCalibration(){
   // ── Zona ciega: fallos con alta confianza ──
   const blindSpots=data.filter(r=>(r.confidence||60)>=80 && !r.correct);
   if(blindSpots.length){
+    // Persistir topics ciegos para el triage prioritario
+    if(!S.blindSpots)S.blindSpots={};
+    const todayStr=today();
+    blindSpots.forEach(r=>{
+      const key=r.topicId||r.course||'otros';
+      if(!S.blindSpots[key]){
+        S.blindSpots[key]={addedAt:todayStr,cleared:false,hits:3};
+      } else if(S.blindSpots[key].cleared){
+        // Reabrir SOLO si el fallo actual es posterior al clearedAt
+        const clearedAt=S.blindSpots[key].clearedAt;
+        if(!clearedAt || (r.date && r.date > clearedAt)){
+          S.blindSpots[key].cleared=false;
+          S.blindSpots[key].hits=3;
+          S.blindSpots[key].addedAt=todayStr;
+        }
+      }
+    });
+    save();
+
+    const activeBlind=Object.keys(S.blindSpots).filter(k=>!S.blindSpots[k].cleared).length;
     html+='<div style="margin-top:.7rem;padding:.5rem .7rem;background:#1f0a0f;border-left:3px solid var(--accent2);border-radius:4px">'
       +'<div style="font-size:.68rem;color:var(--accent2);font-weight:700;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.05em">⚠ Zona ciega — creías saber y fallaste ('+blindSpots.length+')</div>'
-      +'<div style="font-size:.68rem;color:var(--muted);line-height:1.5">Estos son los temas que MÁS te van a doler en el examen. No los estudiás porque creés que los sabés.</div>'
+      +'<div style="font-size:.68rem;color:var(--muted);line-height:1.5;margin-bottom:.5rem">Estos son los temas que MÁS te van a doler en el examen. No los estudiás porque creés que los sabés.</div>'
+      +'<button onclick="startBlindSpotTriage()" style="padding:.35rem .7rem;background:var(--accent2);color:#000;border:none;border-radius:4px;cursor:pointer;font-family:inherit;font-size:.68rem;font-weight:700">⚡ Triage de zona ciega ('+activeBlind+' tema'+(activeBlind===1?'':'s')+')</button>'
       +'</div>';
   }
 
@@ -9077,13 +9641,20 @@ function toggleSchedEdit(){
   }
 }
 
-function toggleScheduleCheck(key){
-  if(!key)return;
-  if(!S.scheduleChecks)S.scheduleChecks={};
-  S.scheduleChecks[key]=!S.scheduleChecks[key];
-  save();
-  renderStudySchedule();
+// Bloquea el cambio de modo si hay una sesión mixta activa
+function _mixedSessionActive(){
+  return _mixedProblems.length > 0 && _mixedIdx < _mixedProblems.length;
 }
+
+// Override de setChronoMode para bloquear
+const _origSetChronoMode = setChronoMode;
+setChronoMode = function(mode){
+  if(_mixedSessionActive() && mode !== _chronoMode){
+    showToast('Terminá o reseteá la sesión mixta primero');
+    return;
+  }
+  _origSetChronoMode(mode);
+};
 let _schedDragSrc = null;
 let _schedTouchSrc = null;
 let _schedGhost = null;
@@ -9241,6 +9812,7 @@ buildWeeklyStudyPlan();renderPlanTopics();loadThemePreference();loadCustomTheme(
 /* ═══ MODO TRIAGE DE NUEVAS v2 (60/día) ═══ */
 let _fcTriQueue = [];
 let _fcTriIdx = 0;
+let _fcTriMode = 'new'; // 'new' | 'blind'
 
 const TRI_CONFIG = {
   dailyLimit: 60,   // ← 60/día
@@ -9277,6 +9849,7 @@ function startFcTriage(){
   }
 
   const remaining = TRI_CONFIG.dailyLimit - done;
+  _fcTriMode = 'new';
   _fcTriQueue = pool.slice(0, remaining);
   _fcTriIdx = 0;
 
@@ -9288,7 +9861,10 @@ function startFcTriage(){
 function renderFcTri(){
   const card = _fcTriQueue[_fcTriIdx];
   if(!card){
-    showToast('✓ Triage completo: ' + _fcTriQueue.length + ' tarjetas');
+    const msg = _fcTriMode === 'blind'
+      ? '✓ Zona ciega triada: ' + _fcTriQueue.length + ' tarjetas'
+      : '✓ Triage completo: ' + _fcTriQueue.length + ' tarjetas';
+    showToast(msg);
     exitFcTriage();
     return;
   }
@@ -9299,12 +9875,56 @@ function renderFcTri(){
   const limitEl = document.getElementById('fcTriLimit');
 
   if(prog) prog.textContent = (_fcTriIdx + 1) + ' / ' + _fcTriQueue.length;
-  if(limitEl) limitEl.textContent = 'hoy: ' + (doneToday + _fcTriIdx) + ' / ' + TRI_CONFIG.dailyLimit;
+  if(limitEl){
+    if(_fcTriMode === 'blind'){
+      limitEl.textContent = '🎯 zona ciega — sin límite';
+      limitEl.style.color = 'var(--accent2)';
+    } else {
+      limitEl.textContent = 'hoy: ' + (doneToday + _fcTriIdx) + ' / ' + TRI_CONFIG.dailyLimit;
+      limitEl.style.color = '';
+    }
+  }
   if(courseEl) courseEl.textContent = card.course + ' · ' + card.topic;
   if(qEl){
     qEl.textContent = card.q;
     renderMath(qEl);
   }
+}
+function startBlindSpotTriage(){
+  const active = Object.entries(S.blindSpots||{}).filter(([k,v])=>!v.cleared);
+  if(!active.length){ showToast('No hay zonas ciegas activas'); return; }
+
+  const blindTopicIds = new Set();
+  const blindCourses = new Set();
+  active.forEach(([key])=>{
+    if(/^[a-z]+\d+$/.test(key)) blindTopicIds.add(key);
+    else blindCourses.add(key);
+  });
+
+  const pool = (S.fc||[]).filter(c => {
+    if(blindCourses.has(c.course)) return true;
+    const tid = findTopicIdByCourseAndName(c.course, c.topic);
+    if(tid && blindTopicIds.has(tid)) return true;
+    return false;
+  });
+
+  if(!pool.length){
+    showToast('Sin flashcards en los temas de zona ciega. Creá algunas primero.');
+    return;
+  }
+
+  for(let i = pool.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+
+  _fcTriMode = 'blind';
+  _fcTriQueue = pool;
+  _fcTriIdx = 0;
+
+  const ov = document.getElementById('fcTriOverlay');
+  if(ov) ov.style.display = 'flex';
+  renderFcTri();
 }
 
 function fcTri(level){
@@ -9363,12 +9983,23 @@ function fcTri(level){
   });
   if(S.calibration.length > 2000) S.calibration = S.calibration.slice(-2000);
 
-  // Contador diario
-  const t = today();
-  if(!S.fcTriToday || S.fcTriToday.date !== t){
-    S.fcTriToday = { date: t, done: 0 };
+  // Modo blind: si acertaste, limpiar la zona ciega de ese tema
+  if(_fcTriMode === 'blind' && level === 'good'){
+    const key = topicId || realCard.course;
+    if(S.blindSpots && S.blindSpots[key]){
+      S.blindSpots[key].cleared = true;
+      S.blindSpots[key].clearedAt = today();
+    }
   }
-  S.fcTriToday.done++;
+
+  // Contador diario — SOLO en modo 'new'
+  if(_fcTriMode === 'new'){
+    const t = today();
+    if(!S.fcTriToday || S.fcTriToday.date !== t){
+      S.fcTriToday = { date: t, done: 0 };
+    }
+    S.fcTriToday.done++;
+  }
 
   save();
   _fcTriIdx++;
@@ -9380,6 +10011,7 @@ function exitFcTriage(){
   if(ov) ov.style.display = 'none';
   _fcTriQueue = [];
   _fcTriIdx = 0;
+  _fcTriMode = 'new';
   save();
   renderFC();
   if(typeof refreshPlanIcons === 'function') refreshPlanIcons();
