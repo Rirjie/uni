@@ -2627,6 +2627,10 @@ function scheduleClass(text){
   return '';
 }
 
+function moveScheduleWeek(delta){
+  scheduleWeekOffset += delta;
+  renderStudySchedule();
+}
 function renderStudySchedule(){
   const el=document.getElementById('studySchedule');if(!el)return;
   const base=new Date(SCHEDULE_START+'T12:00:00'); const rangeEnd=new Date(SCHEDULE_END+'T12:00:00'); const current=mondayOf(new Date());
@@ -2810,6 +2814,17 @@ function migrateData(){
   if(!S.sessions)S.sessions=[];
   if(!S.dailySegments)S.dailySegments={};
   if(!S.scheduleChecks)S.scheduleChecks={};
+  // v13: descartar plantilla de horario personalizada si quedó desactualizada
+  // (contiene "Repasar todo" en la fila 15 o "Historia del Perú" junto a RM/RV en fila 13)
+  if(S.schedTpl && S.schedTpl.odd){
+    const fila13=S.schedTpl.odd[13]||[];
+    const fila15=S.schedTpl.odd[15]||[];
+    const esVieja = fila15.includes('Repasar todo') || fila13.includes('Historia del Perú');
+    if(esVieja){
+      console.log('Migración: descartando S.schedTpl viejo (plantilla pre-v13)');
+      delete S.schedTpl;
+    }
+  }
   if(S._v>=DATA_VERSION){migrateSessionsFromHours();return;}
   S._v=DATA_VERSION;
   migrateSessionsFromHours();
