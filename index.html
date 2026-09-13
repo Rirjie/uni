@@ -1602,18 +1602,22 @@ const DEPENDENCIES = {
   'a16':['a13'],           // Potenciación depende de Divisibilidad
   'a19':['a18'],           // Análisis combinatorio depende de Estadística
 
-  // ── FÍSICA ──
-  'f3':['f1'],             // Cinemática 1D depende de Análisis dimensional
-  'f4':['f3','f2'],        // Cinemática 2D depende de Cinemática 1D y Vectores
-  'f5':['f3'],             // Gráficas depende de Cinemática
-  'f7':['f2','f3'],        // Dinámica depende de Vectores y Cinemática
-  'f8':['f7'],             // Trabajo/energía depende de Dinámica
-  'f9':['f7'],             // Impulso depende de Dinámica
-  'f11':['f7','f8'],       // Oscilaciones depende de Dinámica y Energía
-  'f15':['f14'],           // Termodinámica depende de Fenómenos térmicos
-  'f16':['f9'],            // Electrostática depende de Impulso
-  'f17':['f16'],           // Electrodinámica depende de Electrostática
-  'f18':['f17'],           // Electromagnetismo depende de Electrodinámica
+// ── FÍSICA ──
+  'f3':['f2'],           // Cinemática necesita vectores
+  'f4':['f2'],           // Estática necesita vectores
+  'f5':['f2','f3'],      // Dinámica necesita vectores + cinemática
+  'f6':['f5'],           // Trabajo y potencia necesita dinámica
+  'f7':['f5','f6'],      // Energía necesita dinámica + trabajo
+  'f8':['f5'],           // Cantidad de movimiento necesita dinámica
+  'f9':['f8'],           // Choques necesita cantidad de movimiento
+  'f11':['f5'],          // MAS necesita dinámica
+  'f12':['f5'],          // Gravitación necesita dinámica
+  'f14':['f13'],         // Termodinámica necesita calor
+  'f16':['f15'],         // Electrodinámica necesita electrostática
+  'f17':['f16'],         // Magnetismo necesita electrodinámica
+  'f18':['f16','f17'],   // Electromagnetismo necesita electrodinámica + magnetismo
+  'f19':['f18'],         // Óptica necesita electromagnetismo
+
 
   // ── GEOMETRÍA ──
   'g2':['g1'],             // Triángulos depende de Líneas y ángulos
@@ -1645,21 +1649,20 @@ const DEPENDENCIES = {
   't13':['t3','t5'],       // Complejos trig depende de Ángulo e Identidades
 
   // ── QUÍMICA ──
-  'q3':['q2'],             // Estructura atómica depende de Modelos atómicos
-  'q4':['q3'],             // Modelo cuántico depende de Estructura
-  'q5':['q4'],             // Configuración electrónica depende de Cuántico
-  'q6':['q5'],             // Tabla periódica depende de Configuración
-  'q7':['q6'],             // Enlace químico depende de Tabla periódica
-  'q8':['q7'],             // Geometría molecular depende de Enlace
-  'q9':['q7'],             // Fuerzas intermoleculares depende de Enlace
-  'q11':['q10'],           // Cálculos depende de Nomenclatura
-  'q16':['q15'],           // Mezcla gases depende de Gaseoso
-  'q18':['q17'],           // Estequiometría depende de Reacciones
-  'q19':['q18'],           // Peso equivalente depende de Estequiometría
-  'q21':['q17'],           // Cinética depende de Reacciones
-  'q22':['q21'],           // Equilibrio depende de Cinética
-  'q23':['q22'],           // Ácidos/bases depende de Equilibrio
-  'q25':['q24'],           // Electroquímica depende de Celdas
+  'q3':['q2'],           // Números cuánticos necesita teoría atómica
+  'q4':['q2','q3'],      // Tabla periódica necesita atómica + cuánticos
+  'q5':['q4'],           // Enlace necesita tabla periódica
+  'q8':['q6'],           // Unidades de masa necesita nomenclatura
+  'q9':['q8'],           // Composición estequiométrica necesita unidades de masa
+  'q10':['q7'],          // Estado gaseoso necesita conceptos físicos
+  'q11':['q7'],          // Líquidos y sólidos necesita conceptos físicos
+  'q12':['q6','q8'],     // Reacciones necesita nomenclatura + unidades
+  'q13':['q12'],         // Estequiometría necesita reacciones
+  'q14':['q13'],         // Soluciones necesita estequiometría
+  'q15':['q12','q13'],   // Cinética/equilibrio necesita reacciones + estequiometría
+  'q16':['q15'],         // Ácidos/bases necesita equilibrio
+  'q17':['q16'],         // Electroquímica necesita ácidos/bases
+  'q18':['q5','q6'],     // Orgánica necesita enlace + nomenclatura
 
     // ── RM (críticos) ──
   'rm4':['rm1'],           // Lógica proposicional depende de Razonamiento Lógico
@@ -1677,9 +1680,10 @@ const SOFT_DEPS = {
   'al11':['al4'],          // Ec. grado superior sin polinomios: se puede
   
   // ── Física ──
-  'f7':['f5'],             // Dinámica sin gráficas
-  'f8':['f5'],             // Energía sin gráficas
-  'f16':['f7'],            // Electrostática sin dinámica dominada
+  'f4':['f3'],           // Estática se puede estudiar sin cinemática perfecta
+  'f8':['f6'],           // Cantidad de movimiento sin trabajo al 100%
+  'f9':['f7'],           // Choques sin energía al 100%
+  'f16':['f5'],          // Electrodinámica sin dinámica dominada
   
   // ── Geometría ──
   'g7':['g1'],             // Puntos notables sin ángulos perfectos
@@ -1691,8 +1695,9 @@ const SOFT_DEPS = {
   't10':['t6'],            // Ecuaciones trig sin resolución de triángulos
   
   // ── Química ──
-  'q18':['q11'],           // Estequiometría sin cálculos perfectos
-  'q22':['q18'],           // Equilibrio sin esteq dominada
+  'q9':['q6'],           // Composición sin nomenclatura perfecta
+  'q13':['q11'],         // Estequiometría sin líquidos/sólidos perfectos
+  'q16':['q13'],         // Ácidos/bases sin estequiometría al 100%
 };
 
 // Función: devuelve prereqs de un tema
@@ -1971,25 +1976,24 @@ const TOPICS = {
   Física: {
     f1:"Cap. I · Análisis dimensional",
     f2:"Cap. II · Análisis vectorial",
-    f3:"Cap. III · Cinemática 1D",
-    f4:"Cap. IV · Cinemática 2D",
-    f5:"Cap. V · Gráficas del movimiento",
-    f6:"Cap. VI · Estática",
-    f7:"Cap. VII · Dinámica",
-    f8:"Cap. VIII · Trabajo mecánico y energía",
-    f9:"Cap. IX · Impulso y movimiento",
-    f10:"Cap. X · Gravitación",
-    f11:"Cap. XI · Oscilaciones",
-    f12:"Cap. XII · Ondas mecánicas",
-    f13:"Cap. XIII · Estática de fluidos",
-    f14:"Cap. XIV · Fenómenos térmicos",
-    f15:"Cap. XV · Termodinámica",
-    f16:"Cap. XVI · Electrostática",
-    f17:"Cap. XVII · Electrodinámica",
+    f3:"Cap. III · Cinemática",
+    f4:"Cap. IV · Estática",
+    f5:"Cap. V · Dinámica",
+    f6:"Cap. VI · Trabajo y potencia",
+    f7:"Cap. VII · Energía",
+    f8:"Cap. VIII · Cantidad de movimiento",
+    f9:"Cap. IX · Choques",
+    f10:"Cap. X · Estática de fluidos",
+    f11:"Cap. XI · Movimiento armónico simple (MAS)",
+    f12:"Cap. XII · Gravitación universal",
+    f13:"Cap. XIII · Calor",
+    f14:"Cap. XIV · Termodinámica",
+    f15:"Cap. XV · Electrostática",
+    f16:"Cap. XVI · Electrodinámica",
+    f17:"Cap. XVII · Magnetismo",
     f18:"Cap. XVIII · Electromagnetismo",
-    f19:"Cap. XIX · Ondas electromagnéticas",
-    f20:"Cap. XX · Óptica geométrica",
-    f21:"Cap. XXI · Física moderna"
+    f19:"Cap. XIX · Óptica",
+    f20:"Cap. XX · Física moderna"
   },
 
   Geometría: {
@@ -2029,37 +2033,26 @@ const TOPICS = {
     t13:"Cap. XIII · Complejos en trig"
   },
 
-  Química: {
-    q1:"Cap. I · Materia",
-    q2:"Cap. II · Modelos atómicos",
-    q3:"Cap. III · Estructura atómica",
-    q4:"Cap. IV · Modelo cuántico",
-    q5:"Cap. V · Configuración electrónica",
-    q6:"Cap. VI · Tabla periódica",
-    q7:"Cap. VII · Enlace químico",
-    q8:"Cap. VIII · Geometría molecular",
-    q9:"Cap. IX · Fuerzas intermoleculares",
-    q10:"Cap. X · Nomenclatura inorgánica",
-    q11:"Cap. XI · Cálculos en química",
-    q12:"Cap. XII · Estados de la materia",
-    q13:"Cap. XIII · Estado sólido",
-    q14:"Cap. XIV · Estado líquido",
-    q15:"Cap. XV · Estado gaseoso",
-    q16:"Cap. XVI · Mezcla de gases",
-    q17:"Cap. XVII · Reacciones químicas",
-    q18:"Cap. XVIII · Estequiometría",
-    q19:"Cap. XIX · Peso equivalente",
-    q20:"Cap. XX · Sistemas dispersos",
-    q21:"Cap. XXI · Cinética química",
-    q22:"Cap. XXII · Equilibrio químico",
-    q23:"Cap. XXIII · Ácidos y bases",
-    q24:"Cap. XXIV · Celdas electrolíticas",
-    q25:"Cap. XXV · Electroquímica",
-    q26:"Cap. XXVI · Química orgánica",
-    q27:"Cap. XXVII · Funciones oxigenadas",
-    q28:"Cap. XXVIII · Funciones nitrogenadas",
-    q29:"Cap. XXIX · Aromáticos",
-    q30:"Cap. XXX · Química aplicada"
+    Química: {
+    q1:"Cap. I · Materia y energía",
+    q2:"Cap. II · Teoría atómica y estructura moderna",
+    q3:"Cap. III · Números cuánticos y configuración",
+    q4:"Cap. IV · Tabla periódica",
+    q5:"Cap. V · Enlace químico",
+    q6:"Cap. VI · Nomenclatura inorgánica",
+    q7:"Cap. VII · Conceptos físicos",
+    q8:"Cap. VIII · Unidades químicas de masa",
+    q9:"Cap. IX · Composición estequiométrica",
+    q10:"Cap. X · Estado gaseoso",
+    q11:"Cap. XI · Líquidos y sólidos",
+    q12:"Cap. XII · Reacciones químicas",
+    q13:"Cap. XIII · Estequiometría",
+    q14:"Cap. XIV · Soluciones",
+    q15:"Cap. XV · Cinética y equilibrio químico",
+    q16:"Cap. XVI · Ácidos y bases",
+    q17:"Cap. XVII · Electroquímica",
+    q18:"Cap. XVIII · Química orgánica",
+    q19:"Cap. XIX · Ecología, química descriptiva y aplicada"
   },
 
   Literatura: {
@@ -2716,6 +2709,7 @@ async function load(){
     S.fc=S.fc||[];
   }
   migrateData();
+  if(!S._migFcV2){migrateFcTopicsV2();S._migFcV2=true;save();}
 }
 let _fcSaveTimer=null;
 async function _flushFCSave(){
@@ -2804,6 +2798,123 @@ function migrateSessionsFromHours(){
   if(S.sessions.length>200)S.sessions=S.sessions.slice(0,200);
   if(S.sessions.length)save();
 }
+/* ═══ MIGRACIÓN v2: Física/Química — reasignar flashcards y limpiar estado huérfano ═══ */
+function migrateFcTopicsV2(){
+  const MAP_FISICA = {
+    'Cap. I · Análisis dimensional':'Cap. I · Análisis dimensional',
+    'Cap. II · Análisis vectorial':'Cap. II · Análisis vectorial',
+    'Cap. III · Cinemática 1D':'Cap. III · Cinemática',
+    'Cap. IV · Cinemática 2D':'Cap. III · Cinemática',
+    'Cap. V · Gráficas del movimiento':'Cap. III · Cinemática',
+    'Cap. VI · Estática':'Cap. IV · Estática',
+    'Cap. VII · Dinámica':'Cap. V · Dinámica',
+    'Cap. VIII · Trabajo mecánico y energía':'Cap. VII · Energía',
+    'Cap. IX · Impulso y movimiento':'Cap. VIII · Cantidad de movimiento',
+    'Cap. X · Gravitación':'Cap. XII · Gravitación universal',
+    'Cap. XI · Oscilaciones':'Cap. XI · Movimiento armónico simple (MAS)',
+    'Cap. XII · Ondas mecánicas':'Cap. XI · Movimiento armónico simple (MAS)',
+    'Cap. XIII · Estática de fluidos':'Cap. X · Estática de fluidos',
+    'Cap. XIV · Fenómenos térmicos':'Cap. XIII · Calor',
+    'Cap. XV · Termodinámica':'Cap. XIV · Termodinámica',
+    'Cap. XVI · Electrostática':'Cap. XV · Electrostática',
+    'Cap. XVII · Electrodinámica':'Cap. XVI · Electrodinámica',
+    'Cap. XVIII · Electromagnetismo':'Cap. XVIII · Electromagnetismo',
+    'Cap. XIX · Ondas electromagnéticas':'Cap. XVIII · Electromagnetismo',
+    'Cap. XX · Óptica geométrica':'Cap. XIX · Óptica',
+    'Cap. XXI · Física moderna':'Cap. XX · Física moderna'
+  };
+  const MAP_QUIMICA = {
+    'Cap. I · Materia':'Cap. I · Materia y energía',
+    'Cap. II · Modelos atómicos':'Cap. II · Teoría atómica y estructura moderna',
+    'Cap. III · Estructura atómica':'Cap. II · Teoría atómica y estructura moderna',
+    'Cap. IV · Modelo cuántico':'Cap. III · Números cuánticos y configuración',
+    'Cap. V · Configuración electrónica':'Cap. III · Números cuánticos y configuración',
+    'Cap. VI · Tabla periódica':'Cap. IV · Tabla periódica',
+    'Cap. VII · Enlace químico':'Cap. V · Enlace químico',
+    'Cap. VIII · Geometría molecular':'Cap. V · Enlace químico',
+    'Cap. IX · Fuerzas intermoleculares':'Cap. V · Enlace químico',
+    'Cap. X · Nomenclatura inorgánica':'Cap. VI · Nomenclatura inorgánica',
+    'Cap. XI · Cálculos en química':'Cap. VIII · Unidades químicas de masa',
+    'Cap. XII · Estados de la materia':'Cap. X · Estado gaseoso',
+    'Cap. XIII · Estado sólido':'Cap. XI · Líquidos y sólidos',
+    'Cap. XIV · Estado líquido':'Cap. XI · Líquidos y sólidos',
+    'Cap. XV · Estado gaseoso':'Cap. X · Estado gaseoso',
+    'Cap. XVI · Mezcla de gases':'Cap. X · Estado gaseoso',
+    'Cap. XVII · Reacciones químicas':'Cap. XII · Reacciones químicas',
+    'Cap. XVIII · Estequiometría':'Cap. XIII · Estequiometría',
+    'Cap. XIX · Peso equivalente':'Cap. XIII · Estequiometría',
+    'Cap. XX · Sistemas dispersos':'Cap. XIV · Soluciones',
+    'Cap. XXI · Cinética química':'Cap. XV · Cinética y equilibrio químico',
+    'Cap. XXII · Equilibrio químico':'Cap. XV · Cinética y equilibrio químico',
+    'Cap. XXIII · Ácidos y bases':'Cap. XVI · Ácidos y bases',
+    'Cap. XXIV · Celdas electrolíticas':'Cap. XVII · Electroquímica',
+    'Cap. XXV · Electroquímica':'Cap. XVII · Electroquímica',
+    'Cap. XXVI · Química orgánica':'Cap. XVIII · Química orgánica',
+    'Cap. XXVII · Funciones oxigenadas':'Cap. XVIII · Química orgánica',
+    'Cap. XXVIII · Funciones nitrogenadas':'Cap. XVIII · Química orgánica',
+    'Cap. XXIX · Aromáticos':'Cap. XVIII · Química orgánica',
+    'Cap. XXX · Química aplicada':'Cap. XIX · Ecología, química descriptiva y aplicada'
+  };
+  const MAPS={'Física':MAP_FISICA,'Química':MAP_QUIMICA};
+
+  function renameStr(s,map){
+    if(typeof s!=='string')return s;
+    let out=s;
+    const entries=Object.entries(map).sort((a,b)=>b[0].length-a[0].length);
+    for(const[v,n]of entries){
+      if(v===n)continue;
+      out=out.split(v).join(n);
+    }
+    return out;
+  }
+
+  // 1) Flashcards — reasignar por nombre (se conservan todas)
+  let fcN=0;
+  (S.fc||[]).forEach(c=>{
+    const map=MAPS[c.course];
+    if(!map)return;
+    const nuevo=map[c.topic];
+    if(nuevo&&nuevo!==c.topic){
+      c.topic=nuevo;
+      if(Array.isArray(c.etiquetas))c.etiquetas=[...new Set(c.etiquetas.map(e=>renameStr(e,map)))];
+      fcN++;
+    }
+  });
+
+  // 2) Banco de problemas — reasignar por nombre
+  let bankN=0;
+  (S.bank||[]).forEach(b=>{
+    const map=MAPS[b.course];
+    if(!map||!b.tema)return;
+    const nuevo=map[b.tema];
+    if(nuevo&&nuevo!==b.tema){b.tema=nuevo;bankN++;}
+  });
+
+  // 3) Limpiar estado huérfano de Física/Química
+  //    Los IDs f1..f21 y q1..q30 cambiaron de significado → hay que resetear.
+  const cursosCien=['Física','Química'];
+  let stN=0;
+  if(S.t)Object.keys(S.t).forEach(id=>{
+    const info=TOPIC_INDEX[id];
+    if(info&&cursosCien.includes(info.course)){delete S.t[id];stN++;}
+    else if(!info&&/^[fq]\d+$/.test(id)){delete S.t[id];stN++;}
+  });
+  ['exCount','capErrors'].forEach(k=>{
+    if(S[k])Object.keys(S[k]).forEach(id=>{
+      const info=TOPIC_INDEX[id];
+      if((info&&cursosCien.includes(info.course))||(!info&&/^[fq]\d+$/.test(id)))delete S[k][id];
+    });
+  });
+  if(S.speedSessions)S.speedSessions=S.speedSessions.filter(s=>!cursosCien.includes(s.course));
+  if(S.errors)S.errors=S.errors.filter(e=>!e.match(/^\[([fq]\d+)\]/));
+  if(S.topicTime)Object.keys(S.topicTime).forEach(k=>{
+    const[c]=k.split('::');
+    if(cursosCien.includes(c))delete S.topicTime[k];
+  });
+
+  console.log('✓ Migración v2 — flashcards renombradas:',fcN,'· banco:',bankN,'· caps reseteados:',stN);
+}
+
 function today(){const d=new Date();return d.getFullYear()+'-'+(String(d.getMonth()+1).padStart(2,'0'))+'-'+(String(d.getDate()).padStart(2,'0'))}
 function wkey(){const d=new Date();d.setHours(0,0,0,0);const day=d.getDay();const diff=day===0?-6:1-day;d.setDate(d.getDate()+diff);return d.getFullYear()+'-'+(String(d.getMonth()+1).padStart(2,'0'))+'-'+(String(d.getDate()).padStart(2,'0'))}
 function localKey(d){return d.getFullYear()+'-'+(String(d.getMonth()+1).padStart(2,'0'))+'-'+(String(d.getDate()).padStart(2,'0'))}
