@@ -5246,8 +5246,8 @@ function renderHomeCapActual(){
   const sub=document.getElementById('homeCursoActual');
   if(!el||!sub)return;
   const aw=getActiveWeek();
-  const current=getCurrentScheduleTopic();
-    // Semana de cirugía / descanso
+
+  // Semana de cirugía / descanso
   if(aw && OP_WEEKS.includes(aw.id)){
     el.textContent='Descanso 🏥';
     el.style.color='var(--accent2)';
@@ -5255,6 +5255,31 @@ function renderHomeCapActual(){
     sub.textContent=special ? special.badge : 'Semana sin temas nuevos';
     return;
   }
+
+  const current=getCurrentScheduleTopic();
+  if(current && current.course && aw){
+    const topicId=aw.topics.find(id=>{
+      return getTopic(id).course===current.course && !(S.t||{})[id]?.done;
+    });
+    if(topicId){
+      const info=findTopicInfo(topicId);
+      el.textContent=info.tema;
+      sub.textContent=info.curso+' · ahora: '+current.blockLabel+' ('+current.time+')';
+      return;
+    }
+    el.textContent=current.blockLabel;
+    sub.textContent='Ahora: '+current.time+' · sin caps pendientes de '+current.course;
+    return;
+  }
+
+  if(!aw){el.textContent='—';sub.textContent='Sin semana activa';return;}
+  const pending=aw.topics.filter(id=>!(S.t||{})[id]?.done);
+  if(!pending.length){el.textContent='Semana ✓';sub.textContent='Todos los caps completados.';return;}
+  const id=pending[0];
+  const info=findTopicInfo(id);
+  el.textContent=info.tema;
+  sub.textContent=info.curso+' · Semana '+aw.id+' ('+aw.s+' – '+aw.e+')';
+}
 
   // 1) Si hay bloque en el horario ahora, úsalo
   if(current && current.course && aw){
@@ -5280,9 +5305,89 @@ function renderHomeCapActual(){
   const info=findTopicInfo(id);
   el.textContent=info.tema;
   sub.textContent=info.curso+' · Semana '+aw.id+' ('+aw.s+' – '+aw.e+')';
-}
+
 
 function renderHomePendienteHoy(){
+  const td=today();
+  const aw=WSCHED.find(w=>td>=w.s&&td<=w.e);
+  const el=document.getElementById('homePendienteHoy');
+  const sub=document.getElementById('homePendienteHoySub');
+  if(!el||!sub)return;
+
+  // Semana de cirugía / descanso
+  if(aw && OP_WEEKS.includes(aw.id)){
+    el.textContent='Descanso 🏥';
+    el.className='hc-val';
+    el.style.color='var(--accent2)';
+    const special=PLAN_SPECIAL_WEEKS[parseInt(aw.id.replace('w',''))];
+    sub.textContent=special ? special.desc : 'Semana sin temas programados. Prioridad: recuperación.';
+    return;
+  }
+
+  const mh=aw?getWeekTargetHours(aw.id):6;
+  const ms=mh*3600;
+  const hoy=(S.h||{})[td]||0;
+  const diff=ms-hoy;
+
+  if(diff<=0){
+    el.textContent='¡Meta cumplida!';el.className='hc-val green';
+    sub.textContent='Llevas '+fmt(hoy)+' hoy · meta '+mh+'h/día';
+    return;
+  }
+  const h=Math.floor(diff/3600),m=Math.floor((diff%3600)/60);
+  el.textContent=h+'h '+m+'m';el.className='hc-val orange';
+
+  const dow=(new Date().getDay()+6)%7;
+  if(dow<2){
+    sub.textContent='Llevas '+fmt(hoy)+' hoy · meta '+mh+'h/día';
+    return;
+  }
+
+  const CRASH_WEEKS=['w4','w5','w6'];
+  const isExcluded=(ds)=>{
+    const w=WSCHED.find(x=>ds>=x.s&&ds<=x.e);
+    if(!w)return true;
+    if(OP_WEEKS.includes(w.id))return true;
+    if(CRASH_WEEKS.includes(w.id))return true;
+    return false;
+  };
+
+  const weekStart=new Date();
+  weekStart.setDate(weekStart.getDate()-dow);
+  let secs=0,diasEfectivos=0;
+  for(let i=0;i<dow;i++){
+    const d=new Date(weekStart);
+    d.setDate(d.getDate()+i);
+    if(d.getDay()===0)continue;
+    const ds=localKey(d);
+    if(isExcluded(ds))continue;
+    diasEfectivos++;
+    secs+=(S.h||{})[ds]||0;
+  }
+  const ritmoReal=diasEfectivos>0?secs/diasEfectivos:0;
+  const weekTotal=(S.h||{})['w'+wkey()]||0;
+  const weekRemaining=Math.max(0,ms-weekTotal);
+  let diasRestantes=0;
+  for(let i=0;i<=(6-dow);i++){
+    const d=new Date();d.setDate(d.getDate()+i);
+    if(d.getDay()===0)continue;
+    const ds=localKey(d);
+    if(isExcluded(ds))continue;
+    diasRestantes++;
+  }
+  const necesario=diasRestantes>0?weekRemaining/diasRestantes:weekRemaining;
+  let ratio=1;
+  if(necesario>0&&ritmoReal>0)ratio=ritmoReal/necesario;
+  else if(necesario>0&&ritmoReal===0)ratio=0;
+  else ratio=1;
+  let vlabel,vcolor;
+  if(ratio>=1){vlabel='✓ ritmo viable';vcolor='var(--accent3)';}
+  else if(ratio>=0.6){vlabel='⚠ ritmo justo ('+Math.round(ratio*100)+'%)';vcolor='var(--accent4)';}
+  else{vlabel='✗ no cierra a este ritmo ('+Math.round(ratio*100)+'%)';vcolor='var(--accent2)';}
+  sub.innerHTML='Llevas '+fmt(hoy)+' hoy · meta '+mh+'h/día<br>'
+    +'Ritmo real: <strong>'+fmt(Math.round(ritmoReal))+'</strong>/día · necesario: <strong>'+fmt(Math.round(necesario))+'</strong>/día<br>'
+    +'<span style="color:'+vcolor+';font-weight:700">'+vlabel+'</span>';
+}
   const td=today();
   const aw=WSCHED.find(w=>td>=w.s&&td<=w.e);
   const el=document.getElementById('homePendienteHoy');
@@ -5374,7 +5479,7 @@ function renderHomePendienteHoy(){
   sub.innerHTML='Llevas '+fmt(hoy)+' hoy · meta '+mh+'h/día<br>'
     +'Ritmo real: <strong>'+fmt(Math.round(ritmoReal))+'</strong>/día · necesario: <strong>'+fmt(Math.round(necesario))+'</strong>/día<br>'
     +'<span style="color:'+vcolor+';font-weight:700">'+vlabel+'</span>';
-}
+
 
 function renderHomeProgSem(){
   const aw=getActiveWeek();
@@ -5390,6 +5495,15 @@ function renderHomeProgSem(){
     sub.textContent='Semana sin temas · '+aw.id;
     return;
   }
+
+  const done=aw.topics.filter(id=>(S.t||{})[id]?.done).length;
+  const total=aw.topics.length;
+  const pct=total?Math.round(done/total*100):0;
+  el.textContent=done+'/'+total;
+  el.className='hc-val green';
+  el.style.color='';
+  sub.textContent=pct+'% completado · Semana '+aw.id;
+}
 
   const done=aw.topics.filter(id=>(S.t||{})[id]?.done).length;
   const total=aw.topics.length;
