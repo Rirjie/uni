@@ -794,7 +794,7 @@ for (const [course, topics] of Object.entries(TOPICS)) {
 // No contamina TOPICS (que queda como fuente pura).
 const PLAN_PARTS = {};  // { 'al3__part1': { course:'Álgebra', name:'...' } }
 const DATA_VERSION=12;
-const OP_WEEKS=['w10'];
+const OP_WEEKS=['w4','w5','w6','w16','w24'];
 const SURGERY_NOTE='Cirugía catarata PPV: bloque 18–31 jul (confirmado) · ambos ojos · 6-7 d entre ojos';
 const WEEK_HOURS={w1:5,w2:6,w3:6,w4:7,w5:7,w7:7,w8:8,w9:8,w10:1.5,w11:8,w12:8,w13:8,w15:6};
 function getWeekTargetHours(wid){return WEEK_HOURS[wid]??8;}
@@ -816,17 +816,19 @@ function getSpeedTarget(course){
 // ── PLAN SEMANAL: cada ciencia aparece todas las semanas ──
 const PLAN_START='2026-08-10';
 const PLAN_END='2027-02-15';
-const PLAN_TOTAL_WEEKS=26;
-const PLAN_STUDY_WEEK_NUMBERS=[1,2,3,4,5,7,8,9,10,11,12,14,15,16,17,18,19,21,22,23];
+const PLAN_TOTAL_WEEKS=27;
+const PLAN_STUDY_WEEK_NUMBERS=[1,2,3,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,23];
 const PLAN_STUDY_WEEK_COUNT=PLAN_STUDY_WEEK_NUMBERS.length;
 const PLAN_COURSES = Object.values(COURSES).filter(c => c.group === 'ciencias').map(c => c.name); const COURSE_BY_NAME = Object.fromEntries(Object.values(COURSES).map(c => [c.name, c]));
 const PLAN_SPECIAL_WEEKS={
-  6:{badge:'🔴 DESCANSO 1',desc:'Semana de consolidación. Sin temas nuevos. Solo repasos ligeros.',color:'var(--accent2)'},
-  13:{badge:'🔴 DESCANSO 2',desc:'Semana de consolidación. Sin temas nuevos. Simulacro ligero.',color:'var(--accent2)'},
-  20:{badge:'🔴 DESCANSO 3',desc:'Semana de consolidación. Sin temas nuevos. Repaso global.',color:'var(--accent2)'},
-  24:{badge:'⚡ COLCHÓN 1',desc:'Simulacros a lo bestia. Corrección de errores.',color:'#ffdd6a'},
-  25:{badge:'⚡ COLCHÓN 2',desc:'Simulacros a lo bestia. Afilado final.',color:'#ffdd6a'},
-  26:{badge:'🟢 PRE-EXAMEN',desc:'Descanso activo. Solo fórmulas y audios. Nada de problemas nuevos.',color:'var(--accent3)'}
+  4:{badge:'🏥 CIRUGÍA 1',desc:'Cirugía catarata PPV ojo 1. Descanso absoluto. Sin temas nuevos.',color:'var(--accent2)'},
+  5:{badge:'🏥 CIRUGÍA 2',desc:'Recuperación + cirugía ojo 2. Descanso absoluto.',color:'var(--accent2)'},
+  6:{badge:'🏥 CIRUGÍA 3',desc:'Recuperación post-operatoria. Sin temas nuevos.',color:'var(--accent2)'},
+  16:{badge:'🔴 DESCANSO',desc:'Semana de consolidación. Solo repasos ligeros.',color:'var(--accent2)'},
+  24:{badge:'🔴 DESCANSO',desc:'Semana de consolidación antes del repaso final.',color:'var(--accent2)'},
+  25:{badge:'⚡ REPASO 1',desc:'Repaso intensivo. Sin temas nuevos. Simulacros a lo bestia.',color:'#ffdd6a'},
+  26:{badge:'⚡ REPASO 2',desc:'Repaso intensivo. Corrección de errores.',color:'#ffdd6a'},
+  27:{badge:'🟢 PRE-EXAMEN',desc:'Descanso activo. Solo fórmulas y audios. Examen el 15 feb.',color:'var(--accent3)'}
 };
 function planLocalDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
   function expandCourseIntoWeeklySessions(ids, course, targetWeeks = PLAN_STUDY_WEEK_COUNT){
@@ -936,7 +938,7 @@ function buildWeeklyStudyPlan(){
   Object.keys(WEEKS_TOPICS).forEach(key=>delete WEEKS_TOPICS[key]);
 
   WSCHED.length=0;
-  OP_WEEKS.splice(0,OP_WEEKS.length,'w6','w13','w20','w26');
+  OP_WEEKS.splice(0,OP_WEEKS.length,'w4','w5','w6','w16','w24');
 
   Object.keys(WEEK_HOURS).forEach(key=>delete WEEK_HOURS[key]);
 
@@ -964,14 +966,12 @@ function buildWeeklyStudyPlan(){
 
     const special=PLAN_SPECIAL_WEEKS[weekNumber];
 
-    const specialHours={
-      6:0,
-      13:0,
-      20:0,
-      24:8,
-      25:8,
-      26:4
-    };
+const specialHours={
+  4:0,5:0,6:0,
+  16:0,
+  24:0,
+  25:8,26:8,27:4
+};
 
     WEEK_HOURS[id]=specialHours[weekNumber]??8;
 
@@ -4698,7 +4698,7 @@ function renderAllExBadges(){
 function renderPreOpReview(){
   const td=today();
   const opWindows=[
-    {id:'w10', from:'2026-07-18', to:'2026-07-31', prevWeeks:['w7','w8','w9','w11'], label:'Cirugía catarata PPV (ambos ojos)'},
+    {id:'w4', from:'2026-08-31', to:'2026-09-20', prevWeeks:['w1','w2','w3'], label:'Cirugía catarata PPV (ambos ojos)'},
   ];
   for(const op of opWindows){
     const boxId='preop-'+op.id;
@@ -4828,11 +4828,10 @@ function renderConsistencyChart(){
 
 // ── MEJORA 10: ALERTAS DE SEMANA DE ALTA CARGA ──
 const HIGH_LOAD_WEEKS=[
-  {id:'w8',label:'Geometría 2da / espacial',threshold:8},
-  {id:'w9',label:'Trigonometría (cierre)',threshold:10},
-  {id:'w11',label:'Química pre-cirugía (14 caps)',threshold:8},
-  {id:'w12',label:'Química post-cirugía 1',threshold:8},
-  {id:'w13',label:'Química cierre',threshold:8},
+  {id:'w3',label:'Cierre pre-cirugía',threshold:8},
+  {id:'w10',label:'Mitad de bloque 2',threshold:8},
+  {id:'w15',label:'Cierre bloque 2',threshold:8},
+  {id:'w23',label:'Cierre bloque 3',threshold:8},
 ];
 function renderHighLoadAlerts(){
   const td=today();
@@ -5302,7 +5301,7 @@ function renderHomePendienteHoy(){
     return;
   }
 
-  const CRASH_WEEKS=['w10']; // semana de cirugía
+  const CRASH_WEEKS=['w4','w5','w6']; // semanas de cirugía
   const isExcluded = (ds)=>{
     const w = WSCHED.find(x=>ds>=x.s&&ds<=x.e);
     if(!w) return true;
