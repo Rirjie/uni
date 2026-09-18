@@ -5247,6 +5247,14 @@ function renderHomeCapActual(){
   if(!el||!sub)return;
   const aw=getActiveWeek();
   const current=getCurrentScheduleTopic();
+    // Semana de cirugía / descanso
+  if(aw && OP_WEEKS.includes(aw.id)){
+    el.textContent='Descanso 🏥';
+    el.style.color='var(--accent2)';
+    const special=PLAN_SPECIAL_WEEKS[parseInt(aw.id.replace('w',''))];
+    sub.textContent=special ? special.badge : 'Semana sin temas nuevos';
+    return;
+  }
 
   // 1) Si hay bloque en el horario ahora, úsalo
   if(current && current.course && aw){
@@ -5277,13 +5285,24 @@ function renderHomeCapActual(){
 function renderHomePendienteHoy(){
   const td=today();
   const aw=WSCHED.find(w=>td>=w.s&&td<=w.e);
+  const el=document.getElementById('homePendienteHoy');
+  const sub=document.getElementById('homePendienteHoySub');
+  if(!el||!sub)return;
+
+  // Semana de cirugía / descanso → no mostrar "meta cumplida"
+  if(aw && OP_WEEKS.includes(aw.id)){
+    el.textContent='Descanso 🏥';
+    el.className='hc-val';
+    el.style.color='var(--accent2)';
+    const special=PLAN_SPECIAL_WEEKS[parseInt(aw.id.replace('w',''))];
+    sub.textContent=special ? special.desc : 'Semana sin temas programados. Prioridad: recuperación.';
+    return;
+  }
+
   const mh=aw?getWeekTargetHours(aw.id):6;
   const ms=mh*3600;
   const hoy=(S.h||{})[td]||0;
   const diff=ms-hoy;
-  const el=document.getElementById('homePendienteHoy');
-  const sub=document.getElementById('homePendienteHoySub');
-  if(!el||!sub)return;
 
   if(diff<=0){
     el.textContent='¡Meta cumplida!';el.className='hc-val green';
@@ -5362,10 +5381,22 @@ function renderHomeProgSem(){
   const el=document.getElementById('homeProgSem');
   const sub=document.getElementById('homeProgSemSub');
   if(!el||!sub||!aw)return;
+
+  // Semana de cirugía / descanso
+  if(OP_WEEKS.includes(aw.id)){
+    el.textContent='—';
+    el.className='hc-val';
+    el.style.color='var(--accent2)';
+    sub.textContent='Semana sin temas · '+aw.id;
+    return;
+  }
+
   const done=aw.topics.filter(id=>(S.t||{})[id]?.done).length;
   const total=aw.topics.length;
   const pct=total?Math.round(done/total*100):0;
   el.textContent=done+'/'+total;
+  el.className='hc-val green';
+  el.style.color='';
   sub.textContent=pct+'% completado · Semana '+aw.id;
 }
 
