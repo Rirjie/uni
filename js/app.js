@@ -5365,28 +5365,7 @@ function renderHomePendienteHoy(){
     +'<span style="color:'+vcolor+';font-weight:700">'+vlabel+'</span>';
 }
 
-function renderHomeProgSem(){
-  const aw=getActiveWeek();
-  const el=document.getElementById('homeProgSem');
-  const sub=document.getElementById('homeProgSemSub');
-  if(!el||!sub||!aw)return;
 
-  if(OP_WEEKS.includes(aw.id)){
-    el.textContent='—';
-    el.className='hc-val';
-    el.style.color='var(--accent2)';
-    sub.textContent='Semana sin temas · '+aw.id;
-    return;
-  }
-
-  const done=aw.topics.filter(id=>(S.t||{})[id]?.done).length;
-  const total=aw.topics.length;
-  const pct=total?Math.round(done/total*100):0;
-  el.textContent=done+'/'+total;
-  el.className='hc-val green';
-  el.style.color='';
-  sub.textContent=pct+'% completado · Semana '+aw.id;
-}
 
 function renderHomeProgSem(){
   const aw=getActiveWeek();
