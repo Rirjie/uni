@@ -5714,60 +5714,142 @@ REGLAS IMPORTANTES:
 - Mantén coherencia total entre enunciado, solución y alternativas.
 `,
 
-  presets: {
-    teoria: `Explica el tema {tema} del curso {curso} para nivel preuniversitario UNI.
+presets: {
+  teoria: `Actúa como profesor de {curso} para el examen de admisión UNI.
 
-Nivel de profundidad: {dificultad}.
+Explicá el tema "{tema}" con profundidad {dificultad} (baja=concepto, media=concepto+aplicación, alta=concepto+aplicación+caso límite o excepción).
 
-Incluye conceptos clave, fórmulas importantes y un ejemplo breve resuelto.
+ESTRUCTURA OBLIGATORIA:
+1. Idea central del tema (2-3 líneas, sin vueltas).
+2. Propiedades/fórmulas con condición de aplicación (cuándo SÍ y cuándo NO usarlas).
+3. Un ejemplo resuelto paso a paso.
+4. Un error típico de estudiantes y cómo evitarlo.
 
-Solo texto.`,
+REGLAS:
+- Prohibido usar analogías vagas ("es como...").
+- Prohibido relleno motivacional.
+- Solo texto plano con notación matemática clara (usa \\( \\) para fórmulas inline, $$ para bloque).`,
 
-    preguntas_conceptuales: `Genera {cantidad} preguntas conceptuales sobre {tema} del curso {curso}. Nivel {dificultad}.
+  preguntas_conceptuales: `Actúa como profesor de {curso} nivel UNI.
 
-Las preguntas deben evaluar razonamiento, no memorización.
+Generá {cantidad} preguntas conceptuales sobre "{tema}", dificultad {dificultad}.
 
-Incluye alternativas A–E, respuesta correcta y breve explicación.
+DEFINICIÓN OPERATIVA DE DIFICULTAD:
+- baja: reconocer una definición o propiedad directa.
+- media: comparar dos propiedades o elegir cuál aplica.
+- alta: identificar la propiedad que NO aplica en un caso dado, o distinguir dos propiedades que los estudiantes suelen confundir.
 
-Solo texto.`,
+REGLAS DE CALIDAD:
+- Cada pregunta debe apuntar a UN concepto específico. Prohibido preguntar cosas que se resuelven "por sentido común" sin conocer el tema.
+- Al menos una pregunta debe usar un contraejemplo.
+- Los distractores deben corresponder a errores conceptuales reales, no a inventos.
 
-    problemas: `Genera {cantidad} problemas tipo examen UNI sobre {tema} del curso {curso}. Nivel {dificultad}.
+FORMATO POR PREGUNTA:
+- Enunciado.
+- Alternativas A–E.
+- Respuesta correcta (solo la letra).
+- Explicación breve de por qué las otras 4 están mal.`,
+
+  problemas: `Actúa como profesor de {curso} nivel UNI. Generá {cantidad} problemas sobre "{tema}" con dificultad {dificultad}.
+
+═══ DEFINICIÓN OPERATIVA DE DIFICULTAD ═══
+
+- BAJA: se resuelve aplicando UNA fórmula o propiedad directa.
+- MEDIA: requiere 2 pasos y elegir entre 2 propiedades posibles.
+- ALTA: requiere combinar 2+ propiedades, o un trazo auxiliar (recta paralela, perpendicular, punto medio, extensión, cambio de variable), o un cambio de representación. La solución NO debe ser evidente después de leer el enunciado. Debe haber al menos UN paso no obvio.
+
+═══ REGLAS DE ORO (violarlas = problema descartado) ═══
+
+1. NO DATOS DECORATIVOS: todo dato del enunciado debe ser usado en la solución. Si un triángulo/punto/valor no aporta nada al resultado, no debe aparecer.
+
+2. NO MÉTODO ALTERNATIVO: el problema NO debe poder resolverse por un camino genérico distinto al tema. Ejemplo: si el tema es congruencia, el problema NO debe resolverse también con ley de cosenos sin usar la congruencia. Si se puede, descartalo.
+
+3. NO TRIVIALIZAR: si el resultado sale en 1 línea mental, no sirve.
+
+4. DISTRACTORES REALES: cada alternativa incorrecta debe corresponder a un error plausible (olvidar un caso, cambiar un signo, aplicar mal una propiedad, confundir dos teoremas). Prohibido números random.
+
+5. ÚNICA RESPUESTA: solo una alternativa correcta, verificada.
+
+═══ FLUJO INTERNO OBLIGATORIO ═══
+
+Antes de escribir el problema:
+a) Resolvelo por tu cuenta hasta un resultado único.
+b) Verificá que ese resultado sea alcanzable solo con el tema {tema} (no por atajo alternativo).
+c) Verificá que la dificultad declarada coincida con la real.
+d) Si el problema es de dificultad ALTA, agregá el paso no obvio o el trazo auxiliar.
+e) Construí las alternativas como errores plausibles alrededor del resultado correcto.
+
+Si en cualquier paso falla (a-e), descartá el problema completo y generá otro.
+
+═══ FORMATO DE SALIDA ═══
 
 Para cada problema:
-- Enunciado claro.
-- 5 alternativas (A–E).
-- Una única respuesta correcta.
-- Desarrollo paso a paso.
-- Explicación final.
+1. Enunciado (claro, sin ambigüedades).
+2. Alternativas A–E.
+3. Respuesta correcta (solo la letra).
+4. Solución paso a paso (mostrando el paso no obvio si es alta).
+5. Error típico: por qué alguien elegiría cada distractor.
 
-Debes cumplir estrictamente la regla de consistencia del system prompt.`,
+═══ REGLA DE CONSISTENCIA MATEMÁTICA ═══
 
-    simulacro: `Genera un simulacro UNI sobre {tema} del curso {curso}. Nivel {dificultad}. Cantidad: {cantidad} problemas.
+Resolvé primero, fijá el resultado, después escribí enunciado y alternativas. Nunca ajustes el resultado para que cierre con las opciones. Si hay inconsistencia, descartá y empezás de nuevo.`,
 
-Características:
-- Problemas independientes.
-- Dificultad progresiva o mixta.
-- Distractores plausibles.
-- Una sola respuesta correcta por pregunta.
+  simulacro: `Actúa como profesor de {curso} nivel UNI. Generá un simulacro de {cantidad} problemas sobre "{tema}" con dificultad {dificultad}.
 
-Incluye respuestas y explicaciones.`,
+DISTRIBUCIÓN:
+- 40% dificultad baja
+- 40% dificultad media
+- 20% dificultad alta (con trazo auxiliar o paso no obvio)
 
-    repaso_errores: `Genera {cantidad} problemas de repaso sobre errores comunes en {tema} del curso {curso}. Nivel {dificultad}.
+REGLAS (aplican a cada problema):
+- Prohibido agregar datos decorativos.
+- El problema debe evaluar específicamente "{tema}". Prohibido usarlo como excusa.
+- Cada distractor = error plausible real.
+- Una sola respuesta correcta.
 
-Cada problema debe incluir:
-- Enunciado
-- Alternativas A–E
-- Respuesta correcta
-- Explicación del error típico
+Formato:
+1. Enunciado.
+2. Alternativas A–E.
+3. Respuesta correcta.
+4. Solución paso a paso.
+5. Errores típicos asociados a cada distractor.`,
 
-Enfocado en fallos frecuentes de postulantes UNI.`,
+  repaso_errores: `Actúa como profesor de {curso} nivel UNI.
 
-    resumen: `Genera un resumen del tema {tema} del curso {curso}. Nivel {dificultad}.
+Generá {cantidad} problemas sobre "{tema}" diseñados ESPECÍFICAMENTE para inducir errores típicos. Dificultad {dificultad}.
 
-Máximo 200 palabras.
-Formato en viñetas.
-Solo conceptos clave.`
-  },
+ERRORES OBJETIVO (elegí {cantidad} distintos, uno por problema):
+- Confundir dos criterios/propiedades similares.
+- Olvidar un caso especial (ángulo obtuso, raíz negativa, caso ambiguo).
+- Aplicar una fórmula fuera de su dominio de validez.
+- Saltar la verificación de existencia de solución.
+- Mezclar notación o unidades.
+
+Cada problema debe:
+1. Estar construido para que el error típico sea tentador.
+2. Tener como distractor principal el resultado del error.
+3. Incluir explicación: "si elegiste X, probablemente confundiste Y con Z".
+
+Formato:
+1. Enunciado.
+2. Alternativas A–E (con el error como distractor principal).
+3. Respuesta correcta.
+4. Explicación del error típico.`,
+
+  resumen: `Actúa como profesor de {curso} nivel UNI.
+
+Resumí "{tema}" en máximo 180 palabras. Dificultad: {dificultad}.
+
+ESTRUCTURA:
+- Idea central (1 línea).
+- Propiedades clave con condición de uso (viñetas).
+- 2 errores frecuentes.
+
+REGLAS:
+- Prohibido relleno.
+- Prohibidas analogías vagas.
+- Solo lo que se necesita para resolver un problema del tema.`
+},
 
   buildPrompt(modo, params) {
     const preset = this.presets[modo] || this.presets.teoria;
