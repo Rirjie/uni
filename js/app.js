@@ -5364,98 +5364,29 @@ function renderHomePendienteHoy(){
     +'Ritmo real: <strong>'+fmt(Math.round(ritmoReal))+'</strong>/día · necesario: <strong>'+fmt(Math.round(necesario))+'</strong>/día<br>'
     +'<span style="color:'+vcolor+';font-weight:700">'+vlabel+'</span>';
 }
-  const td=today();
-  const aw=WSCHED.find(w=>td>=w.s&&td<=w.e);
-  const el=document.getElementById('homePendienteHoy');
-  const sub=document.getElementById('homePendienteHoySub');
-  if(!el||!sub)return;
 
-  // Semana de cirugía / descanso → no mostrar "meta cumplida"
-  if(aw && OP_WEEKS.includes(aw.id)){
-    el.textContent='Descanso 🏥';
+function renderHomeProgSem(){
+  const aw=getActiveWeek();
+  const el=document.getElementById('homeProgSem');
+  const sub=document.getElementById('homeProgSemSub');
+  if(!el||!sub||!aw)return;
+
+  if(OP_WEEKS.includes(aw.id)){
+    el.textContent='—';
     el.className='hc-val';
     el.style.color='var(--accent2)';
-    const special=PLAN_SPECIAL_WEEKS[parseInt(aw.id.replace('w',''))];
-    sub.textContent=special ? special.desc : 'Semana sin temas programados. Prioridad: recuperación.';
+    sub.textContent='Semana sin temas · '+aw.id;
     return;
   }
 
-  const mh=aw?getWeekTargetHours(aw.id):6;
-  const ms=mh*3600;
-  const hoy=(S.h||{})[td]||0;
-  const diff=ms-hoy;
-
-  if(diff<=0){
-    el.textContent='¡Meta cumplida!';el.className='hc-val green';
-    sub.textContent='Llevas '+fmt(hoy)+' hoy · meta '+mh+'h/día';
-    return;
-  }
-  const h=Math.floor(diff/3600),m=Math.floor((diff%3600)/60);
-  el.textContent=h+'h '+m+'m';el.className='hc-val orange';
-
-  const dow=(new Date().getDay()+6)%7; // 0=lun ... 6=dom
-
-  // Antes del miércoles: solo horas, sin veredicto
-  if(dow<2){
-    sub.textContent='Llevas '+fmt(hoy)+' hoy · meta '+mh+'h/día';
-    return;
-  }
-
-  const CRASH_WEEKS=['w4','w5','w6']; // semanas de cirugía
-  const isExcluded = (ds)=>{
-    const w = WSCHED.find(x=>ds>=x.s&&ds<=x.e);
-    if(!w) return true;
-    if(OP_WEEKS.includes(w.id)) return true;
-    if(CRASH_WEEKS.includes(w.id)) return true;
-    return false;
-  };
-
-  // Ventana: lunes de esta semana hasta ayer, sin domingos
-  const weekStart = new Date();
-  weekStart.setDate(weekStart.getDate() - dow);
-  let secs=0, diasEfectivos=0;
-  for(let i=0; i<dow; i++){ // i=0 es lunes; llega hasta ayer
-    const d = new Date(weekStart);
-    d.setDate(d.getDate() + i);
-    if(d.getDay()===0) continue;              // domingo fuera
-    const ds = localKey(d);
-    if(isExcluded(ds)) continue;              // op-week / cirugía fuera
-    diasEfectivos++;
-    secs += (S.h||{})[ds]||0;                 // definición A: cuenta aunque sea 0
-  }
-
-  const ritmoReal = diasEfectivos>0 ? secs/diasEfectivos : 0;
-
-  // Horas que faltan para el objetivo semanal
-  const weekTotal = (S.h||{})['w'+wkey()]||0;
-  const weekRemaining = Math.max(0, ms - weekTotal);
-
-  // Días restantes: de hoy a sábado inclusive, menos domingos
-  let diasRestantes=0;
-  for(let i=0; i<=(6-dow); i++){
-    const d=new Date(); d.setDate(d.getDate()+i);
-    if(d.getDay()===0) continue;
-    const ds = localKey(d);
-    if(isExcluded(ds)) continue;
-    diasRestantes++;
-  }
-
-  const necesario = diasRestantes>0 ? weekRemaining/diasRestantes : weekRemaining;
-
-  let ratio = 1;
-  if(necesario>0 && ritmoReal>0) ratio = ritmoReal/necesario;
-  else if(necesario>0 && ritmoReal===0) ratio = 0;
-  else ratio = 1;
-
-  let vlabel, vcolor;
-  if(ratio>=1){vlabel='✓ ritmo viable';vcolor='var(--accent3)';}
-  else if(ratio>=0.6){vlabel='⚠ ritmo justo ('+Math.round(ratio*100)+'%)';vcolor='var(--accent4)';}
-  else{vlabel='✗ no cierra a este ritmo ('+Math.round(ratio*100)+'%)';vcolor='var(--accent2)';}
-
-  sub.innerHTML='Llevas '+fmt(hoy)+' hoy · meta '+mh+'h/día<br>'
-    +'Ritmo real: <strong>'+fmt(Math.round(ritmoReal))+'</strong>/día · necesario: <strong>'+fmt(Math.round(necesario))+'</strong>/día<br>'
-    +'<span style="color:'+vcolor+';font-weight:700">'+vlabel+'</span>';
-
+  const done=aw.topics.filter(id=>(S.t||{})[id]?.done).length;
+  const total=aw.topics.length;
+  const pct=total?Math.round(done/total*100):0;
+  el.textContent=done+'/'+total;
+  el.className='hc-val green';
+  el.style.color='';
+  sub.textContent=pct+'% completado · Semana '+aw.id;
+}
 
 function renderHomeProgSem(){
   const aw=getActiveWeek();
