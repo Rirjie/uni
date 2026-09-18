@@ -5281,27 +5281,7 @@ function renderHomeCapActual(){
   sub.textContent=info.curso+' · Semana '+aw.id+' ('+aw.s+' – '+aw.e+')';
 }
 
-  // 1) Si hay bloque en el horario ahora, úsalo
-  if(current && current.course && aw){
-    const topicId=aw.topics.find(id=>{
-      return getTopic(id).course===current.course && !(S.t||{})[id]?.done;
-    });
-    if(topicId){
-      const info=findTopicInfo(topicId);
-      el.textContent=info.tema;
-      sub.textContent=info.curso+' · ahora: '+current.blockLabel+' ('+current.time+')';
-      return;
-    }
-
-  // 2) Fallback: primer capítulo pendiente de la semana
-  if(!aw){el.textContent='—';sub.textContent='Sin semana activa';return;}
-  const pending=aw.topics.filter(id=>!(S.t||{})[id]?.done);
-  if(!pending.length){el.textContent='Semana ✓';sub.textContent='Todos los caps completados.';return;}
-  const id=pending[0];
-  const info=findTopicInfo(id);
-  el.textContent=info.tema;
-  sub.textContent=info.curso+' · Semana '+aw.id+' ('+aw.s+' – '+aw.e+')';
-
+  
 
 function renderHomePendienteHoy(){
   const td=today();
