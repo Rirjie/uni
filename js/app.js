@@ -5292,10 +5292,6 @@ function renderHomeCapActual(){
       sub.textContent=info.curso+' · ahora: '+current.blockLabel+' ('+current.time+')';
       return;
     }
-    el.textContent=current.blockLabel;
-    sub.textContent='Ahora: '+current.time+' · sin caps pendientes de '+current.course;
-    return;
-  }
 
   // 2) Fallback: primer capítulo pendiente de la semana
   if(!aw){el.textContent='—';sub.textContent='Sin semana activa';return;}
