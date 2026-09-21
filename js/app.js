@@ -3523,11 +3523,52 @@ function getDueCards(){
     if(course && c.course!==course)return false;
     if(topic && c.topic!==topic)return false;
     if(tipo && !(c.etiquetas||[]).includes(tipo))return false;
-    return (c.due||today())<=t;
+    return (c.due||t)<=t;
   });
 
   const news=pool.filter(c=>c.state==='new');
   const reviews=pool.filter(c=>c.state!=='new');
+
+  // Alerta de backlog (solo informa, no corta)
+  const atrasadas=(S.fc||[]).filter(c=>c.state!=='new'&&(c.due||t)<t).length;
+  if(!S._backlogDays)S._backlogDays={date:'',count:0};
+  if(atrasadas>200){
+    if(S._backlogDays.date!==t){
+      S._backlogDays.date=t;
+      S._backlogDays.count++;
+    }
+    if(S._backlogDays.count>=3 && S._lastBacklogWarn!==t){
+      S._lastBacklogWarn=t;
+      setTimeout(()=>showToast('⚠ Llevás '+S._backlogDays.count+' días con +200 atrasadas. Sugerencia: bajá las nuevas a 30/día hasta bajar de 100.','error'),500);
+    }
+  } else {
+    S._backlogDays.count=0;
+  }
+
+  // SIN LÍMITE — devolvemos todo lo pendiente
+  return [...reviews, ...news];
+}
+
+// Sugerencia del día (NO restringe, solo informa)
+function getFCSuggestion(){
+  if(!S.fcConfig)S.fcConfig={newPerDay:20,reviewPerDay:200};
+  const t=today();
+  if(!S.fcToday||S.fcToday.date!==t)S.fcToday={date:t,newDone:0,reviewDone:0};
+
+  const atrasadas=(S.fc||[]).filter(c=>c.state!=='new'&&(c.due||t)<t).length;
+  let dynamicReview=S.fcConfig.reviewPerDay||200;
+  let dynamicNew=S.fcConfig.newPerDay||20;
+
+  if(atrasadas>500){dynamicReview=Math.max(dynamicReview,1500);dynamicNew=Math.min(dynamicNew,60);}
+  else if(atrasadas>200){dynamicReview=Math.max(dynamicReview,900);dynamicNew=Math.min(dynamicNew,100);}
+
+  return {
+    newLimit: dynamicNew,
+    reviewLimit: dynamicReview,
+    newDone: S.fcToday.newDone||0,
+    reviewDone: S.fcToday.reviewDone||0
+  };
+}
 
 
 
@@ -3915,8 +3956,17 @@ function renderFCStats(){
     +'<span style="color:var(--accent4)"><b>'+hoy+'</b> hoy</span>'
     +'<span style="color:var(--muted)"><b>'+newCount+'</b> nuevas</span>'
     +'<span style="color:var(--muted);opacity:.7">· mañana: <b>'+manana+'</b></span>'
-    +'<span style="color:var(--muted);opacity:.7">· total: <b>'+total+'</b></span>'
+       +'<span style="color:var(--muted);opacity:.7">· total: <b>'+total+'</b></span>'
     +'</div>'
+    + (function(){
+        const sug = getFCSuggestion();
+        const sN = Math.max(0, sug.newLimit - sug.newDone);
+        const sR = Math.max(0, sug.reviewLimit - sug.reviewDone);
+        return '<div style="width:100%;font-size:.66rem;color:var(--muted);margin-top:.35rem;padding-top:.35rem;border-top:1px solid var(--border)">'
+          + '💡 Sugerencia del día: <b style="color:var(--accent4)">' + sN + '</b> nuevas + <b style="color:var(--accent4)">' + sR + '</b> repaso'
+          + ' <span style="opacity:.6">(no bloquea — la cola completa está disponible)</span>'
+          + '</div>';
+      })()
     +filtroAviso;
 }
 
