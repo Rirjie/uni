@@ -3903,48 +3903,7 @@ function rateFC(rating){
   save();
   renderFC();
 
-  if(triggerReflection) _showReflectionPrompt(calEntry);
-}
-    // Conectar con el grafo: actualizar dominio del tema según el rating
-  const perfMap={again:15, hard:55, good:80, easy:100};
-  const performance=perfMap[rating]!==undefined?perfMap[rating]:50;
-  const topicId=findTopicIdByCourseAndName(realCard.course, realCard.topic);
-  if(topicId){
-    StudyPrioritizer.updateDominio(topicId, performance);
-  }
 
-  // Calibración metacognitiva: guardar (confianza, acierto)
-  const confidence=window._fcCurrentConfidence||60;
-  const correct=(rating==='good'||rating==='easy');
-  if(!S.calibration)S.calibration=[];
-  const calEntry={
-    source:'fc',
-    topicId:topicId||null,
-    course:realCard.course,
-    topic:realCard.topic,
-    confidence,
-    correct,
-    rating,
-    date:today(),
-    ts:Date.now()
-  };
-  S.calibration.push(calEntry);
-  // Limitar a 2000 registros
-  if(S.calibration.length>2000)S.calibration=S.calibration.slice(-2000);
-  window._fcCurrentConfidence=null;
-
-  // ═══ SELF-EXPLANATION: solo si fallaste con alta confianza ═══
-  const isFail = (rating==='again' || rating==='hard');
-  const triggerReflection = confidence >= 75 && isFail;
-
-  _fcQueue.shift();
-  save();
-  renderFC();
-
-  if(triggerReflection){
-    _showReflectionPrompt(calEntry);
-  }
-}
 
 
 
