@@ -3560,6 +3560,18 @@ function getDueCards(){
     S._backlogDays.count = 0;
   }
 
+  // ── Pre-construir mapa de lapses recientes (perf para el sort) ──
+  const recentLapseMap = {};
+  if(Array.isArray(S.calibration)){
+    const cutoff = Date.now() - 21 * 86400000;
+    for(const c of S.calibration){
+      if(c.rating === 'again' && c.ts >= cutoff && c.cardId){
+        recentLapseMap[c.cardId] = (recentLapseMap[c.cardId] || 0) + 1;
+      }
+    }
+  }
+  window._recentLapseMap = recentLapseMap;
+
   // ── Ordenamiento por PRIORIDAD ──
   const daysToExam = Math.max(0, daysBetween(t, EXAM_DATE));
   const byPrio = (a, b) => computePriority(b, daysToExam) - computePriority(a, daysToExam);
@@ -3569,7 +3581,22 @@ function getDueCards(){
   news.sort(byPrio);
   reviews.sort(byPrio);
 
-  return [...reviews, ...news];
+  let sorted = [...reviews, ...news];
+
+  // ── 3) CAPACIDAD DIARIA (opcional) ──
+  // Si S.fcConfig.dailyCapacity > 0, cortamos la cola por prioridad.
+  // NUNCA bloquea del todo: si ya se pasó la capacidad, devuelve todo igual.
+  const capacity = S.fcConfig.dailyCapacity || 0;
+  if(capacity > 0){
+    const doneToday = (S.fcToday.newDone || 0) + (S.fcToday.reviewDone || 0);
+    const remainingCapacity = Math.max(0, capacity - doneToday);
+    if(remainingCapacity > 0){
+      sorted = sorted.slice(0, remainingCapacity);
+    }
+    // remainingCapacity === 0 → devolvemos todo (no bloqueamos)
+  }
+
+  return sorted;
 }
 
 // Sugerencia del día (NO restringe, solo informa)
@@ -3694,9 +3721,6 @@ function renderFC(){
 
 
 function previewIntervals(card){
-  const e=card.ease||2.5;
-  const i=card.interval||0;
-  const isNew=(card.state==='new'||i===0);
   const fmt=d=>{
     if(d<1)return '<1 min';
     if(d===1)return '1 día';
@@ -3704,12 +3728,47 @@ function previewIntervals(card){
     if(d<365)return Math.round(d/30)+' meses';
     return (d/365).toFixed(1)+' años';
   };
-  if(isNew)return{again:'1 min',hard:'6 min',good:'1 día',easy:'4 días'};
-  return{
-    again:'<1 min',
-    hard:fmt(Math.max(1,Math.round(i*1.2))),
-    good:fmt(Math.round(i*e)),
-    easy:fmt(Math.round(i*e*1.3))
+  if(!card) return {again:'1 min',hard:'1 min',good:'1 día',easy:'1 día'};
+
+  const isNew = card.state === 'new' || !card.interval;
+
+  // ── Tarjeta nueva: SM-2 clásico. Sin historial todavía, no hay nada que simular. ──
+  if(isNew){
+    return { again:'1 min', hard:'6 min', good:'1 día', easy:'4 días' };
+  }
+
+  // ── Tarjeta con historial: simular el motor real. ──
+  const daysToExam = Math.max(0, daysBetween(today(), EXAM_DATE));
+  const topicId    = findTopicIdByCourseAndName(card.course, card.topic);
+  const pressure   = topicId ? computeTopicPressure(topicId) : 50;
+  const confidence = window._fcCurrentConfidence || 60;
+
+  function simulate(rating){
+    const sim = { ...card };
+    const e = card.ease || 2.5;
+
+    if(rating === 'again')      sim.ease = Math.max(1.3, e - 0.20);
+    else if(rating === 'hard')  sim.ease = Math.max(1.3, e - 0.15);
+    else if(rating === 'easy')  sim.ease = Math.min(2.8, e + 0.15);
+
+    if(rating === 'again'){
+      sim.lapses = (card.lapses || 0) + 1;
+      sim.state  = 'learning';
+    }else{
+      sim.state = 'review';
+      sim.reps  = (card.reps || 0) + 1;
+    }
+
+    const stability = computeStability(sim);
+    const pr        = computePR(rating, confidence);
+    return computeFinalInterval(sim, pr, stability, pressure, daysToExam);
+  }
+
+  return {
+    again: '1 min',
+    hard:  fmt(simulate('hard')),
+    good:  fmt(simulate('good')),
+    easy:  fmt(simulate('easy'))
   };
 }
 
@@ -3902,7 +3961,8 @@ function rateFC(rating){
   _fcQueue.shift();
   save();
   renderFC();
-
+  if(triggerReflection) _showReflectionPrompt(calEntry);
+}
 
 
 
@@ -3958,9 +4018,20 @@ function renderFCStats(){
         const sug = getFCSuggestion();
         const sN = Math.max(0, sug.newLimit - sug.newDone);
         const sR = Math.max(0, sug.reviewLimit - sug.reviewDone);
+        const cap = S.fcConfig.dailyCapacity || 0;
+        const capTxt = cap > 0
+          ? '<b style="color:var(--accent4)">' + cap + '</b>'
+          : '<span style="opacity:.6">sin límite</span>';
         return '<div style="width:100%;font-size:.66rem;color:var(--muted);margin-top:.35rem;padding-top:.35rem;border-top:1px solid var(--border)">'
           + '💡 Sugerencia del día: <b style="color:var(--accent4)">' + sN + '</b> nuevas + <b style="color:var(--accent4)">' + sR + '</b> repaso'
-          + ' <span style="opacity:.6">(no bloquea — la cola completa está disponible)</span>'
+          + ' <span style="opacity:.6">(no bloquea)</span>'
+          + '</div>'
+          + '<div style="width:100%;font-size:.66rem;color:var(--muted);margin-top:.25rem;display:flex;align-items:center;gap:.4rem">'
+          + '🎯 Capacidad diaria (por prioridad): ' + capTxt
+          + ' <input type="number" min="0" max="999" value="' + cap + '" '
+          + 'onchange="setFCCapacity(this.value)" '
+          + 'style="width:52px;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:.1rem .25rem;font-family:\'DM Mono\',monospace;font-size:.66rem;border-radius:3px;text-align:center">'
+          + ' <span style="opacity:.6">(0 = ilimitado)</span>'
           + '</div>';
       })()
     +filtroAviso;
@@ -7362,6 +7433,20 @@ function computePR(rating, confidence){
 }
 
 // ─── Stability: cuán estable parece la tarjeta según su historial ───
+// Lapses recientes (últimos 21 días) via calibración.
+// Usa window._recentLapseMap si getDueCards lo pre-construyó (perf).
+function getRecentLapses(card){
+  if(!card || !card.cardId) return 0;
+  if(window._recentLapseMap) return window._recentLapseMap[card.cardId] || 0;
+  if(!Array.isArray(S.calibration)) return 0;
+  const cutoff = Date.now() - 21 * 86400000;
+  let count = 0;
+  for(const c of S.calibration){
+    if(c.cardId === card.cardId && c.rating === 'again' && c.ts >= cutoff) count++;
+  }
+  return count;
+}
+
 function computeStability(card){
   if(!card) return 0;
   const reps     = card.reps    || 0;
@@ -7370,7 +7455,26 @@ function computeStability(card){
   const interval = card.interval || 0;
   if(reps === 0) return 0;
 
-  const successRate   = Math.max(0, (reps - lapses) / reps);
+  // ── 1) TEMPORAL: ¿la tarjeta vivió lo que predijimos? ──
+  // Nota: en rateFC, computeStability() corre ANTES de que se actualice
+  // interval/lastReviewTs, así que ambos reflejan la predicción anterior.
+  let survivalBonus = 0;
+  if(card.lastReviewTs && interval > 0){
+    const actualDays = Math.max(0.1, (Date.now() - card.lastReviewTs) / 86400000);
+    const ratio = actualDays / interval;
+    if(ratio >= 2.0)      survivalBonus = +12;   // sobrevivió de más → boost
+    else if(ratio >= 1.2) survivalBonus = +6;
+    else if(ratio >= 0.9) survivalBonus =  0;    // vivió lo esperado
+    else if(ratio >= 0.5) survivalBonus = -8;
+    else                  survivalBonus = -15;   // falló muy antes de lo esperado
+  }
+
+  // ── 2) LAPSES RECIENTES pesan fuerte, viejos pesan 0.3 ──
+  const recentLapses    = getRecentLapses(card);
+  const oldLapses       = Math.max(0, lapses - recentLapses);
+  const effectiveLapses = oldLapses * 0.3 + recentLapses;
+
+  const successRate   = Math.max(0, (reps - effectiveLapses) / reps);
   const repsScore     = Math.min(1, Math.log2(reps + 1) / 5);
   const intervalScore = Math.min(1, Math.log2(interval + 1) / 5);
   const easeScore     = Math.min(1, Math.max(0, (ease - 1.3) / 1.5));
@@ -7379,7 +7483,8 @@ function computeStability(card){
       successRate   * 40 +
       repsScore     * 20 +
       intervalScore * 25 +
-      easeScore     * 15;
+      easeScore     * 15 +
+      survivalBonus;
 
   return Math.max(0, Math.min(100, Math.round(stability)));
 }
@@ -7800,6 +7905,14 @@ function renderSpeedTargetsEditor(){
       +'<input type="number" value="'+v+'" min="30" max="600" onchange="setSpeedTarget(\''+c+'\',this.value)" style="width:48px;background:#0a0a0f;border:1px solid var(--border);color:var(--text);padding:.15rem .25rem;font-family:inherit;font-size:.68rem;text-align:center;border-radius:3px">'
       +'</label>';
   }).join('');
+}
+function setFCCapacity(val){
+  const n = Math.max(0, Math.min(999, parseInt(val, 10) || 0));
+  if(!S.fcConfig) S.fcConfig = { newPerDay: 20, reviewPerDay: 200 };
+  S.fcConfig.dailyCapacity = n;
+  _fcQueue = null;
+  save();
+  renderFC();
 }
 function setSpeedTarget(course,val){
   if(!S.speedTargets)S.speedTargets={};
