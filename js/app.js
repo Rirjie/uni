@@ -3573,45 +3573,6 @@ function getFCSuggestion(){
 
 
   // ── Auto-ajuste runtime (no persiste) ──
-  const t2=today();
-  const atrasadas=(S.fc||[]).filter(c=>c.state!=='new'&&(c.due||t2)<t2).length;
-  const baseReview=S.fcConfig.reviewPerDay||2500;
-
-  let dynamicReview=baseReview;
-  let dynamicNew=S.fcConfig.newPerDay||120;
-
-  if(atrasadas>500){
-    dynamicReview=Math.max(baseReview,1500);
-    dynamicNew=Math.min(dynamicNew,60);
-  } else if(atrasadas>200){
-    dynamicReview=Math.max(baseReview,900);
-    dynamicNew=Math.min(dynamicNew,100);
-  }
-
-  // Racha de backlog alto + alerta al tercer día seguido
-  if(!S._backlogDays)S._backlogDays={date:'',count:0};
-  if(atrasadas>200){
-    if(S._backlogDays.date!==t2){
-      S._backlogDays.date=t2;
-      S._backlogDays.count++;
-    }
-    if(S._backlogDays.count>=3 && S._lastBacklogWarn!==t2){
-      S._lastBacklogWarn=t2;
-      setTimeout(()=>showToast('⚠ Llevás '+S._backlogDays.count+' días con +200 atrasadas. Bajá las nuevas a 30/día hasta bajar de 100.','error'),500);
-    }
-  } else {
-    S._backlogDays.count=0;
-  }
-
-  const newLimit=Math.max(0,dynamicNew-S.fcToday.newDone);
-  const reviewLimit=Math.max(0,dynamicReview-S.fcToday.reviewDone);
-
-  return [
-    ...reviews.slice(0,reviewLimit),
-    ...news.slice(0,newLimit)
-  ];
-}
-
 
 
 function addFC(){
