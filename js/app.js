@@ -1244,6 +1244,12 @@ async function load(){
   }
   migrateData();
   if(!S._migFcV2){migrateFcTopicsV2();S._migFcV2=true;save();}
+    if(!S._migCardIds){
+    const n = migrateCardIds();
+    if(n) console.log('✓ cardId añadido a ' + n + ' tarjetas');
+    S._migCardIds = true;
+    save();
+  }
 }
 let _fcSaveTimer=null;
 async function _flushFCSave(){
@@ -1343,6 +1349,8 @@ function migrateSessionsFromHours(){
   if(S.sessions.length>200)S.sessions=S.sessions.slice(0,200);
   if(S.sessions.length)save();
 }
+
+
 /* ═══ MIGRACIÓN v2: Física/Química — reasignar flashcards y limpiar estado huérfano ═══ */
 function migrateFcTopicsV2(){
   const MAP_FISICA = {
@@ -1459,7 +1467,14 @@ function migrateFcTopicsV2(){
 
   console.log('✓ Migración v2 — flashcards renombradas:',fcN,'· banco:',bankN,'· caps reseteados:',stN);
 }
-
+function migrateCardIds(){
+  if(!Array.isArray(S.fc)) return 0;
+  let added = 0;
+  S.fc.forEach(c => {
+    if(!c.cardId){ c.cardId = genCardId(); added++; }
+  });
+  return added;
+}
 function today(){const d=new Date();return d.getFullYear()+'-'+(String(d.getMonth()+1).padStart(2,'0'))+'-'+(String(d.getDate()).padStart(2,'0'))}
 function wkey(){const d=new Date();d.setHours(0,0,0,0);const day=d.getDay();const diff=day===0?-6:1-day;d.setDate(d.getDate()+diff);return d.getFullYear()+'-'+(String(d.getMonth()+1).padStart(2,'0'))+'-'+(String(d.getDate()).padStart(2,'0'))}
 function localKey(d){return d.getFullYear()+'-'+(String(d.getMonth()+1).padStart(2,'0'))+'-'+(String(d.getDate()).padStart(2,'0'))}
@@ -3376,6 +3391,7 @@ function importFCFile(file){
         topicsUsados.add(topic);
         coursesUsados.add(course);
         S.fc.push({
+          cardId: genCardId(),
           course, topic, etiquetas, q, a,
           ease: 2.5, interval: 0, due: today(),
           state: 'new', reps: 0, lapses: 0
@@ -3465,6 +3481,7 @@ function convertPasteFC(){
     if(exists){ skipped++; return; }
 
     S.fc.push({
+      cardId: genCardId(),
       course, topic: topicName, etiquetas,
       q: b.q, a: b.r,
       ease: 2.5, interval: 0, due: today(),
@@ -3508,44 +3525,50 @@ function initFCImportCourseSelect(){
 let _fcQueue=null;
 
 function getDueCards(){
-  if(!S.fc)return[];
-  const t=today();
-  if(!S.fcConfig)S.fcConfig={newPerDay:20,reviewPerDay:200};
-  if(!S.fcToday||S.fcToday.date!==t){
-    S.fcToday={date:t,newDone:0,reviewDone:0};
+  if(!S.fc) return [];
+  const t = today();
+  if(!S.fcConfig) S.fcConfig = { newPerDay: 20, reviewPerDay: 200 };
+  if(!S.fcToday || S.fcToday.date !== t){
+    S.fcToday = { date: t, newDone: 0, reviewDone: 0 };
     save();
   }
-  const course=document.getElementById('fcFilterCourse')?.value||'';
-  const topic=document.getElementById('fcFilterTopic')?.value||'';
-  const tipo=document.getElementById('fcFilterTipo')?.value||'';
+  const course = document.getElementById('fcFilterCourse')?.value || '';
+  const topic  = document.getElementById('fcFilterTopic')?.value  || '';
+  const tipo   = document.getElementById('fcFilterTipo')?.value   || '';
 
-  const pool=S.fc.filter(c=>{
-    if(course && c.course!==course)return false;
-    if(topic && c.topic!==topic)return false;
-    if(tipo && !(c.etiquetas||[]).includes(tipo))return false;
-    return (c.due||t)<=t;
+  const pool = S.fc.filter(c => {
+    if(course && c.course !== course) return false;
+    if(topic  && c.topic  !== topic)  return false;
+    if(tipo   && !(c.etiquetas || []).includes(tipo)) return false;
+    return (c.due || t) <= t;
   });
 
-  const news=pool.filter(c=>c.state==='new');
-  const reviews=pool.filter(c=>c.state!=='new');
-
-  // Alerta de backlog (solo informa, no corta)
-  const atrasadas=(S.fc||[]).filter(c=>c.state!=='new'&&(c.due||t)<t).length;
-  if(!S._backlogDays)S._backlogDays={date:'',count:0};
-  if(atrasadas>200){
-    if(S._backlogDays.date!==t){
-      S._backlogDays.date=t;
+  // Backlog warning (igual que antes)
+  const atrasadas = (S.fc || []).filter(c => c.state !== 'new' && (c.due || t) < t).length;
+  if(!S._backlogDays) S._backlogDays = { date: '', count: 0 };
+  if(atrasadas > 200){
+    if(S._backlogDays.date !== t){
+      S._backlogDays.date = t;
       S._backlogDays.count++;
     }
-    if(S._backlogDays.count>=3 && S._lastBacklogWarn!==t){
-      S._lastBacklogWarn=t;
-      setTimeout(()=>showToast('⚠ Llevás '+S._backlogDays.count+' días con +200 atrasadas. Sugerencia: bajá las nuevas a 30/día hasta bajar de 100.','error'),500);
+    if(S._backlogDays.count >= 3 && S._lastBacklogWarn !== t){
+      S._lastBacklogWarn = t;
+      setTimeout(() => showToast('⚠ Llevás ' + S._backlogDays.count +
+        ' días con +200 atrasadas. Sugerencia: bajá las nuevas a 30/día hasta bajar de 100.', 'error'), 500);
     }
-  } else {
-    S._backlogDays.count=0;
+  }else{
+    S._backlogDays.count = 0;
   }
 
-  // SIN LÍMITE — devolvemos todo lo pendiente
+  // ── Ordenamiento por PRIORIDAD ──
+  const daysToExam = Math.max(0, daysBetween(t, EXAM_DATE));
+  const byPrio = (a, b) => computePriority(b, daysToExam) - computePriority(a, daysToExam);
+
+  const news    = pool.filter(c => c.state === 'new');
+  const reviews = pool.filter(c => c.state !== 'new');
+  news.sort(byPrio);
+  reviews.sort(byPrio);
+
   return [...reviews, ...news];
 }
 
@@ -3583,6 +3606,7 @@ function addFC(){
   if(!course||!topic||!q||!a)return;
   if(!S.fc)S.fc=[];
   S.fc.push({
+    cardId: genCardId(),
     course,topic,q,a,
     etiquetas: [],
     ease:2.5,
@@ -3788,47 +3812,99 @@ function _closeReflectionPrompt(){
 // ═══ FIN SELF-EXPLANATION ═══
 
 function rateFC(rating){
-  if(!_fcQueue||!_fcQueue.length)return;
-  const card=_fcQueue[0];
-  if(!S.fc)S.fc=[];
-  const realCard=S.fc.find(c=>c===card)||S.fc.find(c=>c.q===card.q&&c.a===card.a&&c.course===card.course);
-  if(!realCard)return;
+  if(!_fcQueue || !_fcQueue.length) return;
+  const card = _fcQueue[0];
+  if(!S.fc) S.fc = [];
+  const realCard = S.fc.find(c => c === card)
+                || S.fc.find(c => c.q === card.q && c.a === card.a && c.course === card.course);
+  if(!realCard) return;
 
-  const e=realCard.ease||2.5;
-  const i=realCard.interval||0;
-  const isNew=(realCard.state==='new'||i===0);
+  // Asegurar cardId (retroactivo para tarjetas viejas)
+  if(!realCard.cardId) realCard.cardId = genCardId();
 
-  if(rating==='again'){
-    realCard.ease=Math.max(1.3,e-0.20);
-    realCard.lapses=(realCard.lapses||0)+1;
-    realCard.state='learning';
-    realCard.interval=0;
-    realCard.due=localKey(new Date(Date.now()+60*1000));
-  }
-  else if(rating==='hard'){
-    realCard.ease=Math.max(1.3,e-0.15);
-    realCard.interval=isNew?1:Math.max(1,Math.round(i*1.2));
-    realCard.state='review';
-    realCard.due=localKey(new Date(Date.now()+realCard.interval*86400000));
-  }
-  else if(rating==='good'){
-    realCard.interval=isNew?1:Math.round(i*e);
-    realCard.state='review';
-    realCard.due=localKey(new Date(Date.now()+realCard.interval*86400000));
-  }
-  else if(rating==='easy'){
-    realCard.ease=Math.min(2.8,e+0.15);
-    realCard.interval=isNew?4:Math.round(i*e*1.3);
-    realCard.state='review';
-    realCard.due=localKey(new Date(Date.now()+realCard.interval*86400000));
-  }
-    if(!S.fcToday||S.fcToday.date!==today())S.fcToday={date:today(),newDone:0,reviewDone:0};
-  const wasNew=isNew;
-  if(wasNew)S.fcToday.newDone=(S.fcToday.newDone||0)+1;
-  else S.fcToday.reviewDone=(S.fcToday.reviewDone||0)+1;
-  realCard.reps=(realCard.reps||0)+1;
-  realCard.lastReview=today();
+  const e = realCard.ease || 2.5;
+  const i = realCard.interval || 0;
+  const isNew = (realCard.state === 'new' || i === 0);
 
+  const confidence = window._fcCurrentConfidence || 60;
+  const pr = computePR(rating, confidence);
+
+  // ── Ease (como antes) ──
+  if(rating === 'again')      realCard.ease = Math.max(1.3, e - 0.20);
+  else if(rating === 'hard')  realCard.ease = Math.max(1.3, e - 0.15);
+  else if(rating === 'easy')  realCard.ease = Math.min(2.8, e + 0.15);
+
+  // ── Estado + lapses ──
+  if(rating === 'again'){
+    realCard.lapses = (realCard.lapses || 0) + 1;
+    realCard.state = 'learning';
+  }else{
+    realCard.state = 'review';
+    realCard.reps = (realCard.reps || 0) + 1;
+  }
+
+  // ── Programación con el nuevo motor ──
+  const daysToExam = Math.max(0, daysBetween(today(), EXAM_DATE));
+  const topicId = findTopicIdByCourseAndName(realCard.course, realCard.topic);
+  const stability = computeStability(realCard);
+  const pressure  = topicId ? computeTopicPressure(topicId) : 50;
+
+  if(rating === 'again'){
+    realCard.interval = 0;
+    realCard.due = localKey(new Date(Date.now() + 60 * 1000));
+  }else{
+    const next = computeFinalInterval(realCard, pr, stability, pressure, daysToExam);
+    realCard.interval = next;
+    realCard.due = localKey(new Date(Date.now() + next * 86400000));
+  }
+
+  // ── Contadores diarios ──
+  if(!S.fcToday || S.fcToday.date !== today()){
+    S.fcToday = { date: today(), newDone: 0, reviewDone: 0 };
+  }
+  if(isNew) S.fcToday.newDone   = (S.fcToday.newDone   || 0) + 1;
+  else      S.fcToday.reviewDone = (S.fcToday.reviewDone || 0) + 1;
+
+  realCard.lastReview   = today();
+  realCard.lastReviewTs = Date.now();
+
+  // ── Dominio del tema (sigue igual que antes) ──
+  const perfMap = { again: 15, hard: 55, good: 80, easy: 100 };
+  const performance = perfMap[rating] ?? 50;
+  if(topicId) StudyPrioritizer.updateDominio(topicId, performance);
+
+  // ── Calibración enriquecida con cardId ──
+  if(!S.calibration) S.calibration = [];
+  const calEntry = {
+    source: 'fc',
+    cardId: realCard.cardId,
+    topicId: topicId || null,
+    course: realCard.course,
+    topic:  realCard.topic,
+    confidence,
+    correct: rating === 'good' || rating === 'easy',
+    rating,
+    pr,
+    stability,
+    topicPressure: pressure,
+    intervalChosen: realCard.interval,
+    date: today(),
+    ts: Date.now()
+  };
+  S.calibration.push(calEntry);
+  if(S.calibration.length > 2000) S.calibration = S.calibration.slice(-2000);
+  window._fcCurrentConfidence = null;
+
+  // ── Self-explanation (igual que antes) ──
+  const isFail = (rating === 'again' || rating === 'hard');
+  const triggerReflection = confidence >= 75 && isFail;
+
+  _fcQueue.shift();
+  save();
+  renderFC();
+
+  if(triggerReflection) _showReflectionPrompt(calEntry);
+}
     // Conectar con el grafo: actualizar dominio del tema según el rating
   const perfMap={again:15, hard:55, good:80, easy:100};
   const performance=perfMap[rating]!==undefined?perfMap[rating]:50;
@@ -7304,7 +7380,132 @@ function courseLabel(name){
   const mo=new MutationObserver(()=>decorate());
   mo.observe(document.body,{childList:true,subtree:true});
 })();
+/* ═══════════════════════════════════════════════════════════════
+   MOTOR FSRS-LITE — Evidencia → Estabilidad → Programación
+   ═══════════════════════════════════════════════════════════════ */
 
+function genCardId(){
+  return 'fc_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+}
+
+// ─── PR: fuerza y dirección de la evidencia (0=bien mala, 100=bien buena) ───
+function computePR(rating, confidence){
+  const c = Math.max(0, Math.min(100, confidence ?? 60)) / 100;
+  const signal = {
+    again: -0.90,
+    hard:   0.05,
+    good:   0.60,
+    easy:   0.95
+  }[rating] ?? 0;
+  const amplifier = 0.5 + c * 1.1;   // 0.5 .. 1.6
+  const pr = 50 + signal * amplifier * 40;
+  return Math.max(0, Math.min(100, Math.round(pr)));
+}
+
+// ─── Stability: cuán estable parece la tarjeta según su historial ───
+function computeStability(card){
+  if(!card) return 0;
+  const reps     = card.reps    || 0;
+  const lapses   = card.lapses  || 0;
+  const ease     = card.ease    || 2.5;
+  const interval = card.interval || 0;
+  if(reps === 0) return 0;
+
+  const successRate   = Math.max(0, (reps - lapses) / reps);
+  const repsScore     = Math.min(1, Math.log2(reps + 1) / 5);
+  const intervalScore = Math.min(1, Math.log2(interval + 1) / 5);
+  const easeScore     = Math.min(1, Math.max(0, (ease - 1.3) / 1.5));
+
+  const stability =
+      successRate   * 40 +
+      repsScore     * 20 +
+      intervalScore * 25 +
+      easeScore     * 15;
+
+  return Math.max(0, Math.min(100, Math.round(stability)));
+}
+
+// ─── TopicPressure: cuánta atención necesita el tema ───
+function computeTopicPressure(topicId){
+  if(!topicId) return 50;
+  const info = getTopicDependencyInfo(topicId);
+  const dominance = info.mastery || 0;
+  let pressure = 100 - dominance;
+
+  const blind = S.blindSpots && S.blindSpots[topicId];
+  if(blind && !blind.cleared) pressure += 30;
+
+  if(info.dependents && info.dependents.length >= 2){
+    pressure += info.dependents.length * 5;
+  }
+
+  const capErrs = ((S.capErrors || {})[topicId] || []).length;
+  if(capErrs > 0) pressure += capErrs * 3;
+
+  if(info.blocked) pressure += 15;
+
+  return Math.max(0, Math.min(100, Math.round(pressure)));
+}
+
+// ─── Priority: qué tan urgente es atender esta tarjeta HOY ───
+function computePriority(card, daysToExam){
+  const topicId   = findTopicIdByCourseAndName(card.course, card.topic);
+  const pressure  = topicId ? computeTopicPressure(topicId) : 50;
+  const stability = computeStability(card);
+
+  const baseNeed = pressure * 0.6 + (100 - stability) * 0.4;
+
+  // 90 días antes del examen ya empieza a apretar
+  const deadlineFactor = Math.max(0, Math.min(1, (90 - daysToExam) / 90));
+
+  const daysOverdue = Math.max(0, daysBetween(card.due || today(), today()));
+  const overdueBonus = Math.min(30, daysOverdue * 2);
+
+  const priority = baseNeed * (0.7 + 0.3 * deadlineFactor) + overdueBonus;
+  return Math.max(0, Math.min(100, Math.round(priority)));
+}
+
+// ─── Intervalo final: aplica presión de tema + blind spot + deadline ───
+function computeFinalInterval(card, pr, stability, topicPressure, daysToExam){
+  const lastInterval = card.interval || 0;
+  const isNew = card.state === 'new' || lastInterval === 0;
+
+  // Candidato derivado de la estabilidad
+  let candidate;
+  if(isNew){
+    candidate = 1;
+  }else{
+    const stabNorm = stability / 100;
+    candidate = Math.max(1, Math.round(Math.pow(2, stabNorm * 6.5)));
+    // Continuidad: no oscilar bruscamente
+    if(pr >= 40){
+      candidate = Math.max(candidate, Math.round(lastInterval * 0.9));
+    }else{
+      candidate = Math.min(candidate, Math.max(1, Math.round(lastInterval * 0.5)));
+    }
+  }
+
+  // Tope por presión del tema
+  let pressureCap = Infinity;
+  if(topicPressure >= 80)      pressureCap = 5;
+  else if(topicPressure >= 60) pressureCap = 10;
+  else if(topicPressure >= 40) pressureCap = 20;
+  else if(topicPressure >= 20) pressureCap = 45;
+
+  // Blind spot: tope duro
+  const topicId = findTopicIdByCourseAndName(card.course, card.topic);
+  const blind = topicId && S.blindSpots && S.blindSpots[topicId];
+  if(blind && !blind.cleared) pressureCap = Math.min(pressureCap, 5);
+
+  candidate = Math.min(candidate, pressureCap);
+
+  // Deadline: nunca agendar más allá del examen
+  const examMargin = Math.max(1, Math.min(3, Math.floor(daysToExam * 0.1)));
+  const deadlineCap = Math.max(1, daysToExam - examMargin);
+  candidate = Math.min(candidate, deadlineCap);
+
+  return Math.max(1, Math.round(candidate));
+}
 /* ═══ VELOCIDAD POR TEMA — Stats ═══ */
 
 
