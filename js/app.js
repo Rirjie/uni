@@ -62,124 +62,185 @@ function renderPlanTopics(){
 
 const DEPENDENCIES = {
   // ── ÁLGEBRA ──
-  'al3':['al2'],           // Productos notables depende de Exponentes
-  'al4':['al2','al3'],     // Polinomios depende de Exponentes y Productos notables
-  'al5':['al3','al4'],     // Divisiones depende de Productos y Polinomios
-  'al7':['al3','al5'],     // Factorización depende de Productos y Divisiones
-  'al8':['al2','al4'],     // Complejos I depende de Exponentes y Polinomios
-  'al10':['al7'],          // Ec. polinomiales depende de Factorización
-  'al11':['al7','al10'],   // Ec. grado superior depende de Factorización y Ec. polinomiales
-  'al13':['al12'],         // Inecuaciones depende de Desigualdades
-  'al16':['al2'],          // Logaritmos depende de Exponentes
-  'al17':['al16'],         // Funciones depende de Logaritmos (dominio, rango)
-  'al20':['al17'],         // Función inversa depende de Funciones
+  'al3':['al2'],
+  'al4':['al2','al3'],
+  'al5':['al3','al4'],
+  'al6':['al4','al5'],
+  'al7':['al4','al5','al6'],
+  'al8':['al2','al4'],
+  'al9':['al8'],
+  'al10':['al4','al7'],
+  'al11':['al7','al10'],
+  'al13':['al12'],
+  'al14':['al5','al13'],
+  'al15':['al13'],
+  'al16':['al2','al7'],
+  'al17':['al13','al15','al16'],
+  'al18':['al17'],
+  'al19':['al17','al18'],
+  'al20':['al17'],
+  'al21':['al17'],
+  'al22':['al16'],
+  'al23':['al22'],
+  'al24':['al7'],
+  'al25':['al24'],
+  'al26':['al24','al25'],
+  'al27':['al24','al25'],
+  'al28':['al13','al27'],
 
   // ── ARITMÉTICA ──
-  'a5':['a1','a2'],        // Regla de mezcla depende de Razones y Magnitudes
-  'a6':['a4'],             // Interés depende de Tanto por cuanto
-  'a7':['a4'],             // Descuento depende de Tanto por cuanto
-  'a13':['a10','a12'],     // Divisibilidad depende de Numeración y Operaciones
-  'a14':['a13'],           // Clasificación Z+ depende de Divisibilidad
-  'a15':['a13','a14'],     // MCD/MCM depende de Divisibilidad y Clasificación
-  'a16':['a13'],           // Potenciación depende de Divisibilidad
-  'a19':['a18'],           // Análisis combinatorio depende de Estadística
+  'a5':['a1','a2'],
+  'a6':['a4'],
+  'a7':['a4'],
+  'a13':['a10','a11','a12'],
+  'a14':['a13'],
+  'a15':['a13','a14'],
+  'a16':['a13'],
+  'a17':['a16'],
+  'a18':['a9'],
+  'a19':['a11','a16','a18'],
+  'a20':['a19'],
 
-// ── FÍSICA ──
-  'f3':['f2'],           // Cinemática necesita vectores
-  'f4':['f2'],           // Estática necesita vectores
-  'f5':['f2','f3'],      // Dinámica necesita vectores + cinemática
-  'f6':['f5'],           // Trabajo y potencia necesita dinámica
-  'f7':['f5','f6'],      // Energía necesita dinámica + trabajo
-  'f8':['f5'],           // Cantidad de movimiento necesita dinámica
-  'f9':['f8'],           // Choques necesita cantidad de movimiento
-  'f11':['f5'],          // MAS necesita dinámica
-  'f12':['f5'],          // Gravitación necesita dinámica
-  'f14':['f13'],         // Termodinámica necesita calor
-  'f16':['f15'],         // Electrodinámica necesita electrostática
-  'f17':['f16'],         // Magnetismo necesita electrodinámica
-  'f18':['f16','f17'],   // Electromagnetismo necesita electrodinámica + magnetismo
-  'f19':['f18'],         // Óptica necesita electromagnetismo
-
+  // ── FÍSICA ──
+  'f2':['f1'],
+  'f3':['f2'],
+  'f4':['f2'],
+  'f5':['f2','f3'],
+  'f6':['f5'],
+  'f7':['f5','f6'],
+  'f8':['f5'],
+  'f9':['f8'],
+  'f10':['f5'],
+  'f11':['f5'],
+  'f12':['f3','f5'],
+  'f14':['f13'],
+  'f16':['f15'],
+  'f17':['f16'],
+  'f18':['f16','f17'],
+  'f19':['f11'],
+  'f20':['f15','f18'],
 
   // ── GEOMETRÍA ──
-  'g2':['g1'],             // Triángulos depende de Líneas y ángulos
-  'g3':['g2'],             // Polígonos depende de Triángulos
-  'g4':['g2','g3'],        // Cuadriláteros depende de Triángulos y Polígonos
-  'g5':['g1','g2'],        // Circunferencia depende de Líneas y Triángulos
-  'g6':['g5'],             // Polígonos inscritos depende de Circunferencia
-  'g7':['g2','g5'],        // Puntos notables depende de Triángulos y Circunferencia
-  'g8':['g2'],             // Proporcionalidad depende de Triángulos
-  'g9':['g5','g8'],        // Relaciones métricas depende de Circunferencia y Proporcionalidad
-  'g11':['g2','g4'],       // Áreas planas depende de Triángulos y Cuadriláteros
-  'g13':['g11'],           // Poliedros depende de Áreas
-  'g14':['g13'],           // Prismas/cilindros depende de Poliedros
-  'g15':['g13'],           // Pirámide/cono depende de Poliedros
-  'g16':['g13','g15'],     // Esfera depende de Poliedros y Pirámide
-  'g17':['g9'],            // Geometría analítica depende de Relaciones métricas
+  'g2':['g1'],
+  'g3':['g2'],
+  'g4':['g2','g3'],
+  'g5':['g1','g2'],
+  'g6':['g5'],
+  'g7':['g2','g5'],
+  'g8':['g2'],
+  'g9':['g5','g8'],
+  'g10':['g5'],
+  'g11':['g2','g4'],
+  'g12':['g11'],
+  'g13':['g11','g12'],
+  'g14':['g13'],
+  'g15':['g13'],
+  'g16':['g13','g15'],
+  'g17':['g9'],
+  'g18':['g17'],
 
   // ── TRIGONOMETRÍA ──
-  't2':['t1'],             // Razones trig depende de Medición angular
-  't3':['t1','t2'],        // Ángulo posición normal depende de anteriores
-  't4':['t3'],             // Identidades I depende de Ángulo posición
-  't5':['t4'],             // Identidades II depende de Identidades I
-  't6':['t2','t4'],        // Resolución triángulos depende de Razones e Identidades
-  't7':['t3'],             // Circunferencia trig depende de Ángulo posición
-  't8':['t7'],             // Funciones directas depende de Circunferencia trig
-  't9':['t8'],             // Funciones inversas depende de Funciones directas
-  't10':['t5','t8'],       // Ecuaciones trig depende de Identidades y Funciones
-  't11':['t9'],            // Secciones cónicas depende de Funciones inversas
-  't13':['t3','t5'],       // Complejos trig depende de Ángulo e Identidades
+  't2':['t1'],
+  't3':['t1','t2'],
+  't4':['t3'],
+  't5':['t4'],
+  't6':['t2','t3'],
+  't7':['t3'],
+  't8':['t7'],
+  't9':['t8'],
+  't10':['t5','t8'],
+  't11':['t9'],
+  't12':['t11'],
+  't13':['t3','t5'],
 
   // ── QUÍMICA ──
-  'q3':['q2'],           // Números cuánticos necesita teoría atómica
-  'q4':['q2','q3'],      // Tabla periódica necesita atómica + cuánticos
-  'q5':['q4'],           // Enlace necesita tabla periódica
-  'q8':['q6'],           // Unidades de masa necesita nomenclatura
-  'q9':['q8'],           // Composición estequiométrica necesita unidades de masa
-  'q10':['q7'],          // Estado gaseoso necesita conceptos físicos
-  'q11':['q7'],          // Líquidos y sólidos necesita conceptos físicos
-  'q12':['q6','q8'],     // Reacciones necesita nomenclatura + unidades
-  'q13':['q12'],         // Estequiometría necesita reacciones
-  'q14':['q13'],         // Soluciones necesita estequiometría
-  'q15':['q12','q13'],   // Cinética/equilibrio necesita reacciones + estequiometría
-  'q16':['q15'],         // Ácidos/bases necesita equilibrio
-  'q17':['q16'],         // Electroquímica necesita ácidos/bases
-  'q18':['q5','q6'],     // Orgánica necesita enlace + nomenclatura
+  'q2':['q1'],
+  'q3':['q2'],
+  'q4':['q2','q3'],
+  'q5':['q4'],
+  'q6':['q1','q2'],
+  'q8':['q1','q6'],
+  'q9':['q8'],
+  'q10':['q7'],
+  'q11':['q7'],
+  'q12':['q6','q8'],
+  'q13':['q9','q10','q12'],
+  'q14':['q10','q11','q13'],
+  'q15':['q12','q13'],
+  'q16':['q15'],
+  'q17':['q16'],
+  'q18':['q5','q6','q13'],
+  'q19':['q5','q18'],
 
-    // ── RM (críticos) ──
-  'rm4':['rm1'],           // Lógica proposicional depende de Razonamiento Lógico
-  'rm5':['rm4'],           // Lógica de clases depende de Proposicional
-  'rm8':['rm7'],           // Deductivo depende de Inductivo
-  'rm11':['rm7'],          // Planteo ecuaciones depende de Inductivo
-  'rm23':['rm22'],         // Suficiencia II depende de Suficiencia I
+  // ── RAZ. MATEMÁTICO ──
+  'rm4':['rm1'],
+  'rm5':['rm4'],
+  'rm8':['rm7'],
+  'rm11':['rm7'],
+  'rm12':['rm11'],
+  'rm15':['rm11'],
+  'rm17':['rm16'],
+  'rm18':['rm17'],
+  'rm23':['rm22'],
 };
-
-// Prereqs blandos: solo advierten, NO bloquean. El tema se puede estudiar
-// sin dominar al 100% el prereq, pero probablemente te cueste más.
 const SOFT_DEPS = {
   // ── Álgebra ──
-  'al7':['al4'],           // Factorización sin polinomios perfectos: se puede
-  'al11':['al4'],          // Ec. grado superior sin polinomios: se puede
-  
+  'al6':['al3'],
+  'al9':['al2','al4'],
+  'al11':['al4'],
+  'al14':['al7'],
+  'al15':['al12'],
+  'al17':['al10'],
+  'al21':['al15'],
+  'al26':['al20'],
+  'al27':['al17'],
+  'al28':['al24'],
+
+  // ── Aritmética ──
+  'a5':['a4'],
+  'a14':['a15'],
+  'a17':['a15'],
+  'a18':['a9'],
+  'a20':['a18'],
+
   // ── Física ──
-  'f4':['f3'],           // Estática se puede estudiar sin cinemática perfecta
-  'f8':['f6'],           // Cantidad de movimiento sin trabajo al 100%
-  'f9':['f7'],           // Choques sin energía al 100%
-  'f16':['f5'],          // Electrodinámica sin dinámica dominada
-  
+  'f4':['f3'],
+  'f8':['f6'],
+  'f9':['f7'],
+  'f10':['f4'],
+  'f12':['f6'],
+  'f16':['f5'],
+  'f17':['f15'],
+  'f20':['f14'],
+
   // ── Geometría ──
-  'g7':['g1'],             // Puntos notables sin ángulos perfectos
-  'g11':['g8'],            // Áreas sin proporcionalidad perfecta
-  'g17':['g2'],            // Geo analítica sin triángulos al 100%
-  
+  'g7':['g1'],
+  'g11':['g8'],
+  'g12':['g3'],
+  'g17':['g2'],
+  'g18':['g5'],
+
   // ── Trigonometría ──
-  't6':['t5'],             // Resolución sin identidades II al 100%
-  't10':['t6'],            // Ecuaciones trig sin resolución de triángulos
-  
+  't6':['t5'],
+  't10':['t6'],
+  't13':['t10'],
+
   // ── Química ──
-  'q9':['q6'],           // Composición sin nomenclatura perfecta
-  'q13':['q11'],         // Estequiometría sin líquidos/sólidos perfectos
-  'q16':['q13'],         // Ácidos/bases sin estequiometría al 100%
+  'q9':['q6'],
+  'q10':['q8'],
+  'q13':['q11'],
+  'q16':['q13'],
+  'q17':['q15'],
+  'q19':['q17'],
+
+  // ── Raz. Matemático ──
+  'rm6':['rm4'],
+  'rm9':['rm2'],
+  'rm10':['rm3'],
+  'rm13':['rm11'],
+  'rm14':['rm3'],
+  'rm21':['rm3'],
+  'rm22':['rm2'],
 };
 
 // Función: devuelve prereqs de un tema
@@ -230,7 +291,7 @@ function getTopicDependencyInfo(topicId){
   const blocked=weakPrereqs.length>0&&mastery<70;
   const warned=!blocked&&weakSoft.length>0&&mastery<70;
   const isBottleneck=dependents.length>=2&&mastery<60;
-  return{blocked,warned,weakPrereqs,weakSoft,dependents,weakDependents,isBottleneck,mastery};
+  return{blocked,warned,weakPrereqs,weakSoft,dependents,weakDependents,isBottleneck,mastery,prereqs};
 }
 /* Modal/detalle de dependencias de un tema */
 function showDepInfo(topicId){
