@@ -641,6 +641,12 @@ select.pcourse{width:100%;background:#0a0a0f;border:1px solid var(--border);colo
 .dep-badge.bottleneck{color:#ffd84a}
 .dep-badge.warned{color:#f0a500}
 .dep-badge:hover{transform:scale(1.25);transition:transform .12s}
+/* PESO Y DEUDA */
+.peso-badge{font-size:.6rem;padding:.02rem .25rem;border-radius:3px;font-family:'DM Mono',monospace;margin-left:.25rem;vertical-align:middle}
+.peso-badge.high{background:#2a1515;color:var(--accent2);border:1px solid #5a1a1a}
+.peso-badge.mid{background:#2a2510;color:var(--accent4);border:1px solid #4a3a10}
+.peso-badge.low{background:#1a1a1a;color:var(--muted);border:1px solid var(--border)}
+.deuda-badge{font-size:.7rem;margin-left:.15rem;cursor:help}
 /* TOPIC */
 .ti{display:flex;align-items:flex-start;gap:.35rem;padding:.18rem 0;cursor:default}
 .tck{width:11px;height:11px;flex-shrink:0;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.66rem;margin-top:2px;cursor:pointer;transition:all .15s}
