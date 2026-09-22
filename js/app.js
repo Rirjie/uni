@@ -22,8 +22,18 @@ function makeTI(id){
     depIcon=`<span class="dep-badge bottleneck" onclick="event.stopPropagation();showDepInfo('${id}')" title="🎯 Cuello de botella — ${depInfo.dependents.length} dependientes">🎯</span>`;
   }
 
-    const safeName=name.replace(/'/g,"&#39;").replace(/"/g,"&quot;");
-  return`<div class="ti" data-id="${id}" data-course="${course}" data-name="${safeName}"><div class="tck" onclick="ck(event,'${id}')" title="Teoría vista (leí el capítulo / vi videos)"></div><div class="tck2" onclick="ck2(event,'${id}')" title="Problemas resueltos (practiqué con ejercicios)"></div><span class="tn">${name}${lum}${depIcon}${exBlock}</span><button class="db-cycle" onclick="sd(event,'${id}')" title="Dificultad (fácil / medio / pesado)">◆</button><span class="tlast" id="tl-${id}"></span><button class="tfb" onclick="event.stopPropagation();toggleCapErr('${id}')" title="Registrar error">⚠</button><button class="tfb" onclick="event.stopPropagation();document.getElementById('notes-${id}').classList.toggle('on')" title="Notas">✎</button></div><div class="tnotes-wrap" id="notes-${id}"><input class="tnote-input" placeholder="nota del tema..." oninput="saveNote('${id}',this.value)" onclick="event.stopPropagation()"></div>${errBlock}`;
+const meta=getTopicMeta(id);
+  const pesoReal=getPesoReal(id);
+  const pesoBadge=pesoReal>=10
+    ?`<span class="peso-badge high" title="Peso examen: ${pesoReal.toFixed(1)}% (alto)">${pesoReal.toFixed(0)}%</span>`
+    :pesoReal>=5
+    ?`<span class="peso-badge mid" title="Peso examen: ${pesoReal.toFixed(1)}% (medio)">${pesoReal.toFixed(0)}%</span>`
+    :`<span class="peso-badge low" title="Peso examen: ${pesoReal.toFixed(1)}% (bajo)">${pesoReal.toFixed(0)}%</span>`;
+  const deudaBadge=meta.deuda>=3
+    ?`<span class="deuda-badge" title="Lleva ${meta.deuda} exámenes sin salir — ¡probable que caiga!">🔥</span>`
+    :'';
+  const safeName=name.replace(/'/g,"&#39;").replace(/"/g,'&quot;');
+  return`<div class="ti" data-id="${id}" data-course="${course}" data-name="${safeName}"><div class="tck" onclick="ck(event,'${id}')" title="Teoría vista (leí el capítulo / vi videos)"></div><div class="tck2" onclick="ck2(event,'${id}')" title="Problemas resueltos (practiqué con ejercicios)"></div><span class="tn">${name}${lum}${pesoBadge}${deudaBadge}${depIcon}${exBlock}</span><button class="db-cycle" onclick="sd(event,'${id}')" title="Dificultad (fácil / medio / pesado)">◆</button><span class="tlast" id="tl-${id}"></span><button class="tfb" onclick="event.stopPropagation();toggleCapErr('${id}')" title="Registrar error">⚠</button><button class="tfb" onclick="event.stopPropagation();document.getElementById('notes-${id}').classList.toggle('on')" title="Notas">✎</button></div><div class="tnotes-wrap" id="notes-${id}"><input class="tnote-input" placeholder="nota del tema..." oninput="saveNote('${id}',this.value)" onclick="event.stopPropagation()"></div>${errBlock}`;
 }
 
 function renderPlanTopics(){
@@ -782,7 +792,144 @@ const TOPICS = {
   }
 
 };
+// ═══════════════════════════════════════════════════════════════
+// META DE TEMAS — peso examen + dificultad + deuda
+// ═══════════════════════════════════════════════════════════════
+const TOPIC_META = {
+  // Álgebra
+  al1:{peso:1,dif:1,deuda:0},  al2:{peso:3,dif:2,deuda:0},   al3:{peso:3,dif:2,deuda:0},
+  al4:{peso:3,dif:2,deuda:0},  al5:{peso:3,dif:2,deuda:0},   al6:{peso:3,dif:2,deuda:2},
+  al7:{peso:3,dif:3,deuda:0},  al8:{peso:3.6,dif:3,deuda:1}, al9:{peso:3.6,dif:3,deuda:1},
+  al10:{peso:10.6,dif:3,deuda:0}, al11:{peso:3.6,dif:3,deuda:0}, al12:{peso:3.6,dif:2,deuda:1},
+  al13:{peso:11.7,dif:2,deuda:0}, al14:{peso:4.2,dif:2,deuda:2}, al15:{peso:3.6,dif:2,deuda:1},
+  al16:{peso:7.5,dif:1,deuda:0},  al17:{peso:17,dif:3,deuda:0},  al18:{peso:3.6,dif:3,deuda:1},
+  al19:{peso:2.5,dif:3,deuda:1},  al20:{peso:3.6,dif:3,deuda:1}, al21:{peso:4.5,dif:3,deuda:2},
+  al22:{peso:10.6,dif:2,deuda:0}, al23:{peso:6,dif:3,deuda:1},   al24:{peso:12.8,dif:2,deuda:0},
+  al25:{peso:12.8,dif:2,deuda:0}, al26:{peso:6,dif:3,deuda:1},   al27:{peso:8.5,dif:2,deuda:0},
+  al28:{peso:12.8,dif:2,deuda:0},
+  // Aritmética
+  a1:{peso:4.95,dif:1,deuda:0}, a2:{peso:6.6,dif:2,deuda:3},  a3:{peso:3.6,dif:1,deuda:1},
+  a4:{peso:5,dif:2,deuda:1},    a5:{peso:8.9,dif:2,deuda:0},  a6:{peso:5.9,dif:2,deuda:0},
+  a7:{peso:6.6,dif:2,deuda:4},  a8:{peso:7.9,dif:2,deuda:0},  a9:{peso:7.9,dif:1,deuda:0},
+  a10:{peso:16.8,dif:2,deuda:0},a11:{peso:5,dif:3,deuda:1},   a12:{peso:8,dif:2,deuda:0},
+  a13:{peso:10.9,dif:3,deuda:0},a14:{peso:4,dif:2,deuda:1},   a15:{peso:3.96,dif:3,deuda:0},
+  a16:{peso:7.9,dif:2,deuda:0}, a17:{peso:8.9,dif:2,deuda:0}, a18:{peso:7.9,dif:2,deuda:0},
+  a19:{peso:6.9,dif:3,deuda:0}, a20:{peso:6.9,dif:3,deuda:1},
+  // Física
+  f1:{peso:3,dif:1,deuda:0},    f2:{peso:4.7,dif:2,deuda:0},  f3:{peso:12.2,dif:3,deuda:0},
+  f4:{peso:6.6,dif:3,deuda:0},  f5:{peso:6.6,dif:3,deuda:0},  f6:{peso:5.2,dif:2,deuda:0},
+  f7:{peso:5.2,dif:3,deuda:0},  f8:{peso:5,dif:2,deuda:1},    f9:{peso:5,dif:3,deuda:1},
+  f10:{peso:5.2,dif:2,deuda:0}, f11:{peso:4.7,dif:3,deuda:0}, f12:{peso:4.2,dif:3,deuda:0},
+  f13:{peso:6.1,dif:2,deuda:0}, f14:{peso:6.1,dif:3,deuda:0}, f15:{peso:5.6,dif:3,deuda:0},
+  f16:{peso:8,dif:3,deuda:0},   f17:{peso:6,dif:3,deuda:1},   f18:{peso:6.1,dif:3,deuda:0},
+  f19:{peso:7,dif:2,deuda:0},   f20:{peso:5.6,dif:3,deuda:0},
+  // Geometría
+  g1:{peso:3.7,dif:1,deuda:0},  g2:{peso:5.6,dif:2,deuda:0},  g3:{peso:4.6,dif:2,deuda:0},
+  g4:{peso:4,dif:2,deuda:1},    g5:{peso:13.9,dif:3,deuda:0}, g6:{peso:3,dif:3,deuda:1},
+  g7:{peso:2.5,dif:3,deuda:2},  g8:{peso:4,dif:2,deuda:0},    g9:{peso:4.6,dif:3,deuda:0},
+  g10:{peso:8.3,dif:2,deuda:0}, g11:{peso:6.5,dif:2,deuda:0}, g12:{peso:10.2,dif:2,deuda:0},
+  g13:{peso:3.7,dif:2,deuda:0}, g14:{peso:16.7,dif:2,deuda:0},g15:{peso:7.4,dif:2,deuda:0},
+  g16:{peso:4.6,dif:2,deuda:0}, g17:{peso:4.6,dif:3,deuda:0}, g18:{peso:3.6,dif:3,deuda:0},
+  // Trigonometría
+  t1:{peso:5.75,dif:1,deuda:0}, t2:{peso:4.6,dif:1,deuda:0},  t3:{peso:13.8,dif:2,deuda:0},
+  t4:{peso:8.05,dif:3,deuda:0}, t5:{peso:8.05,dif:3,deuda:0}, t6:{peso:13.8,dif:3,deuda:0},
+  t7:{peso:6.9,dif:2,deuda:0},  t8:{peso:12.6,dif:3,deuda:0}, t9:{peso:13.8,dif:3,deuda:0},
+  t10:{peso:10.3,dif:3,deuda:0},t11:{peso:5.75,dif:3,deuda:0},t12:{peso:3,dif:2,deuda:0},
+  t13:{peso:3,dif:3,deuda:0},
+  // Química
+  q1:{peso:4.7,dif:1,deuda:0},  q2:{peso:7.5,dif:2,deuda:0},  q3:{peso:3.6,dif:3,deuda:0},
+  q4:{peso:4.7,dif:1,deuda:1},  q5:{peso:8,dif:2,deuda:0},    q6:{peso:6.6,dif:2,deuda:0},
+  q7:{peso:3.6,dif:1,deuda:0},  q8:{peso:4,dif:2,deuda:0},    q9:{peso:3.6,dif:2,deuda:0},
+  q10:{peso:5,dif:2,deuda:0},   q11:{peso:4.7,dif:2,deuda:0}, q12:{peso:6,dif:2,deuda:0},
+  q13:{peso:9.9,dif:3,deuda:0}, q14:{peso:11.8,dif:2,deuda:0},q15:{peso:8.5,dif:3,deuda:0},
+  q16:{peso:6.6,dif:2,deuda:0}, q17:{peso:9,dif:3,deuda:0},   q18:{peso:8,dif:2,deuda:0},
+  q19:{peso:5.6,dif:1,deuda:1},
+  // Psicología
+  ps1:{peso:7.1,dif:1,deuda:0}, ps2:{peso:3,dif:1,deuda:0},   ps3:{peso:7.5,dif:2,deuda:1},
+  ps4:{peso:17.2,dif:2,deuda:0},ps5:{peso:5,dif:2,deuda:0},   ps6:{peso:5,dif:2,deuda:0},
+  ps7:{peso:4,dif:2,deuda:0},   ps8:{peso:17.2,dif:2,deuda:0},ps9:{peso:17.2,dif:2,deuda:0},
+  ps10:{peso:7.5,dif:2,deuda:1},ps11:{peso:5,dif:1,deuda:0},  ps12:{peso:4,dif:2,deuda:0},
+  ps13:{peso:7.1,dif:2,deuda:0},ps14:{peso:7.1,dif:2,deuda:0},ps15:{peso:7.5,dif:2,deuda:1},
+  ps16:{peso:25.7,dif:2,deuda:0},ps17:{peso:8.5,dif:2,deuda:0},ps18:{peso:7.5,dif:1,deuda:1},
+  ps19:{peso:3,dif:1,deuda:0},  ps20:{peso:3,dif:1,deuda:0},
+  // Filosofía
+  fi1:{peso:8.6,dif:1,deuda:0}, fi2:{peso:28.6,dif:2,deuda:0},fi3:{peso:15,dif:2,deuda:0},
+  fi4:{peso:8,dif:2,deuda:0},   fi5:{peso:28.6,dif:3,deuda:0},fi6:{peso:8.6,dif:2,deuda:0},
+  fi7:{peso:10,dif:3,deuda:0},  fi8:{peso:8.6,dif:2,deuda:0}, fi9:{peso:8.6,dif:2,deuda:0},
+  fi10:{peso:5,dif:2,deuda:0},  fi11:{peso:7.5,dif:2,deuda:2},fi12:{peso:17.2,dif:2,deuda:0},
+  fi13:{peso:8.6,dif:2,deuda:0},fi14:{peso:7.5,dif:2,deuda:2},fi15:{peso:12,dif:2,deuda:1},
+  fi16:{peso:5,dif:2,deuda:0},  fi17:{peso:5,dif:2,deuda:0},  fi18:{peso:5,dif:2,deuda:0},
+  fi19:{peso:3,dif:1,deuda:0},  fi20:{peso:3,dif:1,deuda:0},
+  // Historia Universal
+  h1:{peso:21.1,dif:2,deuda:0}, h2:{peso:10.5,dif:2,deuda:0}, h3:{peso:13.2,dif:2,deuda:0},
+  h4:{peso:7.9,dif:2,deuda:0},  h5:{peso:7.9,dif:2,deuda:0},  h6:{peso:7.9,dif:2,deuda:0},
+  h7:{peso:4,dif:2,deuda:0},    h8:{peso:4,dif:2,deuda:0},    h9:{peso:4,dif:2,deuda:0},
+  h10:{peso:3,dif:1,deuda:0},
+  // Historia del Perú
+  hp1:{peso:5,dif:1,deuda:0},   hp2:{peso:7.9,dif:2,deuda:0}, hp3:{peso:7.9,dif:2,deuda:0},
+  hp4:{peso:4,dif:2,deuda:0},   hp5:{peso:5,dif:2,deuda:0},   hp6:{peso:10.5,dif:2,deuda:0},
+  hp7:{peso:10.5,dif:2,deuda:0},hp8:{peso:10.5,dif:2,deuda:0},hp9:{peso:4,dif:2,deuda:0},
+  hp10:{peso:3,dif:2,deuda:0},
+  // Geografía
+  ge1:{peso:16,dif:2,deuda:0},  ge2:{peso:6,dif:2,deuda:0},   ge3:{peso:7.5,dif:2,deuda:2},
+  ge4:{peso:7.5,dif:2,deuda:2}, ge5:{peso:5,dif:1,deuda:0},   ge6:{peso:4,dif:2,deuda:0},
+  ge7:{peso:3.6,dif:2,deuda:0}, ge8:{peso:7.5,dif:2,deuda:2}, ge9:{peso:4.8,dif:2,deuda:0},
+  ge10:{peso:8,dif:2,deuda:0},  ge11:{peso:8,dif:2,deuda:0},  ge12:{peso:12,dif:3,deuda:0},
+  ge13:{peso:4,dif:2,deuda:0},  ge14:{peso:12,dif:2,deuda:0}, ge15:{peso:12,dif:2,deuda:0},
+  ge16:{peso:5,dif:2,deuda:0},  ge17:{peso:12,dif:2,deuda:0}, ge18:{peso:5,dif:2,deuda:0},
+  ge19:{peso:3,dif:1,deuda:0},  ge20:{peso:3,dif:1,deuda:0},
+  // Lenguaje
+  le1:{peso:5,dif:1,deuda:0},   le2:{peso:3,dif:1,deuda:0},   le3:{peso:21.2,dif:2,deuda:0},
+  le4:{peso:6,dif:2,deuda:0},   le5:{peso:3,dif:1,deuda:0},   le6:{peso:3,dif:1,deuda:0},
+  le7:{peso:3,dif:1,deuda:0},   le8:{peso:15.2,dif:2,deuda:0}, le9:{peso:3,dif:1,deuda:0},
+  le10:{peso:3.6,dif:2,deuda:0},le11:{peso:15.2,dif:2,deuda:0},le12:{peso:5,dif:2,deuda:0},
+  le13:{peso:3,dif:1,deuda:0},  le14:{peso:6,dif:2,deuda:0},  le15:{peso:6,dif:2,deuda:0},
+  le16:{peso:21.2,dif:2,deuda:0},le17:{peso:6,dif:2,deuda:0}, le18:{peso:3,dif:1,deuda:0},
+  le19:{peso:6,dif:3,deuda:0},  le20:{peso:6,dif:3,deuda:0},
+  // Economía
+  ec1:{peso:11.5,dif:2,deuda:0},ec2:{peso:5,dif:2,deuda:0},   ec3:{peso:5,dif:2,deuda:0},
+  ec4:{peso:5.4,dif:1,deuda:0}, ec5:{peso:19.2,dif:2,deuda:0},ec6:{peso:11.5,dif:2,deuda:0},
+  ec7:{peso:6,dif:2,deuda:0},   ec8:{peso:5,dif:2,deuda:0},   ec9:{peso:5,dif:2,deuda:0},
+  ec10:{peso:19.2,dif:2,deuda:0},ec11:{peso:6,dif:2,deuda:0}, ec12:{peso:5.4,dif:2,deuda:0},
+  ec13:{peso:4,dif:2,deuda:0},  ec14:{peso:11.5,dif:2,deuda:0},ec15:{peso:5,dif:2,deuda:0},
+  ec16:{peso:4,dif:2,deuda:0},  ec17:{peso:7.7,dif:2,deuda:0},ec18:{peso:7.7,dif:2,deuda:0},
+  ec19:{peso:3,dif:1,deuda:0},  ec20:{peso:3,dif:1,deuda:0},
+  // Literatura
+  l1:{peso:4.5,dif:1,deuda:0},  l2:{peso:11.6,dif:2,deuda:0}, l3:{peso:5,dif:2,deuda:0},
+  l4:{peso:8,dif:2,deuda:0},    l5:{peso:6.5,dif:2,deuda:0},  l6:{peso:5.8,dif:2,deuda:0},
+  l7:{peso:11.6,dif:2,deuda:0}, l8:{peso:5.8,dif:2,deuda:0},  l9:{peso:5,dif:2,deuda:0},
+  l10:{peso:8.1,dif:2,deuda:0}, l11:{peso:8.1,dif:2,deuda:0}, l12:{peso:5,dif:2,deuda:0},
+  l13:{peso:8.1,dif:2,deuda:0}, l14:{peso:5,dif:2,deuda:0},   l15:{peso:5,dif:2,deuda:0},
+  l16:{peso:4,dif:2,deuda:0},   l17:{peso:8.1,dif:2,deuda:0}, l18:{peso:8.1,dif:2,deuda:0},
+  l19:{peso:5,dif:2,deuda:0},   l20:{peso:3,dif:1,deuda:0},
+  // Inglés — estimación
+  i1:{peso:3,dif:1,deuda:0},    i2:{peso:5,dif:1,deuda:0},    i3:{peso:4,dif:1,deuda:0},
+  i4:{peso:5,dif:2,deuda:0},    i5:{peso:4,dif:1,deuda:0},    i6:{peso:4,dif:2,deuda:0},
+  i7:{peso:5,dif:2,deuda:0},    i8:{peso:4,dif:2,deuda:0},    i9:{peso:4,dif:2,deuda:0},
+  i10:{peso:5,dif:2,deuda:0},   i11:{peso:5,dif:2,deuda:0},   i12:{peso:6,dif:3,deuda:0},
+  i13:{peso:5,dif:3,deuda:0},   i14:{peso:5,dif:3,deuda:0},   i15:{peso:5,dif:3,deuda:0},
+  i16:{peso:5,dif:3,deuda:0},   i17:{peso:5,dif:3,deuda:0},   i18:{peso:4,dif:3,deuda:0},
+  i19:{peso:3,dif:1,deuda:0},   i20:{peso:3,dif:1,deuda:0},
+  // RM — estimación
+  rm1:{peso:7,dif:2,deuda:0}, rm2:{peso:6,dif:2,deuda:0}, rm3:{peso:5,dif:2,deuda:0},
+  rm4:{peso:7,dif:2,deuda:0}, rm5:{peso:5,dif:3,deuda:0}, rm6:{peso:5,dif:3,deuda:0},
+  rm7:{peso:8,dif:2,deuda:0}, rm8:{peso:6,dif:3,deuda:0}, rm9:{peso:5,dif:2,deuda:0},
+  rm10:{peso:4,dif:3,deuda:0},rm11:{peso:8,dif:3,deuda:0},rm12:{peso:5,dif:3,deuda:0},
+  rm13:{peso:4,dif:3,deuda:0},rm14:{peso:4,dif:2,deuda:0},rm15:{peso:5,dif:3,deuda:0},
+  rm16:{peso:6,dif:2,deuda:0},rm17:{peso:5,dif:3,deuda:0},rm18:{peso:5,dif:3,deuda:0},
+  rm19:{peso:4,dif:2,deuda:0},rm20:{peso:4,dif:2,deuda:0},rm21:{peso:5,dif:2,deuda:0},
+  rm22:{peso:5,dif:3,deuda:0},rm23:{peso:5,dif:3,deuda:0},
+  // RV — estimación
+  rv1:{peso:5,dif:2,deuda:0}, rv2:{peso:7,dif:2,deuda:0}, rv3:{peso:6,dif:2,deuda:0},
+  rv4:{peso:6,dif:2,deuda:0}, rv5:{peso:7,dif:2,deuda:0}, rv6:{peso:5,dif:2,deuda:0},
+  rv7:{peso:6,dif:3,deuda:0}, rv8:{peso:5,dif:3,deuda:0}, rv9:{peso:5,dif:2,deuda:0},
+  rv10:{peso:8,dif:3,deuda:0},rv11:{peso:5,dif:3,deuda:0},rv12:{peso:5,dif:3,deuda:0},
+  rv13:{peso:4,dif:3,deuda:0},rv14:{peso:4,dif:2,deuda:0},rv15:{peso:4,dif:2,deuda:0},
+  rv16:{peso:5,dif:2,deuda:0},rv17:{peso:6,dif:3,deuda:0},rv18:{peso:5,dif:3,deuda:0},
+  rv19:{peso:5,dif:3,deuda:0},rv20:{peso:4,dif:3,deuda:0}
+};
 
+// ── ÍNDICE DE TEMAS ──
 // ── ÍNDICE DE TEMAS (agregar esto) ──
 const TOPIC_INDEX = {};
 for (const [course, topics] of Object.entries(TOPICS)) {
@@ -864,8 +1011,12 @@ function buildWeeklyStudyPlan(){
 
   // ── CIENCIAS ──
   for(const course of PLAN_COURSES){
-    const originalIds=Object.keys(TOPICS[course]||{})
-      .filter(id=>!id.includes('__part'));
+const originalIds=Object.keys(TOPICS[course]||{})
+      .filter(id=>!id.includes('__part'))
+      .sort((a,b)=>{
+        // 1) Orden del libro (alfabético numérico) como base
+        return a.localeCompare(b);
+      });
     const ids = expandCourseIntoWeeklySessions(originalIds, course);
     let cursor=0;
 
@@ -933,6 +1084,25 @@ function buildWeeklyStudyPlan(){
   distributeHumanities(HUMANITIES_ALL_WEEKS, PLAN_STUDY_WEEK_NUMBERS);
   distributeHumanities(HUMANITIES_ODD_ONLY, HUMANITIES_ODD_WEEKS);
   distributeHumanities(HUMANITIES_EVEN_ONLY, HUMANITIES_EVEN_WEEKS);
+
+  // ── REPASO REAL para semanas 25, 26, 27 ──
+  // Semana 25: críticos con dominio bajo
+  const w25=[];
+  const w26=[];
+  const w27=[];
+  for(const course of PLAN_COURSES){
+    const ids=Object.keys(TOPICS[course]||{}).filter(id=>!id.includes('__part'));
+    ids.forEach(id=>{
+      const peso=getPesoReal(id);
+      const dominio=getTopicMastery(id);
+      if(peso>=10 && dominio<70) w25.push(id);
+      if(dominio<50 || getTopicMeta(id).deuda>=2) w26.push(id);
+      w27.push(id); // w27 = todos para simulacro final
+    });
+  }
+  assignments[24]=w25.slice(0,50);
+  assignments[25]=w26.slice(0,50);
+  assignments[26]=w27.slice(0,60);
 
   // ── RECONSTRUIR PLAN ──
   Object.keys(WEEKS_TOPICS).forEach(key=>delete WEEKS_TOPICS[key]);
@@ -1480,6 +1650,49 @@ function wkey(){const d=new Date();d.setHours(0,0,0,0);const day=d.getDay();cons
 function localKey(d){return d.getFullYear()+'-'+(String(d.getMonth()+1).padStart(2,'0'))+'-'+(String(d.getDate()).padStart(2,'0'))}
 function fmt(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=Math.floor(s%60);return h+'h '+m+'m '+String(sec).padStart(2,'0')+'s'}
 function daysBetween(a,b){return Math.round((new Date(b)-new Date(a))/86400000)}
+
+// ── PESO, DIFICULTAD, TIEMPO ──
+function getTopicMeta(id){
+  return TOPIC_META[id] || {peso:3,dif:2,deuda:0};
+}
+function getPesoReal(id){
+  const m=getTopicMeta(id);
+  const factorDeuda = m.deuda>=5?2.5 : m.deuda>=4?2.2 : m.deuda>=3?1.8 : m.deuda>=2?1.4 : m.deuda>=1?1.2 : 1.0;
+  return Math.max(3, m.peso) * factorDeuda;
+}
+function getDificultad(id){
+  return getTopicMeta(id).dif;
+}
+function getPesoEfectivo(id){
+  // peso real + suma transitiva de dependientes
+  const peso = getPesoReal(id);
+  const deps = getDependents(id);
+  if(!deps.length) return peso;
+  const pesoDeps = deps.reduce((a,d)=>a+getPesoReal(d)*0.5, 0);
+  return peso + pesoDeps;
+}
+function getTiempoTeoria(id){
+  const d = getDificultad(id);
+  const p = getPesoReal(id);
+  if(d===1) return 0.5;
+  if(d===2) return p>=10?2:1;
+  return p>=10?3:2;   // dif 3
+}
+function getExGoalNew(id){
+  const p = getPesoReal(id);
+  if(p>=12) return 30;
+  if(p>=8)  return 25;
+  if(p>=5)  return 20;
+  if(p>=3)  return 10;
+  return 5;
+}
+function getReviewWeight(id){
+  const m=getTopicMeta(id);
+  const prereqCritico = getDependents(id).length>=2 && getPesoReal(id)>=10;
+  if(m.deuda>=3 || prereqCritico) return 'M'; // máximo
+  if(m.deuda>=1 || getPesoReal(id)>=10) return 'R'; // reforzado
+  return 'N';
+}
 
 // ── VIEWS ──
 function closeSidebar(){
@@ -4734,17 +4947,12 @@ function updateRhythmProjection(){
 
 // ── MEJORA 4: CONTADOR DE EJERCICIOS ──
 function getExGoal(id){
-
+  // Prioridad: preferencia del usuario (diff manual) > peso automático
   const d=(S.t||{})[id]?.diff;
-
-  if(d==='p')return 30;
-
-  if(d==='m')return 25;
-
-  return 20;
-
+  if(d==='p') return Math.max(30, getExGoalNew(id));
+  if(d==='m') return Math.max(25, getExGoalNew(id));
+  return getExGoalNew(id);
 }
-
 function getExCount(id){return(S.exCount||{})[id]||0;}
 
 function adjEx(id,delta){
@@ -5500,10 +5708,21 @@ function renderHomeProgSem(){
   }
 
 
-  const done=aw.topics.filter(id=>(S.t||{})[id]?.done).length;
+    const done=aw.topics.filter(id=>(S.t||{})[id]?.done).length;
   const total=aw.topics.length;
   const pct=total?Math.round(done/total*100):0;
+  // Probabilidad ponderada por peso real
+  let sumDominio=0, sumPeso=0;
+  for(const [id,data] of Object.entries(S.t||{})){
+    if(!TOPIC_INDEX[id] && !PLAN_PARTS[id]) continue;
+    const peso=getPesoReal(id);
+    const dom=getTopicMastery(id);
+    sumDominio += peso*dom;
+    sumPeso += peso;
+  }
+  const probAprobar = sumPeso>0 ? Math.round(sumDominio/sumPeso) : 0;
   el.textContent=done+'/'+total;
+  sub.textContent=pct+'% cobertura · Prob. aprobar: '+probAprobar+'%';
   el.className='hc-val green';
   el.style.color='';
   sub.textContent=pct+'% completado · Semana '+aw.id;
@@ -7494,7 +7713,9 @@ function computeTopicPressure(topicId){
   if(!topicId) return 50;
   const info = getTopicDependencyInfo(topicId);
   const dominance = info.mastery || 0;
-  let pressure = 100 - dominance;
+  const peso = getPesoReal(topicId);
+  // Presión base afectada por peso (temas pesados suben)
+  let pressure = (100 - dominance) * (0.7 + peso/25);
 
   const blind = S.blindSpots && S.blindSpots[topicId];
   if(blind && !blind.cleared) pressure += 30;
@@ -8456,6 +8677,10 @@ function startBlindSpotTriage(){
     const tid = findTopicIdByCourseAndName(c.course, c.topic);
     if(tid && blindTopicIds.has(tid)) return true;
     return false;
+  }).sort((a,b)=>{
+    const ta=findTopicIdByCourseAndName(a.course,a.topic);
+    const tb=findTopicIdByCourseAndName(b.course,b.topic);
+    return (tb?getPesoReal(tb):0) - (ta?getPesoReal(ta):0);
   });
 
   if(!pool.length){
@@ -9042,6 +9267,8 @@ function simFinish(){
   if(!S.speedSessions) S.speedSessions = [];
   const ts = Date.now();
   Object.entries(byTopic).forEach(([topicId, t]) => {
+    // Peso del tema modula cuánto importa el resultado
+    const pesoReal = getPesoReal(topicId);
     const topicSecs = Math.round(durationSecs * t.total / totalPreguntas);
     S.speedSessions.push({
       topicId,
@@ -9067,8 +9294,18 @@ function simFinish(){
     if(speedRatio > 1.5)      speedPenalty = 0.7;
     else if(speedRatio > 1.2) speedPenalty = 0.85;
     else if(speedRatio < 0.8) speedPenalty = 1.1;
-    const effectiveAcc = Math.round(Math.min(100, rawAcc * speedPenalty));
+        const effectiveAcc = Math.round(Math.min(100, rawAcc * speedPenalty));
     StudyPrioritizer.updateDominio(topicId, effectiveAcc);
+    // Los temas con peso alto o deuda alta se programan para repaso
+    const meta = getTopicMeta(topicId);
+    if(pesoReal >= 8 || meta.deuda >= 2){
+      S.t[topicId].reviewDates = S.t[topicId].reviewDates || [];
+      S.t[topicId].reviewsDone = S.t[topicId].reviewsDone || [];
+      const reviewDate = localKey(new Date(Date.now() + 5 * 86400000));
+      if(!S.t[topicId].reviewDates.includes(reviewDate)){
+        S.t[topicId].reviewDates.push(reviewDate);
+      }
+    }
 
     // Contar ejercicios resueltos
     if(!S.exCount) S.exCount = {};
