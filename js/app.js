@@ -1012,11 +1012,7 @@ function buildWeeklyStudyPlan(){
   // ── CIENCIAS ──
   for(const course of PLAN_COURSES){
 const originalIds=Object.keys(TOPICS[course]||{})
-      .filter(id=>!id.includes('__part'))
-      .sort((a,b)=>{
-        // 1) Orden del libro (alfabético numérico) como base
-        return a.localeCompare(b);
-      });
+      .filter(id=>!id.includes('__part'));
     const ids = expandCourseIntoWeeklySessions(originalIds, course);
     let cursor=0;
 
