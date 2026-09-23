@@ -387,6 +387,7 @@ h1 span{color:var(--accent)}
 .tcard-action{font-size:.70rem;color:var(--accent);cursor:pointer;background:transparent;border:none;font-family:'DM Mono',monospace}
 .tcard-action:hover{text-decoration:underline}
 
+
 /* POMO */
 /* POMO TABS + CRONÓMETRO */
 .pomo-tabs{display:flex;gap:.3rem;margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
@@ -413,6 +414,9 @@ h1 span{color:var(--accent)}
 .chrono-bt.fallo{border-color:var(--accent2);color:var(--accent2)}
 .chrono-bt.salto{border-color:#f0a500;color:#f0a500}
 .chrono-bt span{font-weight:700;font-family:'Syne',sans-serif;font-size:.75rem;line-height:1}
+.chrono-conf-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.35rem .2rem;border-radius:4px;cursor:pointer;font-size:.9rem;line-height:1;transition:all .12s;font-family:inherit}
+.chrono-conf-btn:hover{border-color:var(--accent)}
+.chrono-conf-btn.active{background:#1a1535;border-color:var(--accent);color:var(--accent);transform:scale(1.08)}
 
 /* POMO */
 .pomo-time{font-family:'Syne',sans-serif;font-size:2rem;font-weight:700;color:#fff;text-align:center;margin:.15rem 0;letter-spacing:-0.03em}
