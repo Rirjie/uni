@@ -2459,6 +2459,65 @@ function renderErrByCourseGrid(){
       +'</div>':'');
 }
 // ═══ TIPO DE ERROR ═══
+const ERR_TYPE_BY_TEXT = {
+  'Error de cálculo':'calculo','Error de signo':'atencion',
+  'Confusión de regla/propiedad':'conceptual','Mal planteamiento':'conceptual',
+  'Error en conversión de unidades':'calculo','No verificar la respuesta':'atencion',
+  'Saltarse un paso':'procedimental','Confundir MCM con MCD':'conceptual',
+  'Factorización incorrecta':'procedimental','Despeje incorrecto':'procedimental',
+  'Error de dominio':'conceptual','Simplificación incorrecta':'procedimental',
+  'Confusión de fórmula':'conceptual','Aplicar regla de producto a suma':'conceptual',
+  'Error en sustitución':'procedimental','Olvidar caso negativo en valor absoluto':'conceptual',
+  'Error de unidades':'calculo','Error de signo en vectores':'atencion',
+  'No identificar el sistema de referencia':'conceptual','Confundir masa y peso':'conceptual',
+  'Error en diagrama de fuerzas':'procedimental','Fórmula incorrecta':'conceptual',
+  'No aplicar conservación de energía':'procedimental','Confundir velocidad y aceleración':'conceptual',
+  'Error en trigonometría del problema':'procedimental',
+  'Error en identificar el teorema':'conceptual','Confundir ángulo inscrito y central':'conceptual',
+  'Error de cálculo de área':'calculo','Propiedad de triángulos incorrecta':'conceptual',
+  'Error en semejanza de triángulos':'procedimental','No distinguir radio y diámetro':'atencion',
+  'Error en polígonos regulares':'procedimental','Olvidar caso de ángulo obtuso':'conceptual',
+  'Error de Pitágoras':'procedimental','Confusión entre perímetro y área':'conceptual',
+  'Identidad mal aplicada':'procedimental','Error de cuadrante':'conceptual',
+  'Confundir sen y cos':'conceptual','Error en conversión radián-grado':'calculo',
+  'Olvido de valor absoluto':'conceptual','Error en Ley de senos/cosenos':'procedimental',
+  'Confundir arcsen con 1/sen':'conceptual','Error de signo en identidades':'atencion',
+  'No simplificar al final':'procedimental','Error en ecuación trig (solución incompleta)':'conceptual',
+  'Error en balanceo':'procedimental','Confundir mol con gramo':'conceptual',
+  'Error de estequiometría':'procedimental','Nomenclatura incorrecta':'conceptual',
+  'Error en configuración electrónica':'procedimental','Confundir enlace iónico y covalente':'conceptual',
+  'Error en cálculo de pH':'calculo','No aplicar gas ideal correctamente':'procedimental',
+  'Error en ecuación de equilibrio':'procedimental','Confundir oxidación y reducción':'conceptual',
+  'Leí mal el enunciado':'lectura','Me confundí al operar':'calculo',
+  'Me bloqueé demasiado tiempo':'conceptual','No revisé la respuesta':'atencion',
+  'Copié mal el dato':'atencion','Confundí el concepto clave':'conceptual',
+  'Error de concentración / distracción':'atencion','No identifiqué el tipo de problema':'conceptual',
+  'Saltarme pasos intermedios':'procedimental','Calculadora / operación apresurada':'atencion'
+};
+
+function classifyChronoError(text){
+  if(!text) return;
+  if(!S.errType) S.errType={};
+  const clean = text.replace(/^\[[^\]]+\]\s*/,'').trim();
+  if(S.errType[clean]) return; // ya tiene tipo
+  // match exacto
+  if(ERR_TYPE_BY_TEXT[clean]){ S.errType[clean] = ERR_TYPE_BY_TEXT[clean]; return; }
+  // match por substring (el usuario escribió "signo" en vez de "Error de signo")
+  const lower = clean.toLowerCase();
+  for(const [key, type] of Object.entries(ERR_TYPE_BY_TEXT)){
+    const k = key.toLowerCase();
+    if(lower.includes(k) || k.includes(lower)){
+      S.errType[clean] = type;
+      return;
+    }
+  }
+  // heurísticas básicas
+  if(/signo|distra|apura|concentra|olvid/i.test(clean)) S.errType[clean] = 'atencion';
+  else if(/c[aá]lculo|oper|sum|multiplic|divid|rest/i.test(clean)) S.errType[clean] = 'calculo';
+  else if(/le[ií]|enunciado|comprensi/i.test(clean)) S.errType[clean] = 'lectura';
+  else if(/proced|paso|m[eé]todo|despej|factoriz/i.test(clean)) S.errType[clean] = 'procedimental';
+  else if(/concept|teorema|propiedad|f[oó]rmula|definici/i.test(clean)) S.errType[clean] = 'conceptual';
+}
 const ERR_TYPE_CYCLE = ['', 'conceptual', 'procedimental', 'calculo', 'lectura', 'atencion'];
 const ERR_TYPE_META = {
   conceptual:     { icon:'🧠', label:'conceptual',    color:'#a855f7', tip:'Volvé a la teoría del capítulo antes de más práctica.' },
@@ -7383,6 +7442,15 @@ let chronoCounts = {
   errores: [],
   motivosSalto: []
 };
+
+window._chronoConfidence = 55;
+
+function setChronoConfidence(v){
+  window._chronoConfidence = v;
+  document.querySelectorAll('.chrono-conf-btn').forEach(b=>{
+    b.classList.toggle('active', Number(b.dataset.conf) === v);
+  });
+}
 // ═══ MODO CRONÓMETRO ═══
 let _chronoMode = 'normal'; // 'normal' | 'sim'
 function setChronoMode(mode){
@@ -7509,15 +7577,16 @@ else if(speedRatio < 0.8) speedPenalty = 1.1;
 const effectiveAcc = Math.round(Math.min(100, rawAcc * speedPenalty));
 StudyPrioritizer.updateDominio(topicId, effectiveAcc);
 
-const body='<div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem .7rem">'
-  +'<span style="color:var(--muted)">Problemas</span><b>'+total+'</b>'
-  +'<span style="color:var(--muted)">Duración</span><b>'+Math.floor(chronoSecs/60)+'m '+(chronoSecs%60)+'s</b>'
-  +'<span style="color:var(--muted)">Tiempo/problema</span><b>'+tpp+'s</b>'
-  +'<span style="color:var(--muted)">Acierto</span><b style="color:'+(acc>=70?'var(--accent3)':'var(--accent4)')+'">'+acc+'%</b>'
-  +'<span style="color:var(--muted)">Saltados</span><b style="color:'+(skip>=20?'#f0a500':'var(--muted)')+'">'+skip+'%</b>'
-  +'<span style="color:var(--muted)">Dominio</span><b>'+effectiveAcc+'%</b>'
-  +'</div>';
-showModal('Sesión guardada',body,{accent:'var(--accent3)',icon:'✅'});
+showChronoSessionClose({
+  course, topicName,
+  total, aciertos, fallos, saltos,
+  acertosFacil, acertosNormal, acertosDificil,
+  tpp, acc, skip, effectiveAcc, chronoSecs,
+  errores: chronoCounts.errores.slice(),
+  motivosSalto: chronoCounts.motivosSalto.slice(),
+  dominioAntes: window._chronoDominioAntes || 0,
+  dominioDespues: getTopicMastery(topicId)
+});
     chronoReset();
     if(typeof renderSpeedStats==='function')renderSpeedStats();
     refreshPlanIcons();
@@ -7567,9 +7636,32 @@ function chronoFallo(){
   if(!chronoRun) return;
   const err = prompt('¿Qué error cometiste? (ej: signo, despeje, fórmula, lectura...)');
   if(err === null) return;
+  const clean = err.trim();
   chronoCounts.fallo++;
-  if(err.trim()) chronoCounts.errores.push(err.trim());
+  if(clean){
+    chronoCounts.errores.push(clean);
+    classifyChronoError(clean);
+  }
+
+  // Capa 7: registrar en calibración + reflexión si confianza alta
+  const conf = window._chronoConfidence || 55;
+  const topicId = document.getElementById('chronoTopic')?.value || '';
+  const course  = document.getElementById('chronoCourse')?.value || '';
+  if(!S.calibration) S.calibration=[];
+  const cal = {
+    source:'chrono', topicId, course,
+    confidence: conf, correct:false, rating:'fallo',
+    date:today(), ts:Date.now()
+  };
+  S.calibration.push(cal);
+  if(S.calibration.length>2000) S.calibration = S.calibration.slice(-2000);
+
+  save();
   updateChronoCounts();
+
+  if(conf >= 80){
+    setTimeout(()=>_showReflectionPrompt(cal), 250);
+  }
 }
 
 function chronoSalteo(){
@@ -9407,8 +9499,9 @@ function simFinish(){
     if(speedRatio > 1.5)      speedPenalty = 0.7;
     else if(speedRatio > 1.2) speedPenalty = 0.85;
     else if(speedRatio < 0.8) speedPenalty = 1.1;
-        const effectiveAcc = Math.round(Math.min(100, rawAcc * speedPenalty));
-    StudyPrioritizer.updateDominio(topicId, effectiveAcc);
+const effectiveAcc = Math.round(Math.min(100, rawAcc * speedPenalty));
+window._chronoDominioAntes = getTopicMastery(topicId);
+StudyPrioritizer.updateDominio(topicId, effectiveAcc);
     // Los temas con peso alto o deuda alta se programan para repaso
     const meta = getTopicMeta(topicId);
     if(pesoReal >= 8 || meta.deuda >= 2){
@@ -9754,4 +9847,97 @@ function delSimulacro(simId){
   renderSimulacrosPanel();
   if(typeof renderSpeedStats === 'function') renderSpeedStats();
   showToast('✓ Simulacro eliminado');
+}
+function showChronoSessionClose(d){
+  document.getElementById('_genModal')?.remove();
+
+  const SKIP_LBL = { no_supe:'🧠 No supe', tiempo:'⏱ Sin tiempo', enunciado:'📖 No entendí', estrategia:'🎯 Estrategia' };
+  const skipCount = {};
+  d.motivosSalto.forEach(m=>{ skipCount[m]=(skipCount[m]||0)+1; });
+
+  // Contar tipos de error de los errores de esta sesión
+  const errCount = {};
+  d.errores.forEach(e=>{ errCount[e]=(errCount[e]||0)+1; });
+
+  // Calibración de esta sesión (últimas 6 horas)
+  const cutoff = Date.now() - 6*3600*1000;
+  const sessionCals = (S.calibration||[]).filter(c => c.source==='chrono' && c.ts >= cutoff);
+  const bienCal   = sessionCals.filter(c => c.correct && c.confidence >= 55).length;
+  const zonaCiega = sessionCals.filter(c => !c.correct && c.confidence >= 80).length;
+  const subconf   = sessionCals.filter(c => c.correct && c.confidence <= 35).length;
+
+  const errTop = Object.entries(errCount).sort((a,b)=>b[1]-a[1])[0];
+  const deltaDom = d.dominioDespues - d.dominioAntes;
+  const deltaStr = (deltaDom > 0 ? '+' : '') + deltaDom;
+
+  const m = document.createElement('div');
+  m.id = '_genModal';
+  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:3000;display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .2s ease';
+  m.onclick = e => { if(e.target === m) closeModal(); };
+
+  m.innerHTML = `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.4rem 1.5rem;max-width:560px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+      <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.9rem;border-bottom:1px solid var(--border);padding-bottom:.7rem">
+        <span style="font-size:1.1rem">✅</span>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;color:var(--accent3);flex:1">Sesión cerrada</div>
+        <button onclick="closeModal()" style="background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;border-radius:4px;font-size:.78rem;padding:.1rem .35rem;line-height:1">✕</button>
+      </div>
+
+      <div style="font-size:.72rem;color:var(--muted);margin-bottom:.8rem">
+        ${d.course} · ${d.topicName}
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.9rem;padding:.7rem;background:var(--bg);border-radius:6px;font-size:.72rem">
+        <div><div style="color:var(--muted);font-size:.64rem">Problemas</div><b>${d.total}</b></div>
+        <div><div style="color:var(--muted);font-size:.64rem">Duración</div><b>${Math.floor(d.chronoSecs/60)}m ${d.chronoSecs%60}s</b></div>
+        <div><div style="color:var(--muted);font-size:.64rem">t/prob</div><b>${d.tpp}s</b></div>
+        <div><div style="color:var(--muted);font-size:.64rem">Acierto</div><b style="color:${d.acc>=70?'var(--accent3)':'var(--accent4)'}">${d.acc}%</b></div>
+        <div><div style="color:var(--muted);font-size:.64rem">Saltados</div><b style="color:${d.skip>=20?'#f0a500':'var(--muted)'}">${d.skip}%</b></div>
+        <div><div style="color:var(--muted);font-size:.64rem">Dominio</div><b>${d.dominioDespues}% <span style="color:${deltaDom>=0?'var(--accent3)':'var(--accent2)'};font-size:.68rem">${deltaStr}</span></b></div>
+      </div>
+
+      <div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:.3rem">Aciertos por dificultad</div>
+      <div style="display:flex;gap:.7rem;font-size:.72rem;margin-bottom:.9rem">
+        <span>⚡ Fácil: <b>${d.acertosFacil}</b></span>
+        <span>😐 Normal: <b>${d.acertosNormal}</b></span>
+        <span>🐢 Difícil: <b>${d.acertosDificil}</b></span>
+      </div>
+
+      ${Object.keys(errCount).length ? `
+        <div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:.3rem">Errores</div>
+        <div style="margin-bottom:.9rem;font-size:.72rem;line-height:1.7">
+          ${Object.entries(errCount).map(([e,n])=>{
+            const tipo = (S.errType||{})[e] || 'sin_tipo';
+            const meta = ERR_TYPE_META[tipo] || {icon:'○', label:'sin clasificar', color:'var(--muted)'};
+            return `<div style="display:flex;align-items:center;gap:.4rem">
+              <span style="color:${meta.color}">${meta.icon}</span>
+              <span>${e}${n>1?' <b style="opacity:.6">×'+n+'</b>':''}</span>
+              <span style="color:${meta.color};font-size:.66rem;margin-left:auto">${meta.label}</span>
+            </div>`;
+          }).join('')}
+        </div>` : ''}
+
+      ${Object.keys(skipCount).length ? `
+        <div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:.3rem">Saltos</div>
+        <div style="margin-bottom:.9rem;font-size:.72rem;line-height:1.6">
+          ${Object.entries(skipCount).map(([k,n])=>'<div>'+(SKIP_LBL[k]||k)+' <b>('+n+')</b></div>').join('')}
+        </div>` : ''}
+
+      <div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:.3rem">Confianza vs resultado</div>
+      <div style="font-size:.72rem;margin-bottom:.9rem;line-height:1.7">
+        🎯 Bien calibrado: <b>${bienCal}</b> · 
+        <span style="color:${zonaCiega>0?'var(--accent2)':'var(--muted)'}">⚠ Zona ciega: <b>${zonaCiega}</b></span> · 
+        😰 Subconfianza: <b>${subconf}</b>
+      </div>
+
+      ${errTop || zonaCiega>0 ? `
+        <div style="padding:.6rem .75rem;background:#1f0a0f;border-left:3px solid var(--accent2);border-radius:4px;font-size:.72rem;line-height:1.5">
+          <div style="color:var(--accent2);font-weight:700;margin-bottom:.2rem">▶ Próximo paso</div>
+          ${errTop ? `Reforzá "<b>${errTop[0]}</b>" (aparece ${errTop[1]}x). ` : ''}
+          ${zonaCiega>0 ? `Tenés <b>${zonaCiega}</b> zona${zonaCiega>1?'s':''} ciega${zonaCiega>1?'s':''} — creías saber y fallaste.` : ''}
+        </div>` : ''}
+
+      <button onclick="closeModal()" style="margin-top:1rem;width:100%;padding:.55rem;background:var(--accent3);color:#000;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.72rem;font-weight:700">Cerrar</button>
+    </div>`;
+  document.body.appendChild(m);
 }
