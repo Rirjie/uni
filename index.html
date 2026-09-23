@@ -416,7 +416,16 @@
               <div class="chrono-time" id="chronoDisp">00:00</div>
               <div style="font-size:.68rem;color:var(--muted);margin-top:.2rem" id="chronoMeta">— sin problemas aún</div>
             </div>
-
+<div id="chronoConfBar" style="display:none;margin-bottom:.5rem">
+  <div style="font-size:.66rem;color:var(--muted);margin-bottom:.25rem;text-transform:uppercase;letter-spacing:.05em">¿Qué tan seguro estás?</div>
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.25rem">
+    <button class="chrono-conf-btn" data-conf="15" onclick="setChronoConfidence(15)" title="nada seguro">😰</button>
+    <button class="chrono-conf-btn" data-conf="35" onclick="setChronoConfidence(35)" title="dudo">🔴</button>
+    <button class="chrono-conf-btn active" data-conf="55" onclick="setChronoConfidence(55)" title="quizá">🟡</button>
+    <button class="chrono-conf-btn" data-conf="80" onclick="setChronoConfidence(80)" title="creo">🟢</button>
+    <button class="chrono-conf-btn" data-conf="95" onclick="setChronoConfidence(95)" title="seguro">✅</button>
+  </div>
+</div>
 <div id="chronoCounters" style="display:none">
   <div class="chrono-btn-row">
     <button class="chrono-bt acerto" onclick="chronoAcerto()">✓ Acerté <span id="cAcerto">0</span></button>
