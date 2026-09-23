@@ -417,16 +417,13 @@
               <div style="font-size:.68rem;color:var(--muted);margin-top:.2rem" id="chronoMeta">— sin problemas aún</div>
             </div>
 
-            <div id="chronoCounters" style="display:none">
-              <div class="chrono-btn-row">
-                <button class="chrono-bt easy" onclick="chronoCount('easy')">✓ Fácil <span id="cEasy">0</span></button>
-                <button class="chrono-bt hard" onclick="chronoCount('hard')">⚠ Difícil <span id="cHard">0</span></button>
-              </div>
-              <div class="chrono-btn-row">
-                <button class="chrono-bt skip" onclick="chronoCount('skipped')">⏭ Salté <span id="cSkipped">0</span></button>
-                <button class="chrono-bt fail" onclick="chronoCount('failed')">✕ Fallé <span id="cFailed">0</span></button>
-              </div>
-            </div>
+<div id="chronoCounters" style="display:none">
+  <div class="chrono-btn-row">
+    <button class="chrono-bt acerto" onclick="chronoAcerto()">✓ Acerté <span id="cAcerto">0</span></button>
+    <button class="chrono-bt fallo" onclick="chronoFallo()">✗ Fallé <span id="cFallo">0</span></button>
+    <button class="chrono-bt salto" onclick="chronoSalteo()">⏭ Salté <span id="cSalto">0</span></button>
+  </div>
+</div>
 
             <div class="pbts" style="margin-top:.5rem">
               <button id="chronoStart" onclick="chronoToggle()">▶ iniciar</button>
