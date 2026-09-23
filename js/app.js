@@ -7575,6 +7575,7 @@ else if(speedRatio > 1.2) speedPenalty = 0.85;
 else if(speedRatio < 0.8) speedPenalty = 1.1;
 
 const effectiveAcc = Math.round(Math.min(100, rawAcc * speedPenalty));
+window._chronoDominioAntes = getTopicMastery(topicId);
 StudyPrioritizer.updateDominio(topicId, effectiveAcc);
 
 showChronoSessionClose({
