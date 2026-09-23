@@ -7376,7 +7376,13 @@ function initAIComponents(){
 initAIComponents();
 /* ═══ CRONÓMETRO POR TEMA ═══ */
 let chronoInt=null, chronoSecs=0, chronoRun=false, chronoStart=null;
-let chronoCounts={easy:0,hard:0,skipped:0,failed:0};
+let chronoCounts = {
+  acerto: { facil: 0, normal: 0, dificil: 0 },
+  fallo: 0,
+  salto: 0,
+  errores: [],
+  motivosSalto: []
+};
 // ═══ MODO CRONÓMETRO ═══
 let _chronoMode = 'normal'; // 'normal' | 'sim'
 function setChronoMode(mode){
@@ -7444,65 +7450,74 @@ function chronoToggle(){
     const course=document.getElementById('chronoCourse').value;
     const topicId=document.getElementById('chronoTopic').value;
     if(!course||!topicId){showToast('Selecciona curso y tema');chronoReset();return;}
-    const total=chronoCounts.easy+chronoCounts.hard+chronoCounts.skipped+chronoCounts.failed;
-    if(total===0){showToast('No registraste ningún problema');chronoReset();return;}
-    if(chronoSecs<5){showToast('Muy corto, no se guardó');chronoReset();return;}
-    if(!S.speedSessions)S.speedSessions=[];
-    const topicName=TOPICS[course]?.[topicId]||topicId;
-    S.speedSessions.push({
-      topicId, course, topic:topicName,
-      secs:chronoSecs,
-      easy:chronoCounts.easy, hard:chronoCounts.hard,
-      skipped:chronoCounts.skipped, failed:chronoCounts.failed,
-      date:today(), ts:Date.now()
-    });
-    save();
+    const acertosFacil = chronoCounts.acerto.facil;
+const acertosNormal = chronoCounts.acerto.normal;
+const acertosDificil = chronoCounts.acerto.dificil;
+const aciertos = acertosFacil + acertosNormal + acertosDificil;
+const fallos = chronoCounts.fallo;
+const saltos = chronoCounts.salto;
+const total = aciertos + fallos + saltos;
 
-    // ⬇️ NUEVO: enviar info al plan de estudio
-    const resolved=chronoCounts.easy+chronoCounts.hard;
-    if(resolved>0){
-      if(!S.exCount)S.exCount={};
-      const goal=getExGoal(topicId);
-      S.exCount[topicId]=Math.min(goal,(S.exCount[topicId]||0)+resolved);
-      renderExBadge(topicId);
-    }
-    if(!S.t)S.t={};S.t[topicId]=S.t[topicId]||{};
-    S.t[topicId].speedSecs=(S.t[topicId].speedSecs||0)+chronoSecs;
-    S.t[topicId].speedProbs=(S.t[topicId].speedProbs||0)+total;
-    S.t[topicId].speedLast=today();
-    save();
-    renderTopicSpeed(topicId);
+if(total===0){showToast('No registraste ningún problema');chronoReset();return;}
+if(chronoSecs<5){showToast('Muy corto, no se guardó');chronoReset();return;}
+if(!S.speedSessions)S.speedSessions=[];
+const topicName=TOPICS[course]?.[topicId]||topicId;
+S.speedSessions.push({
+  topicId, course, topic:topicName,
+  secs:chronoSecs,
+  easy: acertosFacil,
+  hard: acertosNormal + acertosDificil,
+  skipped: saltos,
+  failed: fallos,
+  errores: chronoCounts.errores.slice(),
+  motivosSalto: chronoCounts.motivosSalto.slice(),
+  date:today(), ts:Date.now()
+});
+save();
 
-    const tpp=Math.round(chronoSecs/total);
-    const aciertos=chronoCounts.easy+chronoCounts.hard;
-    const acc=Math.round(aciertos/total*100);
-    const skip=Math.round(chronoCounts.skipped/total*100);
+// Sumar ejercicios resueltos (solo aciertos)
+if(aciertos>0){
+  if(!S.exCount)S.exCount={};
+  const goal=getExGoal(topicId);
+  S.exCount[topicId]=Math.min(goal,(S.exCount[topicId]||0)+aciertos);
+  renderExBadge(topicId);
+}
 
-    // Conectar con el grafo: el acierto real actualiza el dominio del tema
-    // (los saltados cuentan como 40, entre fallo y acierto con esfuerzo)
-    // Acierto puro
-    const rawAcc = (chronoCounts.easy*100 + chronoCounts.hard*70 + chronoCounts.skipped*40 + chronoCounts.failed*10) / total;
+if(!S.t)S.t={};S.t[topicId]=S.t[topicId]||{};
+S.t[topicId].speedSecs=(S.t[topicId].speedSecs||0)+chronoSecs;
+S.t[topicId].speedProbs=(S.t[topicId].speedProbs||0)+total;
+S.t[topicId].speedLast=today();
+save();
+renderTopicSpeed(topicId);
 
-    // Penalización por lentitud (solo si acertaste algo)
-    const target = getSpeedTarget(course);
-    const speedRatio = target ? tpp / target : 1;
-    let speedPenalty = 1;
-    if(speedRatio > 1.5)      speedPenalty = 0.7;   // lentísimo
-    else if(speedRatio > 1.2) speedPenalty = 0.85;  // lento
-    else if(speedRatio < 0.8) speedPenalty = 1.1;   // rápido
+const tpp=Math.round(chronoSecs/total);
+const acc=Math.round(aciertos/total*100);
+const skip=Math.round(saltos/total*100);
 
-    const effectiveAcc = Math.round(Math.min(100, rawAcc * speedPenalty));
-    StudyPrioritizer.updateDominio(topicId, effectiveAcc);
+// Fórmula de dominio ajustada (Fase 1):
+// Acertar fácil = 100, normal = 85, difícil = 70
+// Saltar = 40, Fallar = 0
+const rawAcc = (acertosFacil*100 + acertosNormal*85 + acertosDificil*70 + saltos*40 + fallos*0) / total;
 
-     const body='<div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem .7rem">'
-      +'<span style="color:var(--muted)">Problemas</span><b>'+total+'</b>'
-      +'<span style="color:var(--muted)">Duración</span><b>'+Math.floor(chronoSecs/60)+'m '+(chronoSecs%60)+'s</b>'
-      +'<span style="color:var(--muted)">Tiempo/problema</span><b>'+tpp+'s</b>'
-      +'<span style="color:var(--muted)">Acierto</span><b style="color:'+(acc>=70?'var(--accent3)':'var(--accent4)')+'">'+acc+'%</b>'
-      +'<span style="color:var(--muted)">Saltados</span><b style="color:'+(skip>=20?'#f0a500':'var(--muted)')+'">'+skip+'%</b>'
-      +'<span style="color:var(--muted)">Dominio</span><b>'+effectiveAcc+'%</b>'
-      +'</div>';
-    showModal('Sesión guardada',body,{accent:'var(--accent3)',icon:'✅'});
+const target = getSpeedTarget(course);
+const speedRatio = target ? tpp / target : 1;
+let speedPenalty = 1;
+if(speedRatio > 1.5)      speedPenalty = 0.7;
+else if(speedRatio > 1.2) speedPenalty = 0.85;
+else if(speedRatio < 0.8) speedPenalty = 1.1;
+
+const effectiveAcc = Math.round(Math.min(100, rawAcc * speedPenalty));
+StudyPrioritizer.updateDominio(topicId, effectiveAcc);
+
+const body='<div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem .7rem">'
+  +'<span style="color:var(--muted)">Problemas</span><b>'+total+'</b>'
+  +'<span style="color:var(--muted)">Duración</span><b>'+Math.floor(chronoSecs/60)+'m '+(chronoSecs%60)+'s</b>'
+  +'<span style="color:var(--muted)">Tiempo/problema</span><b>'+tpp+'s</b>'
+  +'<span style="color:var(--muted)">Acierto</span><b style="color:'+(acc>=70?'var(--accent3)':'var(--accent4)')+'">'+acc+'%</b>'
+  +'<span style="color:var(--muted)">Saltados</span><b style="color:'+(skip>=20?'#f0a500':'var(--muted)')+'">'+skip+'%</b>'
+  +'<span style="color:var(--muted)">Dominio</span><b>'+effectiveAcc+'%</b>'
+  +'</div>';
+showModal('Sesión guardada',body,{accent:'var(--accent3)',icon:'✅'});
     chronoReset();
     if(typeof renderSpeedStats==='function')renderSpeedStats();
     refreshPlanIcons();
@@ -7519,7 +7534,13 @@ function chronoToggle(){
     chronoRun=true;
     chronoStart=Date.now();
     chronoSecs=0;
-    chronoCounts={easy:0,hard:0,skipped:0,failed:0};
+    chronoCounts = {
+    acerto: { facil: 0, normal: 0, dificil: 0 },
+    fallo: 0,
+    salto: 0,
+    errores: [],
+    motivosSalto: []
+};
     updateChronoCounts();
     document.getElementById('chronoStart').textContent='■ terminar';
     document.getElementById('chronoStart').classList.add('on');
@@ -7532,22 +7553,51 @@ function chronoToggle(){
   }
 }
 
-function chronoCount(kind){
-  if(!chronoRun)return;
-  chronoCounts[kind]=(chronoCounts[kind]||0)+1;
+function chronoAcerto(){
+  if(!chronoRun) return;
+  const dif = prompt('Dificultad del problema que acertaste:\n1 = Fácil\n2 = Normal\n3 = Difícil', '2');
+  if(dif === null) return;
+  const map = { '1':'facil', '2':'normal', '3':'dificil' };
+  const key = map[dif.trim()] || 'normal';
+  chronoCounts.acerto[key]++;
+  updateChronoCounts();
+}
+
+function chronoFallo(){
+  if(!chronoRun) return;
+  const err = prompt('¿Qué error cometiste? (ej: signo, despeje, fórmula, lectura...)');
+  if(err === null) return;
+  chronoCounts.fallo++;
+  if(err.trim()) chronoCounts.errores.push(err.trim());
+  updateChronoCounts();
+}
+
+function chronoSalteo(){
+  if(!chronoRun) return;
+  const motivo = prompt('¿Por qué lo saltaste?\n1 = No supe\n2 = Falta de tiempo\n3 = No entendí el enunciado\n4 = Estrategia', '1');
+  if(motivo === null) return;
+  const map = { '1':'no_supe', '2':'tiempo', '3':'enunciado', '4':'estrategia' };
+  const key = map[motivo.trim()] || 'no_supe';
+  chronoCounts.salto++;
+  chronoCounts.motivosSalto.push(key);
   updateChronoCounts();
 }
 
 
 
 function updateChronoCounts(){
-  ['easy','hard','skipped','failed'].forEach(k=>{
-    const el=document.getElementById('c'+k.charAt(0).toUpperCase()+k.slice(1));
-    if(el)el.textContent=chronoCounts[k]||0;
-  });
-  const total=chronoCounts.easy+chronoCounts.hard+chronoCounts.skipped+chronoCounts.failed;
-  const meta=document.getElementById('chronoMeta');
-  if(meta)meta.textContent=total?(total+' problema'+(total===1?'':'s')+' registrados'):(chronoRun?'— sin problemas aún':'— sin problemas aún');
+  const acertos = chronoCounts.acerto.facil + chronoCounts.acerto.normal + chronoCounts.acerto.dificil;
+  const total = acertos + chronoCounts.fallo + chronoCounts.salto;
+
+  const elA = document.getElementById('cAcerto');
+  if(elA) elA.textContent = acertos;
+  const elF = document.getElementById('cFallo');
+  if(elF) elF.textContent = chronoCounts.fallo;
+  const elS = document.getElementById('cSalto');
+  if(elS) elS.textContent = chronoCounts.salto;
+
+  const meta = document.getElementById('chronoMeta');
+  if(meta) meta.textContent = total ? (total + ' problema' + (total===1?'':'s') + ' registrados') : (chronoRun ? '— sin problemas aún' : '— sin problemas aún');
 }
 
 function updateChronoDisp(){
@@ -7562,7 +7612,13 @@ function chronoReset(){
   chronoRun=false;
   clearInterval(chronoInt);
   chronoSecs=0;
-  chronoCounts={easy:0,hard:0,skipped:0,failed:0};
+  chronoCounts = {
+  acerto: { facil: 0, normal: 0, dificil: 0 },
+  fallo: 0,
+  salto: 0,
+  errores: [],
+  motivosSalto: []
+};
   const disp=document.getElementById('chronoDisp');
   if(disp)disp.textContent='00:00';
   const btn=document.getElementById('chronoStart');
