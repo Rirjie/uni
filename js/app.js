@@ -7603,6 +7603,8 @@ showChronoSessionClose({
     }
     chronoRun=true;
     chronoStart=Date.now();
+    const topicName = TOPICS[course]?.[topicId] || topicId;
+showToast('▶ Cronómetro iniciado — ' + course + ' · ' + topicName, 'success');
     chronoSecs=0;
     chronoCounts = {
     acerto: { facil: 0, normal: 0, dificil: 0 },
@@ -7624,58 +7626,83 @@ showChronoSessionClose({
 }
 
 function chronoAcerto(){
-  if(!chronoRun) return;
-  const dif = prompt('Dificultad del problema que acertaste:\n1 = Fácil\n2 = Normal\n3 = Difícil', '2');
-  if(dif === null) return;
-  const map = { '1':'facil', '2':'normal', '3':'dificil' };
-  const key = map[dif.trim()] || 'normal';
-  chronoCounts.acerto[key]++;
-  updateChronoCounts();
+  if(!chronoRun){ showToast('Iniciá el cronómetro primero','error'); return; }
+  showChoiceModal({
+    title: '✓ Problema acertado',
+    subtitle: '¿Qué dificultad tenía?',
+    options: [
+      {value:'facil',   icon:'⚡', label:'Fácil',   hint:'directo'},
+      {value:'normal',  icon:'😐', label:'Normal',  hint:'2 pasos'},
+      {value:'dificil', icon:'🐢', label:'Difícil', hint:'trazo / no obvio'}
+    ],
+    onPick: (key, o) => {
+      chronoCounts.acerto[key]++;
+      updateChronoCounts();
+      showToast('✓ Acierto ' + o.label.toLowerCase() + ' registrado','success');
+    }
+  });
 }
 
 function chronoFallo(){
-  if(!chronoRun) return;
-  const err = prompt('¿Qué error cometiste? (ej: signo, despeje, fórmula, lectura...)');
-  if(err === null) return;
-  const clean = err.trim();
-  chronoCounts.fallo++;
-  if(clean){
-    chronoCounts.errores.push(clean);
-    classifyChronoError(clean);
-  }
+  if(!chronoRun){ showToast('Iniciá el cronómetro primero','error'); return; }
+  showChoiceModal({
+    title: '✕ Problema fallado',
+    subtitle: '¿Qué tipo de error fue?',
+    options: [
+      {value:'conceptual',    icon:'🧠', label:'Conceptual',    hint:'confundí / no entendí'},
+      {value:'procedimental', icon:'📐', label:'Procedimental', hint:'paso mal / despeje'},
+      {value:'calculo',       icon:'🔢', label:'Cálculo',       hint:'operación / signo'},
+      {value:'lectura',       icon:'📖', label:'Lectura',       hint:'no entendí el enunciado'},
+      {value:'atencion',      icon:'⚠',  label:'Atención',      hint:'me apuré / distraje'}
+    ],
+    onPick: (key, o) => {
+      const conf = window._chronoConfidence || 55;
+      chronoCounts.fallo++;
+      chronoCounts.errores.push(o.label);
+      if(!S.errType) S.errType = {};
+      S.errType[o.label] = key;
 
-  // Capa 7: registrar en calibración + reflexión si confianza alta
-  const conf = window._chronoConfidence || 55;
-  const topicId = document.getElementById('chronoTopic')?.value || '';
-  const course  = document.getElementById('chronoCourse')?.value || '';
-  if(!S.calibration) S.calibration=[];
-  const cal = {
-    source:'chrono', topicId, course,
-    confidence: conf, correct:false, rating:'fallo',
-    date:today(), ts:Date.now()
-  };
-  S.calibration.push(cal);
-  if(S.calibration.length>2000) S.calibration = S.calibration.slice(-2000);
+      const topicId = document.getElementById('chronoTopic')?.value || '';
+      const course  = document.getElementById('chronoCourse')?.value || '';
+      if(!S.calibration) S.calibration = [];
+      const cal = {
+        source:'chrono', topicId, course,
+        confidence: conf, correct:false, rating:'fallo',
+        errorType: key,
+        date: today(), ts: Date.now()
+      };
+      S.calibration.push(cal);
+      if(S.calibration.length > 2000) S.calibration = S.calibration.slice(-2000);
+      save();
+      updateChronoCounts();
+      showToast('✕ Fallo registrado (' + o.label + ')','error');
 
-  save();
-  updateChronoCounts();
-
-  if(conf >= 80){
-    setTimeout(()=>_showReflectionPrompt(cal), 250);
-  }
+      if(conf >= 80){
+        setTimeout(() => _showReflectionPrompt(cal), 250);
+      }
+    }
+  });
 }
 
 function chronoSalteo(){
-  if(!chronoRun) return;
-  const motivo = prompt('¿Por qué lo saltaste?\n1 = No supe\n2 = Falta de tiempo\n3 = No entendí el enunciado\n4 = Estrategia', '1');
-  if(motivo === null) return;
-  const map = { '1':'no_supe', '2':'tiempo', '3':'enunciado', '4':'estrategia' };
-  const key = map[motivo.trim()] || 'no_supe';
-  chronoCounts.salto++;
-  chronoCounts.motivosSalto.push(key);
-  updateChronoCounts();
+  if(!chronoRun){ showToast('Iniciá el cronómetro primero','error'); return; }
+  showChoiceModal({
+    title: '⏭ Problema saltado',
+    subtitle: '¿Por qué lo saltaste?',
+    options: [
+      {value:'no_supe',      icon:'🧠', label:'No supe cómo'},
+      {value:'tiempo',       icon:'⏱', label:'Falta de tiempo'},
+      {value:'enunciado',    icon:'📖', label:'No entendí el enunciado'},
+      {value:'estrategia',   icon:'🎯', label:'Estrategia (vuelvo luego)'}
+    ],
+    onPick: (key, o) => {
+      chronoCounts.salto++;
+      chronoCounts.motivosSalto.push(key);
+      updateChronoCounts();
+      showToast('⏭ Salto registrado (' + o.label + ')','success');
+    }
+  });
 }
-
 
 
 function updateChronoCounts(){
@@ -9941,4 +9968,39 @@ function showChronoSessionClose(d){
       <button onclick="closeModal()" style="margin-top:1rem;width:100%;padding:.55rem;background:var(--accent3);color:#000;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.72rem;font-weight:700">Cerrar</button>
     </div>`;
   document.body.appendChild(m);
+}
+/* ═══ MODAL DE ELECCIÓN (reemplaza prompt) ═══ */
+function showChoiceModal({title, subtitle, options, onPick}){
+  document.getElementById('_choiceModal')?.remove();
+  const m = document.createElement('div');
+  m.id = '_choiceModal';
+  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:3500;display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .15s ease';
+  m.onclick = e => { if(e.target === m) m.remove(); };
+
+  const optsHtml = options.map((o, i) =>
+    `<button data-idx="${i}" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:.75rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.78rem;text-align:left;display:flex;align-items:center;gap:.7rem;transition:border-color .15s">
+      ${o.icon?`<span style="font-size:1.15rem;flex-shrink:0">${o.icon}</span>`:''}
+      <span style="flex:1">${o.label}</span>
+      ${o.hint?`<span style="font-size:.64rem;color:var(--muted);flex-shrink:0">${o.hint}</span>`:''}
+    </button>`
+  ).join('');
+
+  m.innerHTML = `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.4rem 1.5rem;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;color:var(--accent);margin-bottom:.3rem">${title}</div>
+      ${subtitle?`<div style="font-size:.68rem;color:var(--muted);margin-bottom:.9rem;line-height:1.4">${subtitle}</div>`:''}
+      <div style="display:flex;flex-direction:column;gap:.4rem">${optsHtml}</div>
+    </div>`;
+
+  document.body.appendChild(m);
+
+  m.querySelectorAll('button[data-idx]').forEach(b => {
+    b.onmouseenter = () => b.style.borderColor = 'var(--accent)';
+    b.onmouseleave = () => b.style.borderColor = 'var(--border)';
+    b.onclick = () => {
+      const o = options[Number(b.dataset.idx)];
+      m.remove();
+      onPick(o.value, o);
+    };
+  });
 }
